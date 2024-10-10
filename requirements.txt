@@ -3,3 +3,4 @@ matplotlib==3.9.0
 plotly==5.22.0
 workalendar==17.0.0
 scipy==1.13.1
+openpyxl==3.1.3
