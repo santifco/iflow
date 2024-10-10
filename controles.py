@@ -150,7 +150,7 @@ with tab1:
         tamano_muestra = calcular_tamano_muestra(N, z, e, p)
         st.write(f"El tamaño de muestra necesario es: {tamano_muestra}")
 
-            # Seleccionar una muestra aleatoria de tamaño n
+        # Seleccionar una muestra aleatoria de tamaño n
         df_sample = df_filtered.sample(n=tamano_muestra, random_state=1)
 
         # Mostrar las columnas solicitadas
@@ -158,11 +158,14 @@ with tab1:
             'Entidad', 'Articulo', 'Descripcion Articulo', 'Posicion', 'Pallet', 'Lote', 
             'Fecha Ingreso', 'Vencimiento', 'Bultos_x', 'Unidades_x', 'Tipo de Movimiento Alt', 'Rubro'
         ]
-        df_merged_recepcion['Vencimiento'] = pd.to_datetime(df_merged_recepcion['Vencimiento'], errors='coerce').dt.strftime('%d-%m-%Y')
-        df_merged_recepcion['Fecha Ingreso'] = pd.to_datetime(df_merged_recepcion['Fecha Ingreso'], errors='coerce').dt.strftime('%d-%m-%Y')
-        df_merged_recepcion = df_merged_recepcion.rename(columns={'Bultos_x': 'Bultos', 'Unidades_x': 'Unidades'})
-        df_sample = df_sample[columnas_a_mostrar]
         
+        
+        df_sample = df_sample[columnas_a_mostrar]
+
+        df_sample['Vencimiento'] = pd.to_datetime(df_sample['Vencimiento'], errors='coerce').dt.strftime('%d-%m-%Y')
+        df_sample['Fecha Ingreso'] = pd.to_datetime(df_sample['Fecha Ingreso'], errors='coerce').dt.strftime('%d-%m-%Y')
+        df_sample = df_sample.rename(columns={'Bultos_x': 'Bultos', 'Unidades_x': 'Unidades'})
+
         st.write("Muestra aleatoria de df_filtrado:")
         st.write(df_sample)
 
