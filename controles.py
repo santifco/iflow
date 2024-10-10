@@ -50,6 +50,9 @@ with st.expander("Carga de archivos"):
 with st.sidebar:
 
     p = st.slider("Proporción estimada de defectos (%)", 0, 50, 7) / 100.0
+    productividad = st.slider("Selecciona la productividad del control (Posiciones por hora)", 20, 50, 35)
+    horas_disponibles = st.slider("Selecciona la capacidad de horas disponibles para controlar", 3, 8, 5)
+    resultado = productividad * horas_disponibles
 
 
 # Crear pestañas
@@ -188,6 +191,11 @@ with tab1:
             mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         )
 
+        if resultado < tamano_muestra:
+            st.warning(f"El resultado es una capacidad de {resultado} posiciones, lo cual es menor al tamaño de muestra esperado ({tamano_muestra}).")
+        else:
+            st.success(f"¡El resultado es una capacidad de {resultado} posiciones, lo cual es mayor o igual al tamaño de muestra esperado ({tamano_muestra})!")
+
 
     else:
         st.write("Para realizar el merge, carga ambos archivos: 'Informe Stock con Operacion' y 'Reporte Posicionamiento'.")
@@ -294,6 +302,11 @@ with tab2:
             mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         )
 
+        if resultado < N:
+            st.warning(f"El resultado es una capacidad de {resultado} posiciones, lo cual es menor al tamaño de muestra esperado ({N}).")
+        else:
+            st.success(f"¡El resultado es una capacidad de {resultado} posiciones, lo cual es mayor o igual al tamaño de muestra esperado ({N})!")
+
     else:
         st.write("Para realizar el merge, carga ambos archivos: 'Informe Stock con Operacion' y 'Reporte Posicionamiento'.")
 
@@ -316,10 +329,11 @@ with tab3:
 
 
     if datos_reposicionamiento is not None:
+
+
         # Leer el archivo de reposicionamiento
         df_reposicionamiento_picking = df_reposicionamiento.dropna(subset=["Pallet"])
         df_reposicionamiento_picking = df_reposicionamiento_picking[df_reposicionamiento_picking["Pallet"] != 0]
-        df_reposicionamiento_picking = df_reposicionamiento_picking[df_reposicionamiento_picking["Tipo de Movimiento Alt"].isin(["PIU", "PIB"])]
         df_reposicionamiento_picking["Pallet"] = df_reposicionamiento_picking["Pallet"].astype(int)
         df_reposicionamiento_picking['Fecha (Fin Movimiento)'] = pd.to_datetime(df_reposicionamiento_picking['Fecha (Fin Movimiento)'])
         df_reposicionamiento_picking['Dias_Laborables'] = df_reposicionamiento_picking['Fecha (Fin Movimiento)'].apply(lambda x: cal.get_working_days_delta(x.date(), datetime.now().date()))
@@ -327,23 +341,57 @@ with tab3:
         df_reposicionamiento_picking = df_reposicionamiento_picking[df_reposicionamiento_picking['Universo'] == 1]
 
 
+        df_reposicionamiento_picking_piu_pib = df_reposicionamiento_picking[df_reposicionamiento_picking["Tipo de Movimiento Alt"].isin(["PIU", "PIB"])]
 
-        df_agrupado = df_reposicionamiento_picking.groupby('Posición Destino').agg({'Bultos': 'sum','Unidades': 'sum','ID Art': 'count',"Artículo":"first","Rubro":"first"}).reset_index()
+        # Agrupación y cálculo de acumulados
+        df_agrupado_piu_pib = df_reposicionamiento_picking_piu_pib.groupby('Posición Destino').agg({
+            'Bultos': 'sum',
+            'Unidades': 'sum',
+            'ID Art': 'count',
+            "Artículo": "first",
+            "Rubro": "first",
+            "Tipo de Movimiento Alt": "first"
+        }).reset_index()
 
-        df_agrupado = df_agrupado.sort_values(by='Bultos', ascending=False)
-        df_agrupado['Porcentaje_Acumulado_Bultos'] = df_agrupado['Bultos'].cumsum() / df_agrupado['Bultos'].sum()
-        # st.write(df_agrupado)
+        df_agrupado_piu_pib = df_agrupado_piu_pib.sort_values(by='Bultos', ascending=False)
+        df_agrupado_piu_pib['Porcentaje_Acumulado_Bultos'] = df_agrupado_piu_pib['Bultos'].cumsum() / df_agrupado_piu_pib['Bultos'].sum()
+        
+        df_agrupado_piu_pib = df_agrupado_piu_pib.sort_values(by='ID Art', ascending=False)
+        df_agrupado_piu_pib['Porcentaje_Acumulado_ID_Art'] = df_agrupado_piu_pib['ID Art'].cumsum() / df_agrupado_piu_pib['ID Art'].sum()
 
-        # Ordenar por 'ID Art' en orden descendente y calcular porcentaje acumulado para 'ID Art'
-        df_agrupado = df_agrupado.sort_values(by='ID Art', ascending=False)
-        df_agrupado['Porcentaje_Acumulado_ID_Art'] = df_agrupado['ID Art'].cumsum() / df_agrupado['ID Art'].sum()
+        # Filtrar top 20% de bultos e ID Art
+        df_top_20_bultos_piu_pib = df_agrupado_piu_pib[df_agrupado_piu_pib['Porcentaje_Acumulado_Bultos'] <= 0.80]
+        df_top_20_id_art_piu_pib = df_agrupado_piu_pib[df_agrupado_piu_pib['Porcentaje_Acumulado_ID_Art'] <= 0.80]
 
-        # Filtrar las filas cuyo porcentaje acumulado de 'Bultos' o 'ID Art' esté dentro del 20% más alto
-        df_top_20_bultos = df_agrupado[df_agrupado['Porcentaje_Acumulado_Bultos'] <= 0.80]
-        df_top_20_id_art = df_agrupado[df_agrupado['Porcentaje_Acumulado_ID_Art'] <= 0.80]
+        # Combinar los resultados
+        df_reposicionamiento_picking_piu_pib = pd.concat([df_top_20_bultos_piu_pib, df_top_20_id_art_piu_pib]).drop_duplicates()
 
-        # Combinar los DataFrames para ver las filas que aparecen en el 20% más alto de ambos casos
-        df_reposicionamiento_picking = pd.concat([df_top_20_bultos, df_top_20_id_art]).drop_duplicates()
+        # Repetir el proceso para movimientos "EI" y "SI"
+        df_reposicionamiento_picking_ei_si = df_reposicionamiento_picking[df_reposicionamiento_picking["Tipo de Movimiento Alt"].isin(["EI", "SI"])]
+
+        df_agrupado_ei_si = df_reposicionamiento_picking_ei_si.groupby('Posición Destino').agg({
+            'Bultos': 'sum',
+            'Unidades': 'sum',
+            'ID Art': 'count',
+            "Artículo": "first",
+            "Rubro": "first",
+            "Tipo de Movimiento Alt": "first"
+        }).reset_index()
+
+        df_agrupado_ei_si = df_agrupado_ei_si.sort_values(by='Bultos', ascending=False)
+        df_agrupado_ei_si['Porcentaje_Acumulado_Bultos'] = df_agrupado_ei_si['Bultos'].cumsum() / df_agrupado_ei_si['Bultos'].sum()
+        
+        df_agrupado_ei_si = df_agrupado_ei_si.sort_values(by='ID Art', ascending=False)
+        df_agrupado_ei_si['Porcentaje_Acumulado_ID_Art'] = df_agrupado_ei_si['ID Art'].cumsum() / df_agrupado_ei_si['ID Art'].sum()
+
+        df_top_20_bultos_ei_si = df_agrupado_ei_si[df_agrupado_ei_si['Porcentaje_Acumulado_Bultos'] <= 0.80]
+        df_top_20_id_art_ei_si = df_agrupado_ei_si[df_agrupado_ei_si['Porcentaje_Acumulado_ID_Art'] <= 0.80]
+
+        # Combinar los resultados de EI y SI
+        df_reposicionamiento_picking_ei_si = pd.concat([df_top_20_bultos_ei_si, df_top_20_id_art_ei_si]).drop_duplicates()
+
+        # Concatenar los resultados de PIU/PIB con EI/SI
+        df_reposicionamiento_picking = pd.concat([df_reposicionamiento_picking_piu_pib, df_reposicionamiento_picking_ei_si]).drop_duplicates()
 
         # Crear una figura para la curva de Pareto de Bultos e ID Art
 
@@ -365,9 +413,9 @@ with tab3:
     if datos_stock is None and datos_reposicionamiento is None and datos_posicion is None:
         st.write("Por favor, sube al menos un archivo Excel.")
 
-    if datos_stock is not None and datos_reposicionamiento is not None:
+    # if datos_stock is not None and datos_reposicionamiento is not None:
 
-        df_agrupado = df_agrupado.sort_values(by='Porcentaje_Acumulado_ID_Art', ascending=False)
+    #     df_agrupado = df_agrupado.sort_values(by='Porcentaje_Acumulado_ID_Art', ascending=False)
 
 
     if datos_stock is not None and datos_reposicionamiento is not None:
@@ -404,6 +452,10 @@ with tab3:
             mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         )
 
+        if resultado < N:
+            st.warning(f"El resultado es una capacidad de {resultado} posiciones, lo cual es menor al tamaño de muestra esperado ({N}).")
+        else:
+            st.success(f"¡El resultado es una capacidad de {resultado} posiciones, lo cual es mayor o igual al tamaño de muestra esperado ({N})!")
 
     else:
         st.write("Para realizar el merge, carga ambos archivos: 'Informe Stock con Operacion' y 'Reporte Posicionamiento'.")
