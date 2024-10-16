@@ -50,13 +50,15 @@ with st.expander("Carga de archivos"):
 with st.sidebar:
 
     p = st.slider("Proporción estimada de defectos (%)", 0, 50, 7) / 100.0
+    cantidad_operarios = st.slider("Selecciona la cantidad de operarios (Operarios)", 1, 5, 2)
     productividad = st.slider("Selecciona la productividad del control (Posiciones por hora)", 20, 50, 35)
-    horas_disponibles = st.slider("Selecciona la capacidad de horas disponibles para controlar", 3, 8, 5)
-    resultado = productividad * horas_disponibles
+    horas_disponibles = st.slider("Selecciona la capacidad de horas disponibles para controlar", 2.0, 8.0, 5.5)
+    productidad_general = cantidad_operarios*productividad
+    resultado = round(productidad_general * horas_disponibles, 2)
 
 
 # Crear pestañas
-tab1, tab2, tab3  = st.tabs(["Control Recepción", "Control Almacenaje", "Control Picking"])
+tab1, tab2, tab3,tab4  = st.tabs(["Control Recepción", "Control Almacenaje", "Control Picking","Control Parciales"])
 
 
 
@@ -369,29 +371,21 @@ with tab3:
         # Repetir el proceso para movimientos "EI" y "SI"
         df_reposicionamiento_picking_ei_si = df_reposicionamiento_picking[df_reposicionamiento_picking["Tipo de Movimiento Alt"].isin(["EI", "SI"])]
 
-        df_agrupado_ei_si = df_reposicionamiento_picking_ei_si.groupby('Posición Destino').agg({
-            'Bultos': 'sum',
-            'Unidades': 'sum',
-            'ID Art': 'count',
-            "Artículo": "first",
-            "Rubro": "first",
-            "Tipo de Movimiento Alt": "first"
-        }).reset_index()
+        # Agrupar por 'Posición Destino' y calcular la suma de bultos para EI y SI por separado
+        df_ei = df_reposicionamiento_picking_ei_si[df_reposicionamiento_picking_ei_si["Tipo de Movimiento Alt"] == "EI"].groupby('Posición Destino')['Bultos'].sum().reset_index().rename(columns={'Bultos': 'Bultos_EI'})
+        df_si = df_reposicionamiento_picking_ei_si[df_reposicionamiento_picking_ei_si["Tipo de Movimiento Alt"] == "SI"].groupby('Posición Destino')['Bultos'].sum().reset_index().rename(columns={'Bultos': 'Bultos_SI'})
 
-        df_agrupado_ei_si = df_agrupado_ei_si.sort_values(by='Bultos', ascending=False)
-        df_agrupado_ei_si['Porcentaje_Acumulado_Bultos'] = df_agrupado_ei_si['Bultos'].cumsum() / df_agrupado_ei_si['Bultos'].sum()
-        
-        df_agrupado_ei_si = df_agrupado_ei_si.sort_values(by='ID Art', ascending=False)
-        df_agrupado_ei_si['Porcentaje_Acumulado_ID_Art'] = df_agrupado_ei_si['ID Art'].cumsum() / df_agrupado_ei_si['ID Art'].sum()
+        # Combinar los datos de EI y SI para la misma posición
+        df_ei_si = pd.merge(df_ei, df_si, on='Posición Destino', how='outer').fillna(0)
 
-        df_top_20_bultos_ei_si = df_agrupado_ei_si[df_agrupado_ei_si['Porcentaje_Acumulado_Bultos'] <= 0.80]
-        df_top_20_id_art_ei_si = df_agrupado_ei_si[df_agrupado_ei_si['Porcentaje_Acumulado_ID_Art'] <= 0.80]
+        # Calcular el módulo de la diferencia entre Bultos_EI y Bultos_SI
+        df_ei_si['Diferencia_Modulo_Bultos'] = (df_ei_si['Bultos_EI'] - df_ei_si['Bultos_SI']).abs()
 
-        # Combinar los resultados de EI y SI
-        df_reposicionamiento_picking_ei_si = pd.concat([df_top_20_bultos_ei_si, df_top_20_id_art_ei_si]).drop_duplicates()
+        st.write(df_ei_si)
+        st.write(len(df_ei_si))
 
         # Concatenar los resultados de PIU/PIB con EI/SI
-        df_reposicionamiento_picking = pd.concat([df_reposicionamiento_picking_piu_pib, df_reposicionamiento_picking_ei_si]).drop_duplicates()
+        df_reposicionamiento_picking = pd.concat([df_reposicionamiento_picking_piu_pib, df_ei_si]).drop_duplicates()
 
         # Crear una figura para la curva de Pareto de Bultos e ID Art
 
@@ -459,3 +453,83 @@ with tab3:
 
     else:
         st.write("Para realizar el merge, carga ambos archivos: 'Informe Stock con Operacion' y 'Reporte Posicionamiento'.")
+
+
+
+with tab4:
+    
+    st.title("Control Parciales")
+
+
+    # Procesar y mostrar cada archivo si se ha subido
+    if datos_stock is not None:
+        # Leer el archivo de stock
+        df_stock_parciales = df_stock.dropna(subset=["Pallet"])
+        df_stock_parciales= df_stock_parciales[df_stock_parciales["Pallet"] != 0]
+        df_stock_parciales["Pallet"] = df_stock_parciales["Pallet"].astype(int)
+        # Mostrar el DataFrame resultante
+        # st.write("Datos de Stock:")
+        # st.write(df_stock["Pallet"])
+        # st.write(df_stock)
+
+    if datos_reposicionamiento is not None:
+        
+        df_reposicionamiento_parciales = df_reposicionamiento.dropna(subset=["Pallet"])
+        df_reposicionamiento_parciales = df_reposicionamiento_parciales[df_reposicionamiento_parciales["Pallet"] != 0]
+        df_reposicionamiento_parciales["Pallet"] = df_reposicionamiento_parciales["Pallet"].astype(int)
+        df_reposicionamiento_parciales['Fecha (Fin Movimiento)'] = pd.to_datetime(df_reposicionamiento_parciales['Fecha (Fin Movimiento)'])
+        df_reposicionamiento_parciales['Dias_Laborables'] = df_reposicionamiento_parciales['Fecha (Fin Movimiento)'].apply(lambda x: cal.get_working_days_delta(x.date(), datetime.now().date()))
+        df_reposicionamiento_parciales['Universo'] = (df_reposicionamiento_parciales['Dias_Laborables'] == 1).astype(int)
+        df_reposicionamiento_parciales = df_reposicionamiento_parciales[df_reposicionamiento_parciales['Universo'] == 1]
+
+        df_reposicionamiento_parciales = df_reposicionamiento_parciales[df_reposicionamiento_parciales["Tipo de Movimiento Alt"].isin(["RP"])]
+
+        df_reposicionamiento_parciales = df_reposicionamiento_parciales.groupby('Posición Origen').agg({
+            'Bultos': 'sum',
+            'Unidades': 'sum',
+            'ID Art': 'count',
+            "Artículo": "first",
+            "Rubro": "first",
+            "Tipo de Movimiento Alt": "first"
+        }).reset_index()
+
+
+        if datos_stock is not None and datos_reposicionamiento is not None:
+        # Realizar el merge de df_stock y df_reposicionamiento según la columna "Pallet"
+            df_merged_parciales = pd.merge(df_stock_parciales, df_reposicionamiento_parciales, left_on='Posicion', right_on='Posición Origen', how='inner')
+            df_merged_parciales = df_merged_parciales[["Artículo","Descripcion Articulo","Pasillo","Columna","Nivel","Sector","Posicion","Bultos_x","Unidades_x","Vencimiento"]]
+            df_merged_parciales['Vencimiento'] = pd.to_datetime(df_merged_parciales['Vencimiento'], errors='coerce').dt.strftime('%d-%m-%Y')
+            df_merged_parciales = df_merged_parciales.rename(columns={'Bultos_x': 'Bultos', 'Unidades_x': 'Unidades'})
+            # Tamaño de la población
+            N = len(df_merged_parciales)
+            st.write(f"Tamaño de df_stock (número de filas en df_merged_parciales): {N}")
+
+            st.write(df_merged_parciales)
+            
+
+            def convert_df_to_excel(df):
+                output = BytesIO()
+                with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
+                    df.to_excel(writer, index=False, sheet_name='Sheet1')
+                    writer.close()  # No es necesario el 'save()', cerrando con 'close()' dentro del contexto
+                processed_data = output.getvalue()  # Obtener los datos del archivo en formato binario
+                return processed_data
+
+            # Crear un archivo Excel de un DataFrame (en este caso df_merged)
+            excel_file = convert_df_to_excel(df_merged_picking)
+
+            # Botón para descargar el archivo Excel
+            st.download_button(
+                label="Download data as Excel Parciales",
+                data=excel_file,
+                file_name="df_merged_parciales.xlsx",
+                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            )
+
+            if resultado < N:
+                st.warning(f"El resultado es una capacidad de {resultado} posiciones, lo cual es menor al tamaño de muestra esperado ({N}).")
+            else:
+                st.success(f"¡El resultado es una capacidad de {resultado} posiciones, lo cual es mayor o igual al tamaño de muestra esperado ({N})!")
+
+        else:
+            st.write("Para realizar el merge, carga ambos archivos: 'Informe Stock con Operacion' y 'Reporte Posicionamiento'.")
