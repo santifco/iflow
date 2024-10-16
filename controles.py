@@ -50,11 +50,11 @@ with st.expander("Carga de archivos"):
 with st.sidebar:
 
     p = st.slider("Proporción estimada de defectos (%)", 0, 50, 7) / 100.0
-    cantidad_operarios = st.slider("Selecciona la cantidad de operarios (Operarios)", 1, 5, 2)
-    productividad = st.slider("Selecciona la productividad del control (Posiciones por hora)", 20, 50, 35)
-    horas_disponibles = st.slider("Selecciona la capacidad de horas disponibles para controlar", 2.0, 8.0, 5.5)
-    productidad_general = cantidad_operarios*productividad
-    resultado = round(productidad_general * horas_disponibles, 2)
+#     cantidad_operarios = st.slider("Selecciona la cantidad de operarios (Operarios)", 1, 5, 2)
+#     productividad = st.slider("Selecciona la productividad del control (Posiciones por hora)", 20, 50, 35)
+#     horas_disponibles = st.slider("Selecciona la capacidad de horas disponibles para controlar", 2.0, 8.0, 5.5)
+#     productidad_general = cantidad_operarios*productividad
+#     resultado = round(productidad_general * horas_disponibles, 2)
 
 
 # Crear pestañas
@@ -69,6 +69,15 @@ with tab1:
         # datos_stock = st.file_uploader("Informe Stock con Operacion", type="xlsx")
         # datos_reposicionamiento= st.file_uploader("Reporte Posicionamiento", type="xlsx")
         # datos_posicion = st.file_uploader("Posicion - Cliente - Sector - Estado", type="xlsx")
+    col1, col2, col3 = st.columns(3)    
+    with col1:
+        cantidad_operarios_recepcion = st.slider("cantidad de operarios (Operarios) Recepción", 1, 5, 2)
+    with col2:
+        productividad_recepcion = st.slider("productividad del control (Posiciones por hora) Recepción", 20, 50, 35)
+    with col3:
+        horas_disponibles_recepcion = st.slider("capacidad de horas disponibles para controlar Recepción", 2.0, 8.0, 5.5)
+    productidad_general_recepcion = cantidad_operarios_recepcion*productividad_recepcion
+    resultado_recepcion = round(productidad_general_recepcion * horas_disponibles_recepcion, 2)
 
         # Procesar y mostrar cada archivo si se ha subido
     if datos_stock is not None:
@@ -193,10 +202,10 @@ with tab1:
             mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         )
 
-        if resultado < tamano_muestra:
-            st.warning(f"El resultado es una capacidad de {resultado} posiciones, lo cual es menor al tamaño de muestra esperado ({tamano_muestra}).")
+        if resultado_recepcion < tamano_muestra:
+            st.warning(f"El resultado es una capacidad de {resultado_recepcion} posiciones, lo cual es menor al tamaño de muestra esperado ({tamano_muestra}).")
         else:
-            st.success(f"¡El resultado es una capacidad de {resultado} posiciones, lo cual es mayor o igual al tamaño de muestra esperado ({tamano_muestra})!")
+            st.success(f"¡El resultado es una capacidad de {resultado_recepcion} posiciones, lo cual es mayor o igual al tamaño de muestra esperado ({tamano_muestra})!")
 
 
     else:
@@ -207,6 +216,16 @@ with tab2:
     
     st.title("Control Almacenaje")
 
+    col1, col2, col3 = st.columns(3)
+
+    with col1:
+        cantidad_operarios_almacenaje = st.slider("cantidad de operarios (Operarios) Almacenaje", 1, 5, 2)
+    with col2:
+        productividad_almacenaje = st.slider("productividad del control (Posiciones por hora) Almacenaje", 20, 50, 35)
+    with col3:
+        horas_disponibles_almacenaje = st.slider("capacidad de horas disponibles para controlar Almacenaje" , 2.0, 8.0, 5.5)
+    productidad_general_almacenaje = cantidad_operarios_almacenaje*productividad_almacenaje
+    resultado_almacenaje = round(productidad_general_almacenaje * horas_disponibles_almacenaje, 2)
 
 
 
@@ -304,10 +323,10 @@ with tab2:
             mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         )
 
-        if resultado < N:
-            st.warning(f"El resultado es una capacidad de {resultado} posiciones, lo cual es menor al tamaño de muestra esperado ({N}).")
+        if resultado_almacenaje < N:
+            st.warning(f"El resultado es una capacidad de {resultado_almacenaje} posiciones, lo cual es menor al tamaño de muestra esperado ({N}).")
         else:
-            st.success(f"¡El resultado es una capacidad de {resultado} posiciones, lo cual es mayor o igual al tamaño de muestra esperado ({N})!")
+            st.success(f"¡El resultado es una capacidad de {resultado_almacenaje} posiciones, lo cual es mayor o igual al tamaño de muestra esperado ({N})!")
 
     else:
         st.write("Para realizar el merge, carga ambos archivos: 'Informe Stock con Operacion' y 'Reporte Posicionamiento'.")
@@ -316,6 +335,15 @@ with tab3:
     
     st.title("Control Picking")
 
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        cantidad_operarios_picking = st.slider(" la cantidad de operarios (Operarios) Picking", 1, 5, 2)
+    with col2:
+        productividad_picking = st.slider("productividad del control (Posiciones por hora) Picking", 20, 50, 35)
+    with col3:
+        horas_disponibles_picking = st.slider("capacidad de horas disponibles para controlar Picking", 2.0, 8.0, 5.5)
+    productidad_general_picking = cantidad_operarios_picking*productividad_picking
+    resultado_picking = round(productidad_general_picking * horas_disponibles_picking, 2)
 
     # Procesar y mostrar cada archivo si se ha subido
     if datos_stock is not None:
@@ -446,10 +474,10 @@ with tab3:
             mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
         )
 
-        if resultado < N:
-            st.warning(f"El resultado es una capacidad de {resultado} posiciones, lo cual es menor al tamaño de muestra esperado ({N}).")
+        if resultado_picking < N:
+            st.warning(f"El resultado es una capacidad de {resultado_picking} posiciones, lo cual es menor al tamaño de muestra esperado ({N}).")
         else:
-            st.success(f"¡El resultado es una capacidad de {resultado} posiciones, lo cual es mayor o igual al tamaño de muestra esperado ({N})!")
+            st.success(f"¡El resultado es una capacidad de {resultado_picking} posiciones, lo cual es mayor o igual al tamaño de muestra esperado ({N})!")
 
     else:
         st.write("Para realizar el merge, carga ambos archivos: 'Informe Stock con Operacion' y 'Reporte Posicionamiento'.")
@@ -459,6 +487,16 @@ with tab3:
 with tab4:
     
     st.title("Control Parciales")
+
+    col1, col2, col3 = st.columns(3)
+    with col1:
+        cantidad_operarios_parciales = st.slider("cantidad de operarios (Operarios) Parciales", 1, 5, 2)
+    with col2:
+        productividad_parciales = st.slider("productividad del control (Posiciones por hora) Parciales", 20, 50, 35)
+    with col3:
+        horas_disponibles_parciales = st.slider("capacidad de horas disponibles para controlar Parciales", 2.0, 8.0, 5.5)
+    productidad_general_parciales = cantidad_operarios_parciales*productividad_parciales
+    resultado_parciales = round(productidad_general_parciales * horas_disponibles_parciales, 2)
 
 
     # Procesar y mostrar cada archivo si se ha subido
@@ -526,10 +564,11 @@ with tab4:
                 mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
             )
 
-            if resultado < N:
-                st.warning(f"El resultado es una capacidad de {resultado} posiciones, lo cual es menor al tamaño de muestra esperado ({N}).")
+            if resultado_parciales < N:
+                st.warning(f"El resultado es una capacidad de {resultado_parciales} posiciones, lo cual es menor al tamaño de muestra esperado ({N}).")
             else:
-                st.success(f"¡El resultado es una capacidad de {resultado} posiciones, lo cual es mayor o igual al tamaño de muestra esperado ({N})!")
+                st.success(f"¡El resultado es una capacidad de {resultado_parciales} posiciones, lo cual es mayor o igual al tamaño de muestra esperado ({N})!")
 
         else:
             st.write("Para realizar el merge, carga ambos archivos: 'Informe Stock con Operacion' y 'Reporte Posicionamiento'.")
+
