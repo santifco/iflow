@@ -2,64 +2,59 @@ import streamlit as st
 import streamlit.components.v1 as components
 
 # Título de la aplicación
-st.title("Escáner de código de barras")
-
-# Verificar si ya hay un código de barras leído almacenado en session_state
-if 'barcode' not in st.session_state:
-    st.session_state.barcode = ""
-
-# Mostrar el código de barras leído en la pantalla si existe
-st.write(f"Código de barras detectado: {st.session_state.barcode}")
+st.title("Lector de códigos de barras con html5-qrcode")
 
 # Instrucciones
-st.write("Usa la cámara del celular para escanear un código de barras.")
+st.write("Coloca el código de barras delante de la cámara para escanearlo.")
 
-# Crear un bloque HTML/JavaScript para leer el código de barras
-barcode_scanner_html = f"""
+# Crear un bloque HTML/JavaScript para leer el código de barras usando html5-qrcode
+html_code = """
 <html>
+  <head>
+    <!-- Incluir la librería html5-qrcode -->
+    <script src="https://unpkg.com/html5-qrcode/minified/html5-qrcode.min.js"></script>
+  </head>
   <body>
-    <div id="barcode-scanner" style="width: 100%; height: 400px;"></div>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/quagga/0.12.1/quagga.min.js"></script>
-    <script type="text/javascript">
-      Quagga.init({{
-        inputStream: {{
-          name: "Live",
-          type: "LiveStream",
-          target: document.querySelector('#barcode-scanner'),
-        }},
-        decoder: {{
-          readers: ["code_128_reader", "ean_reader", "upc_reader"] // Tipos de códigos de barras que se pueden leer
-        }}
-      }}, function(err) {{
-        if (err) {{
-          console.log(err);
-          return;
-        }}
-        console.log("Quagga initialized");
-        Quagga.start();
-      }});
+    <div id="qr-reader" style="width: 500px"></div>
+    <div id="qr-reader-results"></div>
+    
+    <script>
+      function onScanSuccess(decodedText, decodedResult) {
+        // Mostrar el resultado en el elemento con id "qr-reader-results"
+        document.getElementById('qr-reader-results').innerText = `Código detectado: ${decodedText}`;
+        
+        // Enviar el código de barras detectado a Streamlit
+        window.parent.postMessage({barcode: decodedText}, "*");
+      }
 
-      Quagga.onDetected(function(data) {{
-        var code = data.codeResult.code;
-        console.log("Código de barras detectado: " + code);
-        
-        // Enviar el código de barras leído a Streamlit usando la función Streamlit.setComponentValue
-        window.parent.postMessage({{"barcode": code}}, "*");
-        
-        Quagga.stop(); // Detener la lectura después de capturar el código de barras
-      }});
+      function onScanFailure(error) {
+        // No se detectó código de barras en el frame actual
+        console.warn(`Código no detectado. Error: ${error}`);
+      }
+
+      // Inicializar html5-qrcode y pasar las funciones de éxito y fracaso
+      const html5QrCode = new Html5Qrcode("qr-reader");
+      html5QrCode.start(
+        { facingMode: "environment" }, // Usa la cámara trasera si está disponible
+        {
+          fps: 10,    // Velocidad de fotogramas por segundo
+          qrbox: { width: 250, height: 250 }  // Dimensiones del área de escaneo
+        },
+        onScanSuccess,
+        onScanFailure
+      );
     </script>
   </body>
 </html>
 """
 
-# Crear el componente de QuaggaJS dentro de Streamlit
-components.html(barcode_scanner_html, height=500)
+# Renderizar el HTML que contiene el escáner de código de barras
+components.html(html_code, height=600)
 
 # Capturar el código de barras enviado desde el bloque HTML/JavaScript
 barcode_input = st.experimental_get_query_params().get('barcode', [''])[0]
 
-# Si se ha detectado un código de barras, actualizar session_state y mostrarlo en la app
+# Si se ha detectado un código de barras, mostrarlo en la app
 if barcode_input:
-    st.session_state.barcode = barcode_input
     st.write(f"Código de barras detectado: {barcode_input}")
+
