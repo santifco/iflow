@@ -90,9 +90,9 @@ if 'df_pedidos' in st.session_state:
                     ] = row['Cantidad Confirmada'] + cantidad_confirmada
                     # Recalculate "Diferencia" after updating
                     st.session_state.df_pedidos['Diferencia'] = st.session_state.df_pedidos['Cantidad'] - st.session_state.df_pedidos['Cantidad Confirmada']
-                    st.write(f"Cantidad confirmada: {cantidad_confirmada} bultos para el artículo {codigo_articulo} en el pedido {row['Nro. de Pedido']}.")
-                    st.write("Tabla actualizada con la cantidad confirmada y diferencia:")
-                    st.dataframe(st.session_state.df_pedidos)
+                    st.success(f"Cantidad confirmada: {cantidad_confirmada} bultos para el artículo {codigo_articulo} en el pedido {row['Nro. de Pedido']}.")
+                    # st.write("Tabla actualizada con la cantidad confirmada y diferencia:")
+                    # st.dataframe(st.session_state.df_pedidos)
         elif codigo_articulo not in st.session_state.df_pedidos['Artículo Código'].values:
             st.error(f"El artículo {codigo_articulo} no se encuentra en la tabla de pedidos.")
         else:
@@ -116,3 +116,5 @@ if 'df_pedidos' in st.session_state:
 
     st.write("Suma de diferencias por Artículo Código (diferencia > 0):")
     st.dataframe(styled_df)
+
+
