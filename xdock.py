@@ -11,6 +11,12 @@ st.write("Escanea el código del artículo y confirma la cantidad de bultos.")
 with st.expander("Carga de archivos"):
     # File uploader for orders
     archivo_pedidos = st.file_uploader("Carga la tabla de pedidos", type=["xlsx", "csv"])
+sheet_url = 'https://docs.google.com/spreadsheets/d/1cYYCMeEETyWnQ1kWG5p-wGMBLXgnMmBSdXk6ZUJ7Nwg/edit?usp=sharing'
+
+# Extraer el ID de la hoja
+sheet_id = sheet_url.split("/d/")[1].split("/")[0]
+data_url = f'https://docs.google.com/spreadsheets/d/{sheet_id}/gviz/tq?tqx=out:csv'
+    
 
 # Function to display data in a card format
 def mostrar_carta(data_row):
@@ -22,7 +28,7 @@ def mostrar_carta(data_row):
         <div style="padding:16px;">
             <p><strong>Artículo:</strong> {data_row["Artículo Código"]}</p>
             <p><strong>Fecha Entrega:</strong> {data_row["Fecha Entrega"]}</p>
-            <p><strong>Cliente:</strong> {data_row["Entidad Cliente"]}</p>
+            <p><strong>Cliente:</strong> {data_row["Entidad Cliente"]}</p>
             <p><strong>Cantidad Pedida:</strong> {data_row["Cantidad"]}</p>
             <p><strong>Cantidad Confirmada:</strong> {data_row["Cantidad Confirmada"]}</p>
             <p><strong>Cantidad Restante:</strong> {data_row["Diferencia"]}</p>
@@ -32,13 +38,15 @@ def mostrar_carta(data_row):
     st.markdown(card_html, unsafe_allow_html=True)
 
 # Initialize a DataFrame to store confirmed quantities
-if archivo_pedidos is not None:
+if data_url is not None:
     if 'df_pedidos' not in st.session_state:
         # Load the orders file into session state
-        if archivo_pedidos.name.endswith('xlsx'):
-            st.session_state.df_pedidos = pd.read_excel(archivo_pedidos)
-        elif archivo_pedidos.name.endswith('csv'):
-            st.session_state.df_pedidos = pd.read_csv(archivo_pedidos, encoding='ISO-8859-1', sep=';')
+        # if archivo_pedidos.name.endswith('xlsx'):
+        #     st.session_state.df_pedidos = pd.read_excel(archivo_pedidos)
+        # elif archivo_pedidos.name.endswith('csv'):
+        #     st.session_state.df_pedidos = pd.read_csv(archivo_pedidos, encoding='ISO-8859-1', sep=';')
+
+        st.session_state.df_pedidos = pd.read_csv(data_url)
         
         # Convert "Nro. de Pedido" to integer and add "Cantidad Confirmada" if missing
         st.session_state.df_pedidos['Nro. de Pedido'] = pd.to_numeric(st.session_state.df_pedidos['Nro. de Pedido'], errors='coerce').fillna(0).astype(int)
