@@ -1,5 +1,8 @@
 import streamlit as st
 import pandas as pd
+from oauth2client.service_account import ServiceAccountCredentials
+import gspread
+from pathlib import Path
 
 # Configure Streamlit page
 st.set_page_config(page_title="Escaneo y Confirmación de Artículos", layout="wide")
@@ -124,5 +127,27 @@ if 'df_pedidos' in st.session_state:
 
     st.write("Suma de diferencias por Artículo Código (diferencia > 0):")
     st.dataframe(styled_df)
+# Botón para actualizar Google Sheets
+if st.button("Actualizar Sheets"):
+    # Configurar el acceso a la API de Google Sheets con las credenciales
+    scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
+    creds = ServiceAccountCredentials.from_json_keyfile_name('./keys/inbound-pattern-429101-c5-c440791168c3.json', scope)
+    client = gspread.authorize(creds)
+
+    # Coloca tu sheet_id aquí
+    sheet_id = '1cYYCMeEETyWnQ1kWG5p-wGMBLXgnMmBSdXk6ZUJ7Nwg'  # Reemplaza con tu sheet_id real
+
+    # Abre la hoja de Google usando el ID de la hoja
+    sheet = client.open_by_key(sheet_id).sheet1
+
+    # Convirtiendo el DataFrame a una lista de listas
+    df_values = st.session_state.df_pedidos.values.tolist()
+    
+    # Escribe los datos en el Google Sheet, sobrescribiendo todo
+    sheet.clear()  # Borrar el contenido anterior
+    sheet.append_row(st.session_state.df_pedidos.columns.tolist())  # Escribe los encabezados
+    sheet.append_rows(df_values)  # Escribe los datos del DataFrame
+
+    st.success("¡Datos actualizados en Google Sheets con éxito!")
 
 
