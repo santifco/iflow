@@ -137,6 +137,7 @@ if st.button("Actualizar Sheets"):
     creds = service_account.Credentials.from_service_account_info(dict(credentials_info))
 
     import gspread
+    
     client = gspread.authorize(creds)
     # Coloca tu sheet_id aquí
     sheet_id = '1cYYCMeEETyWnQ1kWG5p-wGMBLXgnMmBSdXk6ZUJ7Nwg'  # Reemplaza con tu sheet_id real
@@ -153,5 +154,6 @@ if st.button("Actualizar Sheets"):
     sheet.append_rows(df_values)  # Escribe los datos del DataFrame
 
     st.success("¡Datos actualizados en Google Sheets con éxito!")
+
 
 
