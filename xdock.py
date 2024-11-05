@@ -131,7 +131,7 @@ if 'df_pedidos' in st.session_state:
 if st.button("Actualizar Sheets"):
     # Configurar el acceso a la API de Google Sheets con las credenciales
     scope = ["https://spreadsheets.google.com/feeds", "https://www.googleapis.com/auth/drive"]
-    creds = ServiceAccountCredentials.from_json_keyfile_name('./keys/inbound-pattern-429101-c5-c440791168c3.json', scope)
+    creds = ServiceAccountCredentials.from_json_keyfile_name('./keys/inbound-pattern-429101-c5-eb8957862ed7.json', scope)
     client = gspread.authorize(creds)
 
     # Coloca tu sheet_id aquí
