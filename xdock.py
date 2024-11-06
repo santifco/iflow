@@ -4,7 +4,6 @@ from oauth2client.service_account import ServiceAccountCredentials
 import gspread
 from pathlib import Path
 from google.oauth2 import service_account
-import json
 
 # Configure Streamlit page
 st.set_page_config(page_title="Escaneo y Confirmación de Artículos", layout="wide")
@@ -132,11 +131,15 @@ if 'df_pedidos' in st.session_state:
 # Botón para actualizar Google Sheets
 if st.button("Actualizar Sheets"):
     # Configurar el acceso a la API de Google Sheets con las credenciales
-    credentials_info = json.loads(json.dumps(st.secrets["gcp_service_account"]))
+    credentials_info = st.secrets["gcp_service_account"]
+
+    st.write(credentials_info)
 
     # Configurar los scopes correctos
     scopes = ["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"]
     creds = service_account.Credentials.from_service_account_info(credentials_info, scopes=scopes)
+
+    st.write(creds)
 
     # Autenticar cliente de Google Sheets
     client = gspread.authorize(creds)
@@ -155,6 +158,7 @@ if st.button("Actualizar Sheets"):
     sheet.append_rows(df_values)  # Escribe los datos del DataFrame
 
     st.success("¡Datos actualizados en Google Sheets con éxito!")
+
 
 
 
