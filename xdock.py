@@ -133,13 +133,13 @@ if st.button("Actualizar Sheets"):
     # Configurar el acceso a la API de Google Sheets con las credenciales
     credentials_info = st.secrets["gcp_service_account"]
 
-    st.write(credentials_info)
+    # st.write(credentials_info)
 
     # Configurar los scopes correctos
     scopes = ["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"]
     creds = service_account.Credentials.from_service_account_info(credentials_info, scopes=scopes)
 
-    st.write(creds)
+    # st.write(creds)
 
     # Autenticar cliente de Google Sheets
     client = gspread.authorize(creds)
@@ -158,6 +158,7 @@ if st.button("Actualizar Sheets"):
     sheet.append_rows(df_values)  # Escribe los datos del DataFrame
 
     st.success("¡Datos actualizados en Google Sheets con éxito!")
+
 
 
 
