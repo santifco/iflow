@@ -36,11 +36,11 @@ def mostrar_carta(data_row):
     st.markdown(card_html, unsafe_allow_html=True)
 
     # Campos de entrada
-    articulo = st.number_input(f"Escanea el artículo para la posición {data_row['Posicion']}", min_value=0)
-    paleta = st.number_input(f"Escanea la paleta para la posición {data_row['Posicion']}", min_value=0)
-    cantidad_confirmada = st.number_input(f"Confirma la cantidad de bultos para la posición {data_row['Posicion']}", min_value=0)
-    blister_bulto = st.number_input(f"Confirma la cantidad de blister por bulto para la posición {data_row['Posicion']}", min_value=0)
-    unidades_blister = st.number_input(f"Confirma la cantidad de unidades por blister para la posición {data_row['Posicion']}", min_value=0)
+    articulo = st.number_input(f"Escanea el artículo para la posición {data_row['Posicion']}", value=None,min_value=0)
+    paleta = st.number_input(f"Escanea la paleta para la posición {data_row['Posicion']}", min_value=0,value=None)
+    cantidad_confirmada = st.number_input(f"Confirma la cantidad de bultos para la posición {data_row['Posicion']}", min_value=0,value=None)
+    blister_bulto = st.number_input(f"Confirma la cantidad de blister por bulto para la posición {data_row['Posicion']}", min_value=0,value=None)
+    unidades_blister = st.number_input(f"Confirma la cantidad de unidades por blister para la posición {data_row['Posicion']}", min_value=0,value=None)
     fecha = st.date_input(f"Selecciona la fecha de vencimiento para la posición {data_row['Posicion']}")
     fecha = fecha.strftime("%Y-%m-%d")
     # Actualizar el DataFrame en session_state
