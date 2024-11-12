@@ -7,7 +7,7 @@ from google.oauth2 import service_account
 st.title("Escaneo y Control de Recepción")
 
 # URL de la hoja de Google Sheets
-sheet_url = 'https://docs.google.com/spreadsheets/d/15mDNh1PKS6SjxtGvEasMJvBWxt7BuWOH-IpRKbPHNwA/edit?gid=0#gid=0'
+sheet_url = 'https://docs.google.com/spreadsheets/d/1tpJAMDbUMANKitwywXEJ3_4Khm-DbJPAPxUbzva75cU/edit?gid=0#gid=0'
 
 # Extraer el ID de la hoja y obtener el enlace al CSV
 sheet_id = sheet_url.split("/d/")[1].split("/")[0]
@@ -25,7 +25,11 @@ def mostrar_carta(data_row):
             <p><strong>Pallet:</strong> {data_row["Pallet"]}</p>
             <p><strong>Cantidad Bultos:</strong> {data_row["Bultos"]}</p>
             <p><strong>Cantidad Unidades:</strong> {data_row["Unidades"]}</p>
+            <p><strong>Fecha de Ingreso:</strong> {data_row["Fecha Ingreso"]}</p>
             <p><strong>Fecha de Vencimiento:</strong> {data_row["Vencimiento"]}</p>
+        </div>
+        <div style="padding:10px; text-align:right;">
+            <small>Última actualización: {data_row["Fecha Ingreso"]}</small>
         </div>
     </div>
     """
@@ -33,7 +37,7 @@ def mostrar_carta(data_row):
 
     # Campos de entrada
     articulo = st.number_input(f"Escanea el artículo para la posición {data_row['Posicion']}", min_value=0)
-    lote = st.number_input(f"Lote para la posición {data_row['Posicion']}", min_value=0)
+    paleta = st.number_input(f"Escanea la paleta para la posición {data_row['Posicion']}", min_value=0)
     cantidad_confirmada = st.number_input(f"Confirma la cantidad de bultos para la posición {data_row['Posicion']}", min_value=0)
     blister_bulto = st.number_input(f"Confirma la cantidad de blister por bulto para la posición {data_row['Posicion']}", min_value=0)
     unidades_blister = st.number_input(f"Confirma la cantidad de unidades por blister para la posición {data_row['Posicion']}", min_value=0)
@@ -42,7 +46,7 @@ def mostrar_carta(data_row):
     # Actualizar el DataFrame en session_state
     posicion = data_row["Posicion"]
     st.session_state.df.loc[st.session_state.df["Posicion"] == posicion, "Articulo Escaneado"] = articulo
-    st.session_state.df.loc[st.session_state.df["Posicion"] == posicion, "Lote"] = lote
+    st.session_state.df.loc[st.session_state.df["Posicion"] == posicion, "Paleta Escaneada"] = paleta
     st.session_state.df.loc[st.session_state.df["Posicion"] == posicion, "Bultos Contados"] = cantidad_confirmada
     st.session_state.df.loc[st.session_state.df["Posicion"] == posicion, "Blister por Bulto"] = blister_bulto
     st.session_state.df.loc[st.session_state.df["Posicion"] == posicion, "Unidad por Blister"] = unidades_blister
@@ -51,7 +55,6 @@ def mostrar_carta(data_row):
 # Cargar los datos de Google Sheets si no están en session_state
 if "df" not in st.session_state:
     st.session_state.df = pd.read_csv(data_url)
-    st.session_state.df = st.session_state.df.dropna(subset=['Posicion'])
     st.session_state.df["Posicion"] = st.session_state.df["Posicion"].str.rstrip()
     st.session_state.df['Ordenar_primero'] = st.session_state.df['Posicion'].str.split(' - ').str[0].str[2:4]
     st.session_state.df['Ordenar_segundo'] = st.session_state.df['Posicion'].str.split(' - ').str[1].astype(int)
@@ -80,7 +83,6 @@ else:
 if st.button("Actualizar Google Sheets"):
 
     credentials_info = st.secrets["gcp_service_account"]
-
     # credentials_info = {
     #                 "type": "service_account",
     #                 "project_id": "inbound-pattern-429101-c5",
@@ -127,7 +129,7 @@ if st.button("Actualizar Google Sheets"):
     creds = service_account.Credentials.from_service_account_info(credentials_info, scopes=scopes)
     client = gspread.authorize(creds)
     # Coloca tu sheet_id aquí
-    sheet_id = '15mDNh1PKS6SjxtGvEasMJvBWxt7BuWOH-IpRKbPHNwA'  # Reemplaza con tu sheet_id real
+    sheet_id = '1tpJAMDbUMANKitwywXEJ3_4Khm-DbJPAPxUbzva75cU'  # Reemplaza con tu sheet_id real
 
     # Abre la hoja de Google usando el ID de la hoja
     sheet = client.open_by_key(sheet_id).sheet1
@@ -141,3 +143,4 @@ if st.button("Actualizar Google Sheets"):
     sheet.append_rows(df_values)  # Escribe los datos del DataFrame
 
     st.success("¡Datos actualizados en Google Sheets con éxito!")
+
