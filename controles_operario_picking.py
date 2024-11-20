@@ -4,10 +4,10 @@ import gspread
 from google.oauth2 import service_account
 
 # App title
-st.title("Escaneo y Control de Parciales")
+st.title("Escaneo y Control de Picking")
 
 # URL de la hoja de Google Sheets
-sheet_url = 'https://docs.google.com/spreadsheets/d/1eikx9phIghxyiv1yfFy3ZqqNePWSbhkyvisOzSD37pw/edit?gid=0#gid=0'
+sheet_url = 'https://docs.google.com/spreadsheets/d/1J0YmuXlCFx_lg5DKGS_o_09nhkJaGVh7PLrjsyV2Nsc/edit?gid=0#gid=0'
 
 # Extraer el ID de la hoja y obtener el enlace al CSV
 sheet_id = sheet_url.split("/d/")[1].split("/")[0]
@@ -32,16 +32,19 @@ def mostrar_carta(data_row):
     st.markdown(card_html, unsafe_allow_html=True)
 
     # Campos de entrada
-    articulo = st.number_input(f"Escanea el artículo para la posición {data_row['Posicion']}", min_value=nan)
-    cantidad_confirmada = st.number_input(f"Confirma la cantidad de bultos para la posición {data_row['Posicion']}", min_value=0)
-    blister_bulto = st.number_input(f"Confirma la cantidad de blister por bulto para la posición {data_row['Posicion']}", min_value=0)
-    unidades_blister = st.number_input(f"Confirma la cantidad de unidades por blister para la posición {data_row['Posicion']}", min_value=0)
+    articulo = st.number_input(f"Escanea el artículo para la posición {data_row['Posicion']}", min_value=0,value=None)
+    cantidad_confirmada = st.number_input(f"Confirma la cantidad de bultos para la posición {data_row['Posicion']}", min_value=0,value=None)
+    blister_bulto = st.number_input(f"Confirma la cantidad de blister por bulto para la posición {data_row['Posicion']}", min_value=0,value=None)
+    unidades_blister = st.number_input(f"Confirma la cantidad de unidades por blister para la posición {data_row['Posicion']}", min_value=0,value=None)
+    fecha = st.date_input(f"Selecciona la fecha de vencimiento para la posición {data_row['Posicion']}")
+    fecha = fecha.strftime("%Y-%m-%d")
     # Actualizar el DataFrame en session_state
     posicion = data_row["Posicion"]
     st.session_state.df.loc[st.session_state.df["Posicion"] == posicion, "Articulo Escaneado"] = articulo
     st.session_state.df.loc[st.session_state.df["Posicion"] == posicion, "Bultos Contados"] = cantidad_confirmada
     st.session_state.df.loc[st.session_state.df["Posicion"] == posicion, "Blister por Bulto"] = blister_bulto
     st.session_state.df.loc[st.session_state.df["Posicion"] == posicion, "Unidad por Blister"] = unidades_blister
+    st.session_state.df.loc[st.session_state.df["Posicion"] == posicion, "Fecha Vencimiento Observada"] = fecha
 
 # Cargar los datos de Google Sheets si no están en session_state
 if "df" not in st.session_state:
@@ -121,7 +124,7 @@ if st.button("Actualizar Google Sheets"):
     creds = service_account.Credentials.from_service_account_info(credentials_info, scopes=scopes)
     client = gspread.authorize(creds)
     # Coloca tu sheet_id aquí
-    sheet_id = '1eikx9phIghxyiv1yfFy3ZqqNePWSbhkyvisOzSD37pw'  # Reemplaza con tu sheet_id real
+    sheet_id = '1J0YmuXlCFx_lg5DKGS_o_09nhkJaGVh7PLrjsyV2Nsc'  # Reemplaza con tu sheet_id real
 
     # Abre la hoja de Google usando el ID de la hoja
     sheet = client.open_by_key(sheet_id).sheet1
