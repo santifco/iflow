@@ -32,10 +32,10 @@ def mostrar_carta(data_row):
     st.markdown(card_html, unsafe_allow_html=True)
 
     # Campos de entrada
-    articulo = st.number_input(f"Escanea el artículo para la posición {data_row['Posicion']}", min_value=nan)
-    cantidad_confirmada = st.number_input(f"Confirma la cantidad de bultos para la posición {data_row['Posicion']}", min_value=0)
-    blister_bulto = st.number_input(f"Confirma la cantidad de blister por bulto para la posición {data_row['Posicion']}", min_value=0)
-    unidades_blister = st.number_input(f"Confirma la cantidad de unidades por blister para la posición {data_row['Posicion']}", min_value=0)
+    articulo = st.number_input(f"Escanea el artículo para la posición {data_row['Posicion']}", min_value=0,value=None)
+    cantidad_confirmada = st.number_input(f"Confirma la cantidad de bultos para la posición {data_row['Posicion']}", min_value=0,value=None)
+    blister_bulto = st.number_input(f"Confirma la cantidad de blister por bulto para la posición {data_row['Posicion']}", min_value=0,value=None)
+    unidades_blister = st.number_input(f"Confirma la cantidad de unidades por blister para la posición {data_row['Posicion']}", min_value=0,value=None)
     # Actualizar el DataFrame en session_state
     posicion = data_row["Posicion"]
     st.session_state.df.loc[st.session_state.df["Posicion"] == posicion, "Articulo Escaneado"] = articulo
@@ -135,6 +135,7 @@ if st.button("Actualizar Google Sheets"):
     sheet.append_rows(df_values)  # Escribe los datos del DataFrame
 
     st.success("¡Datos actualizados en Google Sheets con éxito!")
+
 
 
 
