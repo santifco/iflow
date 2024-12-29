@@ -20,6 +20,10 @@ data_url = f'https://docs.google.com/spreadsheets/d/{sheet_id}/gviz/tq?tqx=out:c
 if "HoraInicio" not in st.session_state:
     st.session_state.HoraInicio = {}
 
+if "current_row" not in st.session_state:
+    st.session_state.current_row = 0  # Inicializar solo si no existe
+
+
 # Función para mostrar la información en formato de carta
 def mostrar_carta(data_row,posicion):
     card_html = f"""
