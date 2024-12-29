@@ -137,9 +137,11 @@ with st.expander("Carga de archivos"):
         )
 
 
-if datos_posicion is not None:
 
-    with st.sidebar:
+
+with st.sidebar:
+
+    if datos_posicion is not None:
 
         rubros_unicos = ['Todos'] + sorted(df_stock['Temperatura'].unique())
         rubros_seleccionados = st.sidebar.multiselect('Temperatura:', rubros_unicos, default=["Todos"])
@@ -147,11 +149,13 @@ if datos_posicion is not None:
         entidades_unicas = ['Todos'] + sorted(df_stock['Entidad'].unique())
         entidad_seleccionados = st.sidebar.multiselect('Entidad:', entidades_unicas, default=["Todos"])
 
-        p = st.slider("Proporción estimada de defectos (%)", 0, 50, 7) / 100.0
-        op = st.slider("Selecciona la cantidad de operarios (Operarios)", 1, 10, 6)
-        opciones = ["Control Almacenaje", "Control Parciales", "Control Recepción", "Control Picking","Resultados"]
-        seleccion = st.multiselect("Selecciona uno o más tipos de control:", opciones[0:-1],default=opciones[0])
+    p = st.slider("Proporción estimada de defectos (%)", 0, 50, 7) / 100.0
+    op = st.slider("Selecciona la cantidad de operarios (Operarios)", 1, 10, 6)
+    opciones = ["Control Almacenaje", "Control Parciales", "Control Recepción", "Control Picking","Resultados"]
+    seleccion = st.multiselect("Selecciona uno o más tipos de control:", opciones[0:-1],default=opciones[0])
 
+
+if datos_posicion is not None:
 
     if 'Todos' not in rubros_seleccionados:
         df_stock = df_stock[df_stock['Temperatura'].isin(rubros_seleccionados)]
@@ -169,15 +173,15 @@ if datos_posicion is not None:
         df_posicion = df_posicion[df_posicion['Temperatura'].isin(rubros_seleccionados)]
 
 
-    # Crear pestañas
-    tab1, tab2, tab3,tab4,tab5  = st.tabs(opciones)
+# Crear pestañas
+tab1, tab2, tab3,tab4,tab5  = st.tabs(opciones)
 
-    duracion_turno = 7.5
-    productividad_recepcion = 30
-    productividad_almacenaje = 60
-    productividad_picking = 18
-    productividad_parciales = 22
-    horas_disponibles = op * duracion_turno
+duracion_turno = 7.5
+productividad_recepcion = 30
+productividad_almacenaje = 60
+productividad_picking = 18
+productividad_parciales = 22
+horas_disponibles = op * duracion_turno
 
 
 if "Control Almacenaje" in seleccion: 
