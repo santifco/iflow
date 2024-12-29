@@ -3,8 +3,7 @@ import pandas as pd
 import gspread
 from google.oauth2 import service_account
 from datetime import datetime
-import logging
-logging.getLogger('streamlit').setLevel(logging.ERROR)
+
 
 # App title
 st.title("Escaneo y Control de Almacenaje")
@@ -19,10 +18,6 @@ data_url = f'https://docs.google.com/spreadsheets/d/{sheet_id}/gviz/tq?tqx=out:c
 # Registro de hora de inicio
 if "HoraInicio" not in st.session_state:
     st.session_state.HoraInicio = {}
-
-if "current_row" not in st.session_state:
-    st.session_state.current_row = 0  # Inicializar solo si no existe
-
 
 # Función para mostrar la información en formato de carta
 def mostrar_carta(data_row,posicion):
@@ -105,24 +100,20 @@ def mostrar_carta(data_row,posicion):
         st.session_state.df.loc[st.session_state.df["Posicion"] == posicion, "Unidad por Blister"] = unidades_blister
         st.session_state.df.loc[st.session_state.df["Posicion"] == posicion, "Unidad por Bulto"] = unidades_bulto
 
-        def completar_tarea(posicion, current_row_data):
+        if st.button("Tarea Terminada"):
+
             hora_fin = datetime.now().strftime("%d-%m-%Y %H:%M:%S")
             fecha_control = datetime.now().strftime("%d-%m-%Y")
-
-            # Actualizar los valores en el DataFrame
             st.session_state.df.loc[st.session_state.df["Posicion"] == posicion, "HoraFin"] = hora_fin
             st.session_state.df.loc[st.session_state.df["Posicion"] == posicion, "Fecha"] = fecha_control
 
-            # Incrementar la fila actual automáticamente
-            st.session_state.current_row += 1
-            st.session_state.escaneada_posicion = ""  # Reiniciar la entrada de texto
-
-            # Mensaje de éxito
-            st.success(f"Tarea completada para la posición {posicion}.")
-
-        # Botón con callback para completar la tarea
-        if st.button("Tarea Terminada", key="completar_tarea"):
-            completar_tarea(posicion, current_row_data)
+            if posicion == current_row_data["Posicion"]:
+                st.success("Tarea completada para la posición.")
+                # Reinicia la entrada de posición escaneada
+                st.session_state.escaneada_posicion = ""  # Reinicia el campo de texto
+                # Incrementa la fila actual
+                st.session_state.current_row += 1
+                st.rerun
 
     else: 
         st.warning("La posición ingresada es incorrecta.")
