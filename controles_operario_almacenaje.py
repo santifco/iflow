@@ -101,8 +101,7 @@ def mostrar_carta(data_row,posicion):
         st.session_state.df.loc[st.session_state.df["Posicion"] == posicion, "Unidad por Blister"] = unidades_blister
         st.session_state.df.loc[st.session_state.df["Posicion"] == posicion, "Unidad por Bulto"] = unidades_bulto
 
-        if st.button("Tarea Terminada"):
-
+        def completar_tarea(posicion, current_row_data):
             hora_fin = datetime.now().strftime("%d-%m-%Y %H:%M:%S")
             fecha_control = datetime.now().strftime("%d-%m-%Y")
 
@@ -110,12 +109,16 @@ def mostrar_carta(data_row,posicion):
             st.session_state.df.loc[st.session_state.df["Posicion"] == posicion, "HoraFin"] = hora_fin
             st.session_state.df.loc[st.session_state.df["Posicion"] == posicion, "Fecha"] = fecha_control
 
-            # Mensaje de éxito
-            st.success("Tarea completada para la posición.")
-
             # Incrementar la fila actual automáticamente
             st.session_state.current_row += 1
             st.session_state.escaneada_posicion = ""  # Reiniciar la entrada de texto
+
+            # Mensaje de éxito
+            st.success(f"Tarea completada para la posición {posicion}.")
+
+        # Botón con callback para completar la tarea
+        if st.button("Tarea Terminada", key="completar_tarea"):
+            completar_tarea(posicion, current_row_data)
 
     else: 
         st.warning("La posición ingresada es incorrecta.")
