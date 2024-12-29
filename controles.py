@@ -152,23 +152,23 @@ if datos_posicion is not None:
         opciones = ["Control Almacenaje", "Control Parciales", "Control Recepción", "Control Picking","Resultados"]
         seleccion = st.multiselect("Selecciona uno o más tipos de control:", opciones[0:-1])
 
+if datos_posicion is not None:
 
 
+    if 'Todos' not in rubros_seleccionados:
+        df_stock = df_stock[df_stock['Temperatura'].isin(rubros_seleccionados)]
 
-if 'Todos' not in rubros_seleccionados:
-    df_stock = df_stock[df_stock['Temperatura'].isin(rubros_seleccionados)]
+    if 'Todos' not in entidad_seleccionados:
+        df_stock = df_stock[df_stock['Entidad'].isin(entidad_seleccionados)]
 
-if 'Todos' not in entidad_seleccionados:
-    df_stock = df_stock[df_stock['Entidad'].isin(entidad_seleccionados)]
+    if 'Todos' not in entidad_seleccionados:
+        df_reposicionamiento = df_reposicionamiento[df_reposicionamiento['Operación de Artículo'].isin(entidad_seleccionados)]
 
-if 'Todos' not in entidad_seleccionados:
-    df_reposicionamiento = df_reposicionamiento[df_reposicionamiento['Operación de Artículo'].isin(entidad_seleccionados)]
+    if 'Todos' not in entidad_seleccionados:
+        df_posicion = df_posicion[df_posicion['Entidad'].isin(entidad_seleccionados)]
 
-if 'Todos' not in entidad_seleccionados:
-    df_posicion = df_posicion[df_posicion['Entidad'].isin(entidad_seleccionados)]
-
-if 'Todos' not in rubros_seleccionados:
-    df_posicion = df_posicion[df_posicion['Temperatura'].isin(rubros_seleccionados)]
+    if 'Todos' not in rubros_seleccionados:
+        df_posicion = df_posicion[df_posicion['Temperatura'].isin(rubros_seleccionados)]
 
 
 # Crear pestañas
