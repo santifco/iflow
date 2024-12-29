@@ -137,20 +137,20 @@ with st.expander("Carga de archivos"):
         )
 
 
+if datos_posicion is not None:
 
+    with st.sidebar:
 
-with st.sidebar:
+        rubros_unicos = ['Todos'] + sorted(df_stock['Temperatura'].unique())
+        rubros_seleccionados = st.sidebar.multiselect('Temperatura:', rubros_unicos, default=["Todos"])
 
-    rubros_unicos = ['Todos'] + sorted(df_stock['Temperatura'].unique())
-    rubros_seleccionados = st.sidebar.multiselect('Temperatura:', rubros_unicos, default=["Todos"])
+        entidades_unicas = ['Todos'] + sorted(df_stock['Entidad'].unique())
+        entidad_seleccionados = st.sidebar.multiselect('Entidad:', entidades_unicas, default=["Todos"])
 
-    entidades_unicas = ['Todos'] + sorted(df_stock['Entidad'].unique())
-    entidad_seleccionados = st.sidebar.multiselect('Entidad:', entidades_unicas, default=["Todos"])
-
-    p = st.slider("Proporción estimada de defectos (%)", 0, 50, 7) / 100.0
-    op = st.slider("Selecciona la cantidad de operarios (Operarios)", 1, 10, 6)
-    opciones = ["Control Almacenaje", "Control Parciales", "Control Recepción", "Control Picking","Resultados"]
-    seleccion = st.multiselect("Selecciona uno o más tipos de control:", opciones[0:-1])
+        p = st.slider("Proporción estimada de defectos (%)", 0, 50, 7) / 100.0
+        op = st.slider("Selecciona la cantidad de operarios (Operarios)", 1, 10, 6)
+        opciones = ["Control Almacenaje", "Control Parciales", "Control Recepción", "Control Picking","Resultados"]
+        seleccion = st.multiselect("Selecciona uno o más tipos de control:", opciones[0:-1])
 
 
 
