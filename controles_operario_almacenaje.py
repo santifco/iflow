@@ -2,6 +2,7 @@ import streamlit as st
 import pandas as pd
 import gspread
 from google.oauth2 import service_account
+from datetime import datetime
 
 # App title
 st.title("Escaneo y Control de Almacenaje")
@@ -13,40 +14,108 @@ sheet_url = 'https://docs.google.com/spreadsheets/d/15mDNh1PKS6SjxtGvEasMJvBWxt7
 sheet_id = sheet_url.split("/d/")[1].split("/")[0]
 data_url = f'https://docs.google.com/spreadsheets/d/{sheet_id}/gviz/tq?tqx=out:csv'
 
+# Registro de hora de inicio
+if "HoraInicio" not in st.session_state:
+    st.session_state.HoraInicio = {}
+
 # Función para mostrar la información en formato de carta
-def mostrar_carta(data_row):
+def mostrar_carta(data_row,posicion):
     card_html = f"""
     <div style="border:1px solid #ddd; border-radius:8px; padding:16px; margin:16px 0; box-shadow: 2px 2px 8px rgba(0, 0, 0, 0.1);">
         <div style="padding:10px;">
-            <h3 style="margin:0; font-size:1.5em;">Detalle de Posición: {data_row["Posicion"]}</h3>
+            <h3 style="margin:0; font-size:1.5em;">{data_row["Posicion"]}</h3>
+            <h3 style="margin:0; font-size:1.5em;">Status Posicion: {data_row["Status Posicion"]}</h3>
         </div>
         <div style="padding:16px;">
-            <p><strong>Artículo:</strong> {data_row["Descripcion Articulo"]}</p>
-            <p><strong>Pallet:</strong> {data_row["Pallet"]}</p>
-            <p><strong>Cantidad Bultos:</strong> {data_row["Bultos"]}</p>
-            <p><strong>Cantidad Unidades:</strong> {data_row["Unidades"]}</p>
-            <p><strong>Fecha de Vencimiento:</strong> {data_row["Vencimiento"]}</p>
         </div>
     </div>
     """
     st.markdown(card_html, unsafe_allow_html=True)
 
+
     # Campos de entrada
-    articulo = st.number_input(f"Escanea el artículo para la posición {data_row['Posicion']}", min_value=0,value=None)
-    lote = st.number_input(f"Lote para la posición {data_row['Posicion']}", min_value=0,value=None)
-    cantidad_confirmada = st.number_input(f"Confirma la cantidad de bultos para la posición {data_row['Posicion']}", min_value=0,value=None)
-    blister_bulto = st.number_input(f"Confirma la cantidad de blister por bulto para la posición {data_row['Posicion']}", min_value=0,value=None)
-    unidades_blister = st.number_input(f"Confirma la cantidad de unidades por blister para la posición {data_row['Posicion']}", min_value=0,value=None)
-    fecha = st.date_input(f"Selecciona la fecha de vencimiento para la posición {data_row['Posicion']}")
-    fecha = fecha.strftime("%Y-%m-%d")
-    # Actualizar el DataFrame en session_state
-    posicion = data_row["Posicion"]
-    st.session_state.df.loc[st.session_state.df["Posicion"] == posicion, "Articulo Escaneado"] = articulo
-    st.session_state.df.loc[st.session_state.df["Posicion"] == posicion, "Lote"] = lote
-    st.session_state.df.loc[st.session_state.df["Posicion"] == posicion, "Bultos Contados"] = cantidad_confirmada
-    st.session_state.df.loc[st.session_state.df["Posicion"] == posicion, "Blister por Bulto"] = blister_bulto
-    st.session_state.df.loc[st.session_state.df["Posicion"] == posicion, "Unidad por Blister"] = unidades_blister
-    st.session_state.df.loc[st.session_state.df["Posicion"] == posicion, "Fecha Vencimiento Observada"] = fecha
+    # posicion = st.text_input("Escanea la posición", value=st.session_state.escaneada_posicion)
+    
+    if posicion == data_row['Posicion']:
+
+        if posicion not in st.session_state.HoraInicio:
+            hora_inicio = datetime.now()
+            st.session_state.HoraInicio[posicion] = hora_inicio.strftime("%d-%m-%Y %H:%M:%S")
+
+        if data_row["Status Posicion"] == "DL":
+            
+            posicion_libre = st.radio("¿Existe algún Pallet en la posición?", options=["Sí", "No"])
+            articulo = 0 
+            fecha = 0
+            cantidad_bultos = 0
+            unidades_bulto = 0
+            blister_bulto = 0
+            unidades_blister = 0 
+
+        elif data_row["Status Posicion"].isin(["PC,PV"]):
+            
+            posicion_libre = "No"
+            articulo = st.number_input(f"Escanea el artículo para la posición {data_row['Posicion']}", min_value=0,value=None)
+            fecha = st.date_input(f"Selecciona la fecha de vencimiento para la posición {data_row['Posicion']}")
+            fecha = fecha.strftime("%d-%m-%Y")
+            cantidad_bultos = 0
+            unidades_bulto = 0
+            blister_bulto = 0
+            unidades_blister = 0 
+
+
+
+        elif data_row["Status Posicion"] == "BL":
+            
+            posicion_libre = "No"
+            # cantidad_confirmada = st.number_input(f"Confirma la cantidad de bultos para la posición {data_row['Posicion']}", min_value=0,value=None)
+            fecha = 0
+            articulo = 0
+
+            tiene_blister = st.radio("¿Tiene Blister?", options=["Sí", "No"])  
+
+            if tiene_blister == "No":
+                cantidad_bultos = st.number_input(f"Confirma la cantidad de BULTO para la posición ", min_value=0,value=None)
+                unidades_bulto = st.number_input(f"Confirma la cantidad de UNIDADES POR BULTO para la posición ", min_value=0,value=None)
+                blister_bulto = 0
+                unidades_blister = 0 
+
+            elif tiene_blister == "Sí":
+                cantidad_bultos = st.number_input(f"Confirma la cantidad de BULTOS para la posición ", min_value=0,value=None)
+                blister_bulto = st.number_input(f"Confirma la cantidad de BLISTER POR BULTO para la posición ", min_value=0,value=None)
+                unidades_blister = st.number_input(f"Confirma la cantidad de UNIDADES POR BLISTER para la posición ", min_value=0,value=None)
+                unidades_bulto = 0    
+  
+    # Campos de entrada
+    
+        # Actualizar el DataFrame en session_state
+        posicion = data_row["Posicion"]
+        st.session_state.df.loc[st.session_state.df["Posicion"] == posicion, "Articulo Escaneado"] = articulo
+        st.session_state.df.loc[st.session_state.df["Posicion"] == posicion, "Posición Libre"] = posicion_libre
+        st.session_state.df.loc[st.session_state.df["Posicion"] == posicion, "Fecha Vencimiento Observada"] = fecha
+        st.session_state.df.loc[st.session_state.df["Posicion"] == posicion, "HoraInicio"] = st.session_state.HoraInicio[posicion]
+        st.session_state.df.loc[st.session_state.df["Posicion"] == posicion, "Bultos Contados"] = cantidad_bultos
+        st.session_state.df.loc[st.session_state.df["Posicion"] == posicion, "Blister por Bulto"] = blister_bulto
+        st.session_state.df.loc[st.session_state.df["Posicion"] == posicion, "Unidad por Blister"] = unidades_blister
+        st.session_state.df.loc[st.session_state.df["Posicion"] == posicion, "Unidad por Bulto"] = unidades_bulto
+
+        if st.button("Tarea Terminada"):
+
+            hora_fin = datetime.now().strftime("%d-%m-%Y %H:%M:%S")
+            fecha_control = datetime.now().strftime("%d-%m-%Y")
+            st.session_state.df.loc[st.session_state.df["Posicion"] == posicion, "HoraFin"] = hora_fin
+            st.session_state.df.loc[st.session_state.df["Posicion"] == posicion, "Fecha"] = fecha_control
+
+            if posicion == current_row_data["Posicion"]:
+                st.success("Tarea completada para la posición.")
+                # Reinicia la entrada de posición escaneada
+                st.session_state.escaneada_posicion = ""  # Reinicia el campo de texto
+                # Incrementa la fila actual
+                st.session_state.current_row += 1
+                st.experimental_rerun()
+
+    else: 
+        st.warning("La posición ingresada es incorrecta.")
 
 # Cargar los datos de Google Sheets si no están en session_state
 if "df" not in st.session_state:
@@ -56,22 +125,24 @@ if "df" not in st.session_state:
     st.session_state.df['Ordenar_primero'] = st.session_state.df['Posicion'].str.split(' - ').str[0].str[2:4]
     st.session_state.df['Ordenar_segundo'] = st.session_state.df['Posicion'].str.split(' - ').str[1].astype(int)
     st.session_state.df = st.session_state.df.sort_values(by=['Ordenar_primero', 'Ordenar_segundo']).drop(columns=['Ordenar_primero', 'Ordenar_segundo'])
-    st.session_state.df[['Articulo Escaneado', 'Paleta Escaneada', 'Bultos Contados', 'Blister por Bulto', 'Unidad por Blister', 'Fecha Vencimiento Observada']] = None
+    # st.session_state.df[['Articulo Escaneado','Bultos Contados','Fecha Vencimiento Observada',"Posición Libre"]] = None
 
 # Inicializar la fila actual si no existe
 if "current_row" not in st.session_state:
     st.session_state.current_row = 0  # Inicializar la fila actual
 
+if "escaneada_posicion" not in st.session_state:
+        st.session_state.escaneada_posicion = ""  # Inicializar el valor como vacío
+
 # Verificar si hay más filas para procesar
 if st.session_state.current_row < len(st.session_state.df):
     # Mostrar la información de la fila actual
-    current_row_data = st.session_state.df.iloc[st.session_state.current_row]
-    mostrar_carta(current_row_data)
+    
 
-    # Botón para actualizar Google Sheets y pasar a la siguiente fila
-    if st.button("Tarea Terminada"):
-        # Incrementar el índice de la fila actual para ir a la siguiente
-        st.session_state.current_row += 1
+    posicion = st.text_input("Escanea la posición", value=st.session_state.escaneada_posicion)
+    current_row_data = st.session_state.df.iloc[st.session_state.current_row]
+    mostrar_carta(current_row_data,posicion)
+
 
 else:
     st.write("Todas las filas han sido procesadas.")
@@ -127,11 +198,25 @@ if st.button("Actualizar Google Sheets"):
     creds = service_account.Credentials.from_service_account_info(credentials_info, scopes=scopes)
     client = gspread.authorize(creds)
     # Coloca tu sheet_id aquí
-    sheet_id = '15mDNh1PKS6SjxtGvEasMJvBWxt7BuWOH-IpRKbPHNwA'  # Reemplaza con tu sheet_id real
+    sheet_id = '1fiXf-4qL1SkUrZdLQQGENuS_EFd1R6F9RuKwFhL7mFg'  # Reemplaza con tu sheet_id real
 
     # Abre la hoja de Google usando el ID de la hoja
     sheet = client.open_by_key(sheet_id).sheet1
 
+    st.session_state.df["Unidades Contadas"] = st.session_state.df["Bultos Contados"] * st.session_state.df["Blister por Bulto"] * st.session_state.df["Unidad por Blister"]  * st.session_state.df["Unidad por Blister"] + st.session_state.df["Bultos Contados"] * st.session_state.df["Unidad por Bulto"] 
+    st.session_state.df["Diferencia Unidades"] = st.session_state.df["Unidades Contadas"] -  st.session_state.df["Unidades"]
+
+
+    st.session_state.df['Vencimiento'] = pd.to_datetime(st.session_state.df['Vencimiento'], format='%d-%m-%Y', errors='coerce')
+    st.session_state.df['Fecha Vencimiento Observada'] = pd.to_datetime(st.session_state.df['Fecha Vencimiento Observada'], format='%d-%m-%Y', errors='coerce')
+    st.session_state.df["Diferencia Fecha Vencimiento"] = (st.session_state.df['Vencimiento'] - st.session_state.df['Fecha Vencimiento Observada']).dt.days
+    
+    # Convertir todas las fechas a cadenas para evitar problemas de serialización
+    st.session_state.df['Vencimiento'] = st.session_state.df['Vencimiento'].dt.strftime('%d-%m-%Y')
+    st.session_state.df['Fecha Vencimiento Observada'] = st.session_state.df['Fecha Vencimiento Observada'].dt.strftime('%d-%m-%Y')
+
+    st.session_state.df.fillna(0, inplace=True)
+    st.session_state.df = st.session_state.df.loc[:, ~st.session_state.df.columns.str.contains("Unnamed")]
     # Convirtiendo el DataFrame a una lista de listas
     df_values = st.session_state.df.values.tolist()
     
