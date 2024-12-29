@@ -3,6 +3,8 @@ import pandas as pd
 import gspread
 from google.oauth2 import service_account
 from datetime import datetime
+import logging
+logging.getLogger('streamlit').setLevel(logging.ERROR)
 
 # App title
 st.title("Escaneo y Control de Almacenaje")
