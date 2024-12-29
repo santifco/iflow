@@ -22,6 +22,64 @@ st.set_page_config(page_title="Controles Logisticos", layout="wide")
 
 credentials_info = st.secrets["gcp_service_account"]
 
+# credentials_info = {
+#     "type": "service_account",
+#     "project_id": "inbound-pattern-429101-c5",
+#     "private_key_id": "9dcc01743c917fb186294a8c6d228d4c2fb005bc",
+#     "private_key": """-----BEGIN PRIVATE KEY-----
+# MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDPvpK+357PGmvc
+# 6jxJTHyKfpUs/2861MGvfClaGMjEw9G8YmeeeH8PAkc/rZxaHpl2zcmpUQfTauxs
+# 0mhbOD42jxRflbdi00yvHVkBBtYdzfvtGwepEUsP26yqOySm6PiVI/XKHWdct61B
+# 28l/VW+mjXDVPiDiMATQRTJi4tYTgC5eSjhnkT4efY7gUMHmO2057cI+jmRob1WV
+# PEEWLGt76R4IGnH/FtoW2B6lPoOb7KefRx2WgHfTu+zsXvqmbGbgRLSlheG4Zb6g
+# h0dZXcyojx5vGgJT3ty4o5XgpA6n9EH2uURDXUBYQ9KE8mcNDM9VK6KQEYeBmIJr
+# QOvMftM1AgMBAAECggEAAn4NSNdS4/vtzVvknLk+SUTmmuklQvARPtBfK1zqZSza
+# cQ1XARha/p3r7ReQCpAFyJinRharmulIrFJJjmmF4HdUnycjIxxNUyH5GJLgJpM1
+# cY1Ad6PNkKZSsKH41iVDCGk3N8mk4tH5rynGKKViwreabZX5sEuQdiEIlRXchgLN
+# ransgsarOU/8+RI2W5JRt7wPAO56WsZc+zeOIyLS7RScibfdi8wMQYZF7PsPB5EG
+# 6ps50hxHWZ18lgLgJO5iK6YZkINHwW8AWDaxonxTgn4eYT8iUDMol8D5i2AXM5x1
+# JnRzhLKnNUdzug4RB7XrcCOsjoDOU2dW1VbXTNkyxQKBgQD4WbO23ktbkl64dmdA
+# ZKhRSRcBfbUf8/+Olp8Dt/PTb53Rjvsm3XK5EUK6t9oMGgL131UuOcKysV1RCyzT
+# I5jjiY5Q3Ws2L0N2IFfxSBI7Di2hxSWLaXgETsMUV0MBfv1TH/8E+3tEtoj26lZY
+# A0GVOrGprEJVNcL3X3T83R3mNwKBgQDWJK8icbaJujm9HfXi9ODcG7YpPYKRcqJa
+# LZclOiccRHIUN4SzouIfB6kp63k96W5Yzm6GeRgaiB/LQNPNTDFO4Q7Zrm7wci9o
+# kzRUHWJcgKl7r8Q+TYXBPJVn0dZe65G5O/d+7cmQn+MUp0Gi5cnYu9eaeKHoJGY0
+# P6vCKhab8wKBgC2cK8k14hkbNJIkDKpi0ha7maIIeC86HIEPYHzKV9lI8m7+F1n3
+# 6Y3bganRAhae4FRPg9FNglhXApBTwRO1wepn5N8tCveUjosvPXduiQqXfAHttwt3
+# fzcrT+B4djHcJKITij5cATOJYnYWa20WjADgGqjSngwQJ5JO0alu4oLZAoGAD138
+# j203mzSY9iBTR+EozcLTVKxMVWGzkuMYqJw+uEGVKiw9wqJatb1X/2EdhzrcJ1VR
+# Cydfem/wUCarzFy+YRm3dhmVbn3TNx7xL2QYbejxwKWBYLMxeQd+9T9SsecXwwIx
+# pZMs1ssSgaXrCOSSkpIQS86CV+VczD0Rd1KL4s8CgYEAhfI92S/3eL6eOkm7yHL1
+# 4331R/gomiO4QehLpyUZfirpqxNO/8BL6f25Jp5cC3dJeNu4xEbbMIMpEpT9C+ZJ
+# 4WWYzDCC43HB8AbA8SgMDz7Vaa6h9zHJolLLrcsDMtiD4JT7VeV4UluWXIaRbg6p
+# XYwWQL2d6uGePDriQHXIUmY=
+# -----END PRIVATE KEY-----""",
+#     "client_email": "google-sheets-api@inbound-pattern-429101-c5.iam.gserviceaccount.com",
+#     "client_id": "107649396128661753097",
+#     "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+#     "token_uri": "https://oauth2.googleapis.com/token",
+#     "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+#     "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/google-sheets-api%40inbound-pattern-429101-c5.iam.gserviceaccount.com",
+#     "universe_domain": "googleapis.com"
+# }
+
+valores_validos_secos = [
+    "BA", "BB", "BC", "BD", "BE", "BF", "BG", "BH",
+    "BI", "BJ", "BK", "BL", "BM", "BN", "BO", "BP",
+    "BQ", "BR", "BS", "BT", "BU", "BV"
+]
+
+valores_validos_congelados = [
+    "AK", "AL", "AJ", "AI", "AH", "AG", "AF", "AD",
+    "AE", "AC", "AB", "AA"
+]
+
+valores_validos_refrigerado = [
+    "RC", "RE", "RD", "RC", "RB","CI","CH","CG","CF"
+]
+
+
+
 cal = Argentina()
 
 with st.expander("Carga de archivos"):
@@ -32,7 +90,28 @@ with st.expander("Carga de archivos"):
     datos_posicion = st.file_uploader("Posicion - Cliente - Sector - Estado", type="xlsx")
     
     if datos_stock is not None:
+
+        # Filtrar los valores existentes y asignar "SECO" en la nueva columna
+
         df_stock = pd.read_excel(datos_stock,skiprows=2)
+
+        df_stock['Temperatura'] = df_stock['Posicion'].apply(
+            lambda x: "SECO" if any(valor in x for valor in valores_validos_secos) else
+                    "REFRIGERADO" if any(valor in x for valor in valores_validos_refrigerado) else
+                    "CONGELADO" if any(valor in x for valor in valores_validos_congelados) else
+                    "NO TIENE"
+        )
+
+        df_stock = df_stock[df_stock["Temperatura"] != "NO TIENE"]
+
+        rubros_unicos = ['Todos'] + sorted(df_stock['Temperatura'].unique())
+        rubros_seleccionados = st.sidebar.multiselect('Temperatura:', rubros_unicos, default=["Todos"])
+
+        if 'Todos' not in rubros_seleccionados:
+            df_stock = df_stock[df_stock['Temperatura'].isin(rubros_seleccionados)]
+
+
+        df_stock['Entidad'] = df_stock['Entidad'].str.rstrip()
         
         entidades_unicas = ['Todos'] + sorted(df_stock['Entidad'].unique())
         entidad_seleccionados = st.sidebar.multiselect('Entidad:', entidades_unicas, default=["Todos"])
@@ -40,17 +119,48 @@ with st.expander("Carga de archivos"):
         if 'Todos' not in entidad_seleccionados:
             df_stock = df_stock[df_stock['Entidad'].isin(entidad_seleccionados)]
 
+
+
     if datos_reposicionamiento is not None:
-        df_reposicionamiento = pd.read_excel(datos_reposicionamiento,skiprows=2)
         
-        rubros_unicos = ['Todos'] + sorted(df_reposicionamiento['Rubro'].unique())
-        rubros_seleccionados = st.sidebar.multiselect('Rubro:', rubros_unicos, default=["Todos"])
+        df_reposicionamiento = pd.read_excel(datos_reposicionamiento,skiprows=2)
+        df_reposicionamiento['Operación de Artículo'] = df_reposicionamiento['Operación de Artículo'].str.rstrip()
+        
+
+        if 'Todos' not in entidad_seleccionados:
+            df_reposicionamiento = df_reposicionamiento[df_reposicionamiento['Operación de Artículo'].isin(entidad_seleccionados)]
+        
+
+    if datos_posicion is not None:
+        
+        df_posicion = pd.read_excel(datos_posicion,skiprows=2)
+
+                    # Aplicar la función para filtrar las filas donde el valor después del segundo "-" no sea "1A"
+        df_posicion['Depposc'] = df_posicion['Depposc'].astype(str)
+        def filtrar_despues_segundo_guion_1(valor):
+            partes = valor.split(' - ')
+            if len(partes) >= 3 and '1' in partes[2]:  # Verificar si en la tercera parte (después del segundo "-") contiene '1'
+                return True
+            return False
+
+        # Filtrar las filas donde NO se cumpla que el valor después del segundo guion contiene "1"
+        df_posicion  = df_posicion[~df_posicion['Depposc'].apply(filtrar_despues_segundo_guion_1)]
+        df_posicion = df_posicion.rename(columns={'Entnombre': 'Entidad', 'Depposc': 'Posicion',"Depest":"Status Posicion","Artnom":"Descripcion Articulo"})
+
+        
+        df_posicion['Temperatura'] = df_posicion['Posicion'].apply(
+            lambda x: "SECO" if any(valor in x for valor in valores_validos_secos) else
+                    "REFRIGERADO" if any(valor in x for valor in valores_validos_refrigerado) else
+                    "CONGELADO" if any(valor in x for valor in valores_validos_congelados) else
+                    "NO TIENE"
+        )
+
+        if 'Todos' not in entidad_seleccionados:
+            df_posicion = df_posicion[df_posicion['Entidad'].isin(entidad_seleccionados)]
 
         if 'Todos' not in rubros_seleccionados:
-            df_reposicionamiento = df_reposicionamiento[df_reposicionamiento['Rubro'].isin(rubros_seleccionados)]
+            df_posicion = df_posicion[df_posicion['Temperatura'].isin(rubros_seleccionados)]
 
-    if datos_reposicionamiento is not None:
-        df_posicion = pd.read_excel(datos_posicion,skiprows=2)
 
 with st.sidebar:
 
@@ -94,7 +204,7 @@ if "Control Almacenaje" in seleccion:
             df_stock_almacenaje = df_stock_almacenaje[df_stock_almacenaje['Nivel'] != 1]
             df_stock_almacenaje = df_stock_almacenaje[df_stock_almacenaje['Status Posicion'].isin(["BL", "PC", "PV", "DL"])]
             df_stock_almacenaje["Pallet"] = df_stock_almacenaje["Pallet"].astype(int)
-            df_stock_almacenaje = df_stock_almacenaje[["Entidad","Cod.Articulo","Descripcion Articulo","Posicion","Lote","Pallet","Vencimiento","Status Posicion","Bultos","Unidades"]]
+            df_stock_almacenaje = df_stock_almacenaje[["Entidad","Temperatura","Cod.Articulo","Descripcion Articulo","Posicion","Lote","Pallet","Vencimiento","Status Posicion","Bultos","Unidades","Un.x Bulto"]]
             # Mostrar el DataFrame resultante
             # st.write("Datos de Stock:")
             # st.write(df_stock["Pallet"])
@@ -108,7 +218,6 @@ if "Control Almacenaje" in seleccion:
             df_reposicionamiento_almacenaje = df_reposicionamiento_almacenaje[df_reposicionamiento_almacenaje["Pallet"] != 0]
             df_reposicionamiento_almacenaje = df_reposicionamiento_almacenaje[df_reposicionamiento_almacenaje["Tipo de Movimiento Alt"]=="EP"]
             df_reposicionamiento_almacenaje["Pallet"] = df_reposicionamiento_almacenaje["Pallet"].astype(int)
-
             # Mostrar el DataFrame resultante
             # st.write("Datos de Reposicionamiento:")
             # st.write(df_reposicionamiento["Pallet"])
@@ -117,19 +226,7 @@ if "Control Almacenaje" in seleccion:
 
         if datos_posicion is not None:
             # Leer el archivo de posicion
-            df_posicion_almacenaje = df_posicion[df_posicion['Depest'].isin(["DL"])]
-        
-            # Aplicar la función para filtrar las filas donde el valor después del segundo "-" no sea "1A"
-            df_posicion_almacenaje['Depposc'] = df_posicion_almacenaje['Depposc'].astype(str)
-            def filtrar_despues_segundo_guion_1(valor):
-                partes = valor.split(' - ')
-                if len(partes) >= 3 and '1' in partes[2]:  # Verificar si en la tercera parte (después del segundo "-") contiene '1'
-                    return True
-                return False
-
-            # Filtrar las filas donde NO se cumpla que el valor después del segundo guion contiene "1"
-            df_posicion_almacenaje  = df_posicion_almacenaje[~df_posicion_almacenaje['Depposc'].apply(filtrar_despues_segundo_guion_1)]
-            df_posicion_almacenaje = df_posicion_almacenaje.rename(columns={'Entnombre': 'Entidad', 'Depposc': 'Posicion',"Depest":"Status Posicion","Artnom":"Descripcion Articulo"})
+            df_posicion_almacenaje = df_posicion[df_posicion['Status Posicion'].isin(["DL"])]
             df_posicion_almacenaje = df_posicion_almacenaje.drop(['Depid', 'Depseccod'], axis=1)
             # Mostrar el DataFrame resultante
             # st.write("Datos de Posición:")
@@ -146,6 +243,11 @@ if "Control Almacenaje" in seleccion:
             
 
             df_concatenado = pd.concat([df_stock_almacenaje,df_posicion_almacenaje ], axis=0, ignore_index=True)
+
+            df_reposicionamiento_almacenaje = df_reposicionamiento_almacenaje[["Posición Destino","Rubro"]]
+
+
+
             df_concatenado['Vencimiento'] = pd.to_datetime(df_concatenado['Vencimiento'], errors='coerce').dt.strftime('%d-%m-%Y')
 
             # Tamaño de la población
@@ -301,11 +403,12 @@ if "Control Parciales" in seleccion:
                 "Tipo de Movimiento Alt": "first"
             }).reset_index()
 
+           
 
             if datos_stock is not None and datos_reposicionamiento is not None:
             # Realizar el merge de df_stock y df_reposicionamiento según la columna "Pallet"
                 df_merged_parciales = pd.merge(df_stock_parciales, df_reposicionamiento_parciales, left_on='Posicion', right_on='Posición Origen', how='inner')
-                df_merged_parciales = df_merged_parciales[["Artículo","Descripcion Articulo","Pasillo","Columna","Nivel","Sector","Posicion","Bultos_x","Unidades_x","Vencimiento"]]
+                df_merged_parciales = df_merged_parciales[["Cod.Articulo","Temperatura","Rubro","Entidad","Descripcion Articulo","Pasillo","Columna","Nivel","Sector","Posicion","Bultos_x","Unidades_x","Vencimiento","Un.x Bulto"]]
                 df_merged_parciales['Vencimiento'] = pd.to_datetime(df_merged_parciales['Vencimiento'], errors='coerce').dt.strftime('%d-%m-%Y')
                 df_merged_parciales = df_merged_parciales.rename(columns={'Bultos_x': 'Bultos', 'Unidades_x': 'Unidades'})
                 # Tamaño de la población
@@ -521,8 +624,8 @@ if "Control Recepción" in seleccion:
 
             # Mostrar las columnas solicitadas
             columnas_a_mostrar = [
-                'Entidad', 'Articulo', 'Descripcion Articulo', 'Posicion', 'Pallet', 'Lote', 
-                'Fecha Ingreso', 'Vencimiento', 'Bultos_x', 'Unidades_x', 'Tipo de Movimiento Alt', 'Rubro'
+                'Entidad', 'Articulo',"Temperatura", 'Descripcion Articulo', 'Posicion', 'Pallet', 'Lote', 
+                'Fecha Ingreso', 'Vencimiento', 'Bultos_x', 'Unidades_x', 'Tipo de Movimiento Alt', 'Rubro',"Un.x Bulto"
             ]
             
             
@@ -751,7 +854,7 @@ if "Control Picking" in seleccion:
         if datos_stock is not None and datos_reposicionamiento is not None:
             # Realizar el merge de df_stock y df_reposicionamiento según la columna "Pallet"
             df_merged_picking = pd.merge(df_stock_picking, df_reposicionamiento_picking, left_on='Posicion', right_on='Posición Destino', how='inner')
-            df_merged_picking = df_merged_picking[["Artículo","Descripcion Articulo","Pasillo","Columna","Nivel","Sector","Posicion","Bultos_x","Unidades_x","Vencimiento"]]
+            df_merged_picking = df_merged_picking[["Cod.Articulo","Temperatura","Rubro","Entidad","Descripcion Articulo","Pasillo","Columna","Nivel","Sector","Posicion","Bultos_x","Unidades_x","Vencimiento","Un.x Bulto"]]
             df_merged_picking['Vencimiento'] = pd.to_datetime(df_merged_picking['Vencimiento'], errors='coerce').dt.strftime('%d-%m-%Y')
             df_merged_picking = df_merged_picking.rename(columns={'Bultos_x': 'Bultos', 'Unidades_x': 'Unidades'})
             # Tamaño de la población
@@ -905,10 +1008,21 @@ with tab5:
             # Mostrar el gráfico en Streamlit
             st.plotly_chart(fig)
 
+            df_concatenado_estados = df_concatenado["Status Posicion"].value_counts().reset_index()
+            df_concatenado_estados.columns = ['Status Posicion', 'Cantidad']
+
+            st.write(df_concatenado_estados)
+
+                        # Crear un gráfico de barras usando Plotly
+            fig_2 = px.bar(df_concatenado_estados, x='Status Posicion', y='Cantidad', title="Valores por tipo de Control", 
+                        labels={'Valor': 'Cantidad de Posiciones', 'Control': 'Tipo de Control'})
+
+            # Mostrar el gráfico en Streamlit
+            st.plotly_chart(fig_2)
+
+
         except:
             pass
     
     else:
         pass
-
-
