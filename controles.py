@@ -152,8 +152,6 @@ if datos_posicion is not None:
         opciones = ["Control Almacenaje", "Control Parciales", "Control Recepción", "Control Picking","Resultados"]
         seleccion = st.multiselect("Selecciona uno o más tipos de control:", opciones[0:-1])
 
-if datos_posicion is not None:
-
 
     if 'Todos' not in rubros_seleccionados:
         df_stock = df_stock[df_stock['Temperatura'].isin(rubros_seleccionados)]
@@ -171,15 +169,15 @@ if datos_posicion is not None:
         df_posicion = df_posicion[df_posicion['Temperatura'].isin(rubros_seleccionados)]
 
 
-# Crear pestañas
-tab1, tab2, tab3,tab4,tab5  = st.tabs(opciones)
+    # Crear pestañas
+    tab1, tab2, tab3,tab4,tab5  = st.tabs(opciones)
 
-duracion_turno = 7.5
-productividad_recepcion = 30
-productividad_almacenaje = 60
-productividad_picking = 18
-productividad_parciales = 22
-horas_disponibles = op * duracion_turno
+    duracion_turno = 7.5
+    productividad_recepcion = 30
+    productividad_almacenaje = 60
+    productividad_picking = 18
+    productividad_parciales = 22
+    horas_disponibles = op * duracion_turno
 
 
 if "Control Almacenaje" in seleccion: 
