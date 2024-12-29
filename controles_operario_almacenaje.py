@@ -110,7 +110,7 @@ def mostrar_carta(data_row,posicion):
             if posicion == current_row_data["Posicion"]:
                 st.success("Tarea completada para la posición.")
                 # Reinicia la entrada de posición escaneada
-                st.session_state.escaneada_posicion = ""  # Reinicia el campo de texto
+                st.session_state.escaneada_posicion = "hola"  # Reinicia el campo de texto
                 # Incrementa la fila actual
                 st.session_state.current_row += 1
                 st.rerun()
@@ -138,7 +138,6 @@ if "escaneada_posicion" not in st.session_state:
 # Verificar si hay más filas para procesar
 if st.session_state.current_row < len(st.session_state.df):
     # Mostrar la información de la fila actual
-    
 
     posicion = st.text_input("Escanea la posición", value=st.session_state.escaneada_posicion)
     current_row_data = st.session_state.df.iloc[st.session_state.current_row]
