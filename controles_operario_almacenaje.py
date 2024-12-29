@@ -114,7 +114,7 @@ def mostrar_carta(data_row,posicion):
                 st.session_state.escaneada_posicion = ""  # Reinicia el campo de texto
                 # Incrementa la fila actual
                 st.session_state.current_row += 1
-                # st.rerun
+                st.rerun
 
     else: 
         st.warning("La posición ingresada es incorrecta.")
