@@ -103,32 +103,13 @@ with st.expander("Carga de archivos"):
         )
 
         df_stock = df_stock[df_stock["Temperatura"] != "NO TIENE"]
-
-        rubros_unicos = ['Todos'] + sorted(df_stock['Temperatura'].unique())
-        rubros_seleccionados = st.sidebar.multiselect('Temperatura:', rubros_unicos, default=["Todos"])
-
-        if 'Todos' not in rubros_seleccionados:
-            df_stock = df_stock[df_stock['Temperatura'].isin(rubros_seleccionados)]
-
-
         df_stock['Entidad'] = df_stock['Entidad'].str.rstrip()
-        
-        entidades_unicas = ['Todos'] + sorted(df_stock['Entidad'].unique())
-        entidad_seleccionados = st.sidebar.multiselect('Entidad:', entidades_unicas, default=["Todos"])
-        
-        if 'Todos' not in entidad_seleccionados:
-            df_stock = df_stock[df_stock['Entidad'].isin(entidad_seleccionados)]
-
 
 
     if datos_reposicionamiento is not None:
         
         df_reposicionamiento = pd.read_excel(datos_reposicionamiento,skiprows=2)
         df_reposicionamiento['Operación de Artículo'] = df_reposicionamiento['Operación de Artículo'].str.rstrip()
-        
-
-        if 'Todos' not in entidad_seleccionados:
-            df_reposicionamiento = df_reposicionamiento[df_reposicionamiento['Operación de Artículo'].isin(entidad_seleccionados)]
         
 
     if datos_posicion is not None:
@@ -155,23 +136,39 @@ with st.expander("Carga de archivos"):
                     "NO TIENE"
         )
 
-        if 'Todos' not in entidad_seleccionados:
-            df_posicion = df_posicion[df_posicion['Entidad'].isin(entidad_seleccionados)]
 
-        if 'Todos' not in rubros_seleccionados:
-            df_posicion = df_posicion[df_posicion['Temperatura'].isin(rubros_seleccionados)]
 
 
 with st.sidebar:
+
+    rubros_unicos = ['Todos'] + sorted(df_stock['Temperatura'].unique())
+    rubros_seleccionados = st.sidebar.multiselect('Temperatura:', rubros_unicos, default=["Todos"])
+
+    entidades_unicas = ['Todos'] + sorted(df_stock['Entidad'].unique())
+    entidad_seleccionados = st.sidebar.multiselect('Entidad:', entidades_unicas, default=["Todos"])
 
     p = st.slider("Proporción estimada de defectos (%)", 0, 50, 7) / 100.0
     op = st.slider("Selecciona la cantidad de operarios (Operarios)", 1, 10, 6)
     opciones = ["Control Almacenaje", "Control Parciales", "Control Recepción", "Control Picking","Resultados"]
     seleccion = st.multiselect("Selecciona uno o más tipos de control:", opciones[0:-1])
-#     productividad = st.slider("Selecciona la productividad del control (Posiciones por hora)", 20, 50, 35)
-#     horas_disponibles = st.slider("Selecciona la capacidad de horas disponibles para controlar", 2.0, 8.0, 5.5)
-#     productidad_general = cantidad_operarios*productividad
-#     resultado = round(productidad_general * horas_disponibles, 2)
+
+
+
+
+if 'Todos' not in rubros_seleccionados:
+    df_stock = df_stock[df_stock['Temperatura'].isin(rubros_seleccionados)]
+
+if 'Todos' not in entidad_seleccionados:
+    df_stock = df_stock[df_stock['Entidad'].isin(entidad_seleccionados)]
+
+if 'Todos' not in entidad_seleccionados:
+    df_reposicionamiento = df_reposicionamiento[df_reposicionamiento['Operación de Artículo'].isin(entidad_seleccionados)]
+
+if 'Todos' not in entidad_seleccionados:
+    df_posicion = df_posicion[df_posicion['Entidad'].isin(entidad_seleccionados)]
+
+if 'Todos' not in rubros_seleccionados:
+    df_posicion = df_posicion[df_posicion['Temperatura'].isin(rubros_seleccionados)]
 
 
 # Crear pestañas
