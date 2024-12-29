@@ -150,7 +150,7 @@ if datos_posicion is not None:
         p = st.slider("Proporción estimada de defectos (%)", 0, 50, 7) / 100.0
         op = st.slider("Selecciona la cantidad de operarios (Operarios)", 1, 10, 6)
         opciones = ["Control Almacenaje", "Control Parciales", "Control Recepción", "Control Picking","Resultados"]
-        seleccion = st.multiselect("Selecciona uno o más tipos de control:", opciones[0:-1],default="Control Almacenaje")
+        seleccion = st.multiselect("Selecciona uno o más tipos de control:", opciones[0:-1],default=opciones[0])
 
 
     if 'Todos' not in rubros_seleccionados:
