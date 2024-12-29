@@ -105,16 +105,17 @@ def mostrar_carta(data_row,posicion):
 
             hora_fin = datetime.now().strftime("%d-%m-%Y %H:%M:%S")
             fecha_control = datetime.now().strftime("%d-%m-%Y")
+
+            # Actualizar los valores en el DataFrame
             st.session_state.df.loc[st.session_state.df["Posicion"] == posicion, "HoraFin"] = hora_fin
             st.session_state.df.loc[st.session_state.df["Posicion"] == posicion, "Fecha"] = fecha_control
 
-            if posicion == current_row_data["Posicion"]:
-                st.success("Tarea completada para la posición.")
-                # Reinicia la entrada de posición escaneada
-                st.session_state.escaneada_posicion = ""  # Reinicia el campo de texto
-                # Incrementa la fila actual
-                st.session_state.current_row += 1
-                st.rerun
+            # Mensaje de éxito
+            st.success("Tarea completada para la posición.")
+
+            # Incrementar la fila actual automáticamente
+            st.session_state.current_row += 1
+            st.session_state.escaneada_posicion = ""  # Reiniciar la entrada de texto
 
     else: 
         st.warning("La posición ingresada es incorrecta.")
