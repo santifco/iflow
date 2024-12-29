@@ -18,6 +18,10 @@ data_url = f'https://docs.google.com/spreadsheets/d/{sheet_id}/gviz/tq?tqx=out:c
 if "HoraInicio" not in st.session_state:
     st.session_state.HoraInicio = {}
 
+if "input_key" not in st.session_state:
+    st.session_state.input_key = 0
+
+
 # Función para mostrar la información en formato de carta
 def mostrar_carta(data_row,posicion):
     card_html = f"""
@@ -99,14 +103,14 @@ def mostrar_carta(data_row,posicion):
             st.session_state.df.loc[st.session_state.df["Posicion"] == posicion, "HoraFin"] = hora_fin
             st.session_state.df.loc[st.session_state.df["Posicion"] == posicion, "Fecha"] = fecha_control
             
-
             if posicion == current_row_data["Posicion"]:
                 st.success("Tarea completada para la posición.")
                 # Reinicia la entrada de posición escaneada
-                st.session_state.escaneada_posicion = ""  # Reinicia el campo de texto
+                st.session_state.escaneada_posicion = ""
+                st.session_state.input_key += 1 
                 # Incrementa la fila actual
                 st.session_state.current_row += 1
-                st.experimental_rerun()
+                st.rerun()
 
     else: 
         st.warning("La posición ingresada es incorrecta.")
@@ -133,7 +137,11 @@ if "escaneada_posicion" not in st.session_state:
 if st.session_state.current_row < len(st.session_state.df):
     
     st.session_state.escaneada_posicion = ""
-    posicion = st.text_input("Escanea la posición", value=st.session_state.escaneada_posicion)
+    posicion = st.text_input(
+        "Escanea la posición",
+        value=st.session_state.escaneada_posicion,
+        key=f"input_{st.session_state.input_key}"  # Clave única para reiniciar el campo
+    )
     current_row_data = st.session_state.df.iloc[st.session_state.current_row]
     mostrar_carta(current_row_data,posicion)
 
