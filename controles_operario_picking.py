@@ -110,7 +110,7 @@ def mostrar_carta(data_row,posicion):
                 st.session_state.input_key += 1 
                 # Incrementa la fila actual
                 st.session_state.current_row += 1
-                st.rerun()
+                st.rerun
 
     else: 
         st.warning("La posición ingresada es incorrecta.")
