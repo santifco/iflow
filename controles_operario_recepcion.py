@@ -136,21 +136,6 @@ def mostrar_carta(data_row,posicion):
                 st.rerun()
 
 
-# Cargar los datos de Google Sheets si no están en session_state
-# if "df" not in st.session_state:
-#     st.session_state.df = pd.read_csv(data_url)
-#     st.session_state.df["Posicion"] = st.session_state.df["Posicion"].str.rstrip()
-#     st.session_state.df['Ordenar_primero'] = st.session_state.df['Posicion'].str.split(' - ').str[0].str[2:4]
-#     st.session_state.df['Ordenar_segundo'] = st.session_state.df['Posicion'].str.split(' - ').str[1].astype(int)
-#     st.session_state.df = st.session_state.df.sort_values(by=['Ordenar_primero', 'Ordenar_segundo']).drop(columns=['Ordenar_primero', 'Ordenar_segundo'])
-#     # st.session_state.df[['Lote Escaneado', 'Paleta Escaneada', 'Bultos Contados', 'Blister por Bulto', 'Unidad por Blister',"Unidad por Bulto", 'Fecha Vencimiento Observada']] = None
-
-# # Inicializar la fila actual si no existe
-# if "current_row" not in st.session_state:
-#     st.session_state.current_row = 0  # Inicializar la fila actual
-
-# if "escaneada_posicion" not in st.session_state:
-#         st.session_state.escaneada_posicion = ""  # Inicializar el valor como vacío
 
 # Verificar si hay más filas para procesar
 if st.session_state.current_row < len(st.session_state.df):
