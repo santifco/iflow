@@ -14,12 +14,36 @@ sheet_url = 'https://docs.google.com/spreadsheets/d/1tpJAMDbUMANKitwywXEJ3_4Khm-
 sheet_id = sheet_url.split("/d/")[1].split("/")[0]
 data_url = f'https://docs.google.com/spreadsheets/d/{sheet_id}/gviz/tq?tqx=out:csv'
 
-# Registro de hora de inicio
+# Cachear los datos cargados desde Google Sheets
+@st.cache_data
+def load_data(url):
+    df = pd.read_csv(url)
+    df["Posicion"] = df["Posicion"].str.rstrip()
+    df['Ordenar_primero'] = df['Posicion'].str.split(' - ').str[0].str[2:4]
+    df['Ordenar_segundo'] = df['Posicion'].str.split(' - ').str[1].astype(int)
+    df = df.sort_values(by=['Ordenar_primero', 'Ordenar_segundo']).drop(columns=['Ordenar_primero', 'Ordenar_segundo'])
+    return df
+
+
+# Cargar los datos
+df = load_data(data_url)
+
+# Guardar en session_state para modificar
+if "df" not in st.session_state:
+    st.session_state.df = df.copy()
+
+# Inicializar estados si no existen
+if "current_row" not in st.session_state:
+    st.session_state.current_row = 0
+
 if "HoraInicio" not in st.session_state:
     st.session_state.HoraInicio = {}
 
 if "input_key" not in st.session_state:
     st.session_state.input_key = 0
+
+if "escaneada_posicion" not in st.session_state:
+    st.session_state.escaneada_posicion = ""
 
 
 # Función para mostrar la información en formato de carta
@@ -109,20 +133,20 @@ def mostrar_carta(data_row,posicion):
         st.warning("La posición ingresada es incorrecta.")
 
 # Cargar los datos de Google Sheets si no están en session_state
-if "df" not in st.session_state:
-    st.session_state.df = pd.read_csv(data_url)
-    st.session_state.df["Posicion"] = st.session_state.df["Posicion"].str.rstrip()
-    st.session_state.df['Ordenar_primero'] = st.session_state.df['Posicion'].str.split(' - ').str[0].str[2:4]
-    st.session_state.df['Ordenar_segundo'] = st.session_state.df['Posicion'].str.split(' - ').str[1].astype(int)
-    st.session_state.df = st.session_state.df.sort_values(by=['Ordenar_primero', 'Ordenar_segundo']).drop(columns=['Ordenar_primero', 'Ordenar_segundo'])
-    # st.session_state.df[['Lote Escaneado', 'Paleta Escaneada', 'Bultos Contados', 'Blister por Bulto', 'Unidad por Blister',"Unidad por Bulto", 'Fecha Vencimiento Observada']] = None
+# if "df" not in st.session_state:
+#     st.session_state.df = pd.read_csv(data_url)
+#     st.session_state.df["Posicion"] = st.session_state.df["Posicion"].str.rstrip()
+#     st.session_state.df['Ordenar_primero'] = st.session_state.df['Posicion'].str.split(' - ').str[0].str[2:4]
+#     st.session_state.df['Ordenar_segundo'] = st.session_state.df['Posicion'].str.split(' - ').str[1].astype(int)
+#     st.session_state.df = st.session_state.df.sort_values(by=['Ordenar_primero', 'Ordenar_segundo']).drop(columns=['Ordenar_primero', 'Ordenar_segundo'])
+#     # st.session_state.df[['Lote Escaneado', 'Paleta Escaneada', 'Bultos Contados', 'Blister por Bulto', 'Unidad por Blister',"Unidad por Bulto", 'Fecha Vencimiento Observada']] = None
 
-# Inicializar la fila actual si no existe
-if "current_row" not in st.session_state:
-    st.session_state.current_row = 0  # Inicializar la fila actual
+# # Inicializar la fila actual si no existe
+# if "current_row" not in st.session_state:
+#     st.session_state.current_row = 0  # Inicializar la fila actual
 
-if "escaneada_posicion" not in st.session_state:
-        st.session_state.escaneada_posicion = ""  # Inicializar el valor como vacío
+# if "escaneada_posicion" not in st.session_state:
+#         st.session_state.escaneada_posicion = ""  # Inicializar el valor como vacío
 
 # Verificar si hay más filas para procesar
 if st.session_state.current_row < len(st.session_state.df):
