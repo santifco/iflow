@@ -127,7 +127,7 @@ def mostrar_carta(data_row,posicion):
                 st.session_state.escaneada_posicion = st.session_state.df.iloc[st.session_state.current_row]["Posicion"] + "b"
                 # st.session_state.input_key += 1 
                 # Incrementa la fila actual
-                st.rerun()
+                # st.rerun()
 
     else: 
         st.warning("La posición ingresada es incorrecta.")
