@@ -45,9 +45,6 @@ if "HoraInicio" not in st.session_state:
 if "escaneada_posicion" not in st.session_state:
     st.session_state.escaneada_posicion = ""
 
-if "is_in_position" not in st.session_state:
-    st.session_state.is_in_position = False  # Indica si el usuario está en posición
-
 
 # Función para mostrar la información en formato de carta
 def mostrar_carta(data_row,posicion):
@@ -70,14 +67,11 @@ def mostrar_carta(data_row,posicion):
     # Campos de entrada
 
     
-    if not st.session_state.is_in_position:
-        if st.button(f"Estoy en Posición {current_row_data['Posicion']}"):
-            st.session_state.is_in_position = True
-            if current_row_data["Posicion"] not in st.session_state.HoraInicio:
-                st.session_state.HoraInicio[current_row_data["Posicion"]] = datetime.now().strftime("%d-%m-%Y %H:%M:%S")
-        st.rerun()
-    
-    else:
+    if posicion == data_row['Posicion']:
+
+        if posicion not in st.session_state.HoraInicio:
+            hora_inicio = datetime.now()
+            st.session_state.HoraInicio[posicion] = hora_inicio.strftime("%d-%m-%Y %H:%M:%S")
 
         lote = st.number_input(f"Escanea el LOTE para la posición ", value=None,min_value=0)
         paleta = st.number_input(f"Escanea la PALETA para la posición ", min_value=0,value=None)
@@ -135,8 +129,8 @@ def mostrar_carta(data_row,posicion):
                 # Incrementa la fila actual
                 st.rerun()
 
-    # else: 
-    #     st.warning("La posición ingresada es incorrecta.")
+    else: 
+        st.warning("La posición ingresada es incorrecta.")
 
 # Cargar los datos de Google Sheets si no están en session_state
 # if "df" not in st.session_state:
