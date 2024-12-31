@@ -5,7 +5,7 @@ from google.oauth2 import service_account
 from datetime import datetime
 
 # App title
-st.title("Escaneo y Control de Parciales")
+st.title("Escaneo y Control de Parciales 2 ")
 
 # URL de la hoja de Google Sheets
 sheet_url = 'https://docs.google.com/spreadsheets/d/1eikx9phIghxyiv1yfFy3ZqqNePWSbhkyvisOzSD37pw/edit?gid=0#gid=0'
@@ -38,8 +38,6 @@ if "current_row" not in st.session_state:
 if "HoraInicio" not in st.session_state:
     st.session_state.HoraInicio = {}
 
-# if "input_key" not in st.session_state:
-#     st.session_state.input_key = 0
 
 if "escaneada_posicion" not in st.session_state:
     st.session_state.escaneada_posicion = st.session_state.df.iloc[0]["Posicion"]
@@ -130,7 +128,6 @@ def mostrar_carta(data_row,posicion):
                     # st.session_state.input_key += 1 
                     # Incrementa la fila actual
                     st.rerun()
-
 
 
 # Verificar si hay más filas para procesar
