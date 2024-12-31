@@ -143,9 +143,6 @@ def mostrar_carta(data_row,posicion):
                 st.rerun()
 
 
-    else: 
-        st.warning("La posición ingresada es incorrecta.")
-
 
 # Cargar los datos de Google Sheets si no están en session_state
 if "df" not in st.session_state:
