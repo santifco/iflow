@@ -4,6 +4,7 @@ import gspread
 from google.oauth2 import service_account
 from datetime import datetime
 
+
 # App title
 st.title("Escaneo y Control de Picking")
 
@@ -14,12 +15,39 @@ sheet_url = 'https://docs.google.com/spreadsheets/d/1J0YmuXlCFx_lg5DKGS_o_09nhkJ
 sheet_id = sheet_url.split("/d/")[1].split("/")[0]
 data_url = f'https://docs.google.com/spreadsheets/d/{sheet_id}/gviz/tq?tqx=out:csv'
 
-# Registro de hora de inicio
+# Cachear los datos cargados desde Google Sheets
+@st.cache_data
+def load_data(url):
+    df = pd.read_csv(url)
+    df["Posicion"] = df["Posicion"].str.rstrip()
+    df['Ordenar_primero'] = df['Posicion'].str.split(' - ').str[0].str[2:4]
+    df['Ordenar_segundo'] = df['Posicion'].str.split(' - ').str[1].astype(int)
+    df = df.sort_values(by=['Ordenar_primero', 'Ordenar_segundo']).drop(columns=['Ordenar_primero', 'Ordenar_segundo'])
+    return df
+
+
+# Cargar los datos
+df = load_data(data_url)
+
+# Guardar en session_state para modificar
+if "df" not in st.session_state:
+    st.session_state.df = df.copy()
+
+# Inicializar estados si no existen
+if "current_row" not in st.session_state:
+    st.session_state.current_row = 0
+
 if "HoraInicio" not in st.session_state:
     st.session_state.HoraInicio = {}
 
-if "input_key" not in st.session_state:
-    st.session_state.input_key = 0
+# if "input_key" not in st.session_state:
+#     st.session_state.input_key = 0
+
+if "escaneada_posicion" not in st.session_state:
+    st.session_state.escaneada_posicion = st.session_state.df.iloc[0]["Posicion"]
+
+if "is_in_position" not in st.session_state:
+    st.session_state.is_in_position = False
 
 
 # Función para mostrar la información en formato de carta
@@ -39,11 +67,14 @@ def mostrar_carta(data_row,posicion):
     """
     st.markdown(card_html, unsafe_allow_html=True)
 
-    if posicion == data_row['Posicion']:
+    if st.button(f"Estoy en Posición {current_row_data['Posicion']}",key="hidden_button"):
+        st.session_state.is_in_position = True
+
+    if st.session_state.is_in_position and posicion == data_row['Posicion']:
 
         if posicion not in st.session_state.HoraInicio:
-                    hora_inicio = datetime.now()
-                    st.session_state.HoraInicio[posicion] = hora_inicio.strftime("%d-%m-%Y %H:%M:%S")
+            hora_inicio = datetime.now()
+            st.session_state.HoraInicio[posicion] = hora_inicio.strftime("%d-%m-%Y %H:%M:%S")
                     
 
         # st.write(f"Hora de inicio: {st.session_state.HoraInicio[posicion]}")
@@ -106,11 +137,13 @@ def mostrar_carta(data_row,posicion):
             if posicion == current_row_data["Posicion"]:
                 st.success("Tarea completada para la posición.")
                 # Reinicia la entrada de posición escaneada
-                st.session_state.escaneada_posicion = ""
-                st.session_state.input_key += 1 
-                # Incrementa la fila actual
                 st.session_state.current_row += 1
+                st.session_state.escaneada_posicion = st.session_state.df.iloc[st.session_state.current_row]["Posicion"]
+                st.session_state.is_in_position = False 
+                # st.session_state.input_key += 1 
+                # Incrementa la fila actual
                 st.rerun()
+
 
     else: 
         st.warning("La posición ingresada es incorrecta.")
@@ -136,12 +169,7 @@ if "escaneada_posicion" not in st.session_state:
 # Verificar si hay más filas para procesar
 if st.session_state.current_row < len(st.session_state.df):
     
-    st.session_state.escaneada_posicion = ""
-    posicion = st.text_input(
-        "Escanea la posición",
-        value=st.session_state.escaneada_posicion,
-        key=f"input_{st.session_state.input_key}"  # Clave única para reiniciar el campo
-    )
+    posicion = st.session_state.escaneada_posicion
     current_row_data = st.session_state.df.iloc[st.session_state.current_row]
     mostrar_carta(current_row_data,posicion)
 
