@@ -43,7 +43,7 @@ if "HoraInicio" not in st.session_state:
 #     st.session_state.input_key = 0
 
 if "escaneada_posicion" not in st.session_state:
-    st.session_state.escaneada_posicion = ""
+    st.session_state.escaneada_posicion = st.session_state.df.iloc[0]["Posicion"]
 
 if "is_in_position" not in st.session_state:
     st.session_state.is_in_position = False
@@ -160,7 +160,6 @@ if st.session_state.current_row < len(st.session_state.df):
     posicion = st.text_input("Escanea la posición",value=st.session_state.escaneada_posicion)
     current_row_data = st.session_state.df.iloc[st.session_state.current_row]
     mostrar_carta(current_row_data,posicion)
-    st.write(st.session_state.df)
 
 else:
     st.write("Todas las filas han sido procesadas.")
