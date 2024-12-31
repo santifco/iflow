@@ -5,7 +5,7 @@ from google.oauth2 import service_account
 from datetime import datetime
 
 # App title
-st.title("Escaneo y Control de Parciales 2 ")
+st.title("Escaneo y Control de Parciales")
 
 # URL de la hoja de Google Sheets
 sheet_url = 'https://docs.google.com/spreadsheets/d/1eikx9phIghxyiv1yfFy3ZqqNePWSbhkyvisOzSD37pw/edit?gid=0#gid=0'
