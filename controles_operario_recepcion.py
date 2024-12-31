@@ -45,6 +45,9 @@ if "HoraInicio" not in st.session_state:
 if "escaneada_posicion" not in st.session_state:
     st.session_state.escaneada_posicion = ""
 
+if "is_in_position" not in st.session_state:
+    st.session_state.is_in_position = False
+
 
 # Función para mostrar la información en formato de carta
 def mostrar_carta(data_row,posicion):
@@ -66,8 +69,10 @@ def mostrar_carta(data_row,posicion):
 
     # Campos de entrada
 
-    
-    if posicion == data_row['Posicion']:
+    if st.button(f"Estoy en Posición {current_row_data['Posicion']}"):
+        st.session_state.is_in_position = True
+
+    if st.session_state.is_in_position and posicion == data_row['Posicion']:
 
         if posicion not in st.session_state.HoraInicio:
             hora_inicio = datetime.now()
@@ -124,7 +129,8 @@ def mostrar_carta(data_row,posicion):
                 st.success("Tarea completada para la posición.")
                 # Reinicia la entrada de posición escaneada
                 st.session_state.current_row += 1
-                st.session_state.escaneada_posicion = st.session_state.df.iloc[st.session_state.current_row]["Posicion"] 
+                st.session_state.escaneada_posicion = st.session_state.df.iloc[st.session_state.current_row]["Posicion"]
+                st.session_state.is_in_position = False 
                 # st.session_state.input_key += 1 
                 # Incrementa la fila actual
                 st.rerun()
