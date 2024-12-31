@@ -39,8 +39,8 @@ if "current_row" not in st.session_state:
 if "HoraInicio" not in st.session_state:
     st.session_state.HoraInicio = {}
 
-if "input_key" not in st.session_state:
-    st.session_state.input_key = 0
+# if "input_key" not in st.session_state:
+#     st.session_state.input_key = 0
 
 if "escaneada_posicion" not in st.session_state:
     st.session_state.escaneada_posicion = ""
@@ -125,7 +125,7 @@ def mostrar_carta(data_row,posicion):
                 # Reinicia la entrada de posición escaneada
                 st.session_state.current_row += 1
                 st.session_state.escaneada_posicion = st.session_state.df.iloc[st.session_state.current_row]["Posicion"]
-                st.session_state.input_key += 1 
+                # st.session_state.input_key += 1 
                 # Incrementa la fila actual
                 st.rerun()
 
@@ -151,11 +151,7 @@ def mostrar_carta(data_row,posicion):
 # Verificar si hay más filas para procesar
 if st.session_state.current_row < len(st.session_state.df):
     # Mostrar la información de la fila actual
-    posicion = st.text_input(
-        "Escanea la posición",
-        value=st.session_state.escaneada_posicion,
-        key=f"input_{st.session_state.input_key}"  # Clave única para reiniciar el campo
-    )
+    posicion = st.text_input("Escanea la posición",value=st.session_state.escaneada_posicion)
     current_row_data = st.session_state.df.iloc[st.session_state.current_row]
     mostrar_carta(current_row_data,posicion)
     st.write(st.session_state.df)
