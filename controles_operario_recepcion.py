@@ -45,6 +45,9 @@ if "HoraInicio" not in st.session_state:
 if "escaneada_posicion" not in st.session_state:
     st.session_state.escaneada_posicion = ""
 
+if "is_in_position" not in st.session_state:
+    st.session_state.is_in_position = False  # Indica si el usuario está en posición
+
 
 # Función para mostrar la información en formato de carta
 def mostrar_carta(data_row,posicion):
@@ -67,72 +70,72 @@ def mostrar_carta(data_row,posicion):
     # Campos de entrada
 
     
-    if st.button(f"Estoy en Posición {posicion}"):
+    if not st.session_state.is_in_position:
+        if st.button(f"Estoy en Posición {current_row_data['Posicion']}"):
+            st.session_state.is_in_position = True
+            if current_row_data["Posicion"] not in st.session_state.HoraInicio:
+                st.session_state.HoraInicio[current_row_data["Posicion"]] = datetime.now().strftime("%d-%m-%Y %H:%M:%S")
+    
+    else:
+
+        lote = st.number_input(f"Escanea el LOTE para la posición ", value=None,min_value=0)
+        paleta = st.number_input(f"Escanea la PALETA para la posición ", min_value=0,value=None)
+        fecha = st.date_input(f"Selecciona la fecha de vencimiento para la posición ")
+        fecha = fecha.strftime("%d-%m-%Y")
         
-        if posicion == data_row['Posicion']:
 
-            if posicion not in st.session_state.HoraInicio:
-                hora_inicio = datetime.now()
-                st.session_state.HoraInicio[posicion] = hora_inicio.strftime("%d-%m-%Y %H:%M:%S")
-
-            lote = st.number_input(f"Escanea el LOTE para la posición ", value=None,min_value=0)
-            paleta = st.number_input(f"Escanea la PALETA para la posición ", min_value=0,value=None)
-            fecha = st.date_input(f"Selecciona la fecha de vencimiento para la posición ")
-            fecha = fecha.strftime("%d-%m-%Y")
+        if data_row["Un.x Bulto"] == 1:
             
+            cantidad_bultos = st.number_input(f"Confirma la cantidad de bultos para la posición ", min_value=0,value=None)
+            blister_bulto = 0
+            unidades_bulto = 0
+            unidades_blister = 0 
 
-            if data_row["Un.x Bulto"] == 1:
-                
-                cantidad_bultos = st.number_input(f"Confirma la cantidad de bultos para la posición ", min_value=0,value=None)
+
+        elif data_row["Un.x Bulto"] != 1:
+
+            tiene_blister = st.radio("¿Tiene Blister?", options=["Sí", "No"])  
+
+            if tiene_blister == "No":
+                cantidad_bultos = st.number_input(f"Confirma la cantidad de BULTO para la posición ", min_value=0,value=None)
+                unidades_bulto = st.number_input(f"Confirma la cantidad de UNIDADES POR BULTO para la posición ", min_value=0,value=None)
                 blister_bulto = 0
-                unidades_bulto = 0
                 unidades_blister = 0 
 
+            elif tiene_blister == "Sí":
+                cantidad_bultos = st.number_input(f"Confirma la cantidad de BULTOS para la posición ", min_value=0,value=None)
+                blister_bulto = st.number_input(f"Confirma la cantidad de BLISTER POR BULTO para la posición ", min_value=0,value=None)
+                unidades_blister = st.number_input(f"Confirma la cantidad de UNIDADES POR BLISTER para la posición ", min_value=0,value=None)
+                unidades_bulto = 0 
 
-            elif data_row["Un.x Bulto"] != 1:
+        posicion = data_row["Posicion"]
+        st.session_state.df.loc[st.session_state.df["Posicion"] == posicion, "Lote Escaneado"] = lote
+        st.session_state.df.loc[st.session_state.df["Posicion"] == posicion, "Paleta Escaneada"] = paleta
+        st.session_state.df.loc[st.session_state.df["Posicion"] == posicion, "Bultos Contados"] = cantidad_bultos
+        st.session_state.df.loc[st.session_state.df["Posicion"] == posicion, "Blister por Bulto"] = blister_bulto
+        st.session_state.df.loc[st.session_state.df["Posicion"] == posicion, "Unidad por Blister"] = unidades_blister
+        st.session_state.df.loc[st.session_state.df["Posicion"] == posicion, "Unidad por Bulto"] = unidades_bulto
+        st.session_state.df.loc[st.session_state.df["Posicion"] == posicion, "Fecha Vencimiento Observada"] = fecha
+        st.session_state.df.loc[st.session_state.df["Posicion"] == posicion, "HoraInicio"] = st.session_state.HoraInicio[posicion]
 
-                tiene_blister = st.radio("¿Tiene Blister?", options=["Sí", "No"])  
+        if st.button("Tarea Terminada"):
 
-                if tiene_blister == "No":
-                    cantidad_bultos = st.number_input(f"Confirma la cantidad de BULTO para la posición ", min_value=0,value=None)
-                    unidades_bulto = st.number_input(f"Confirma la cantidad de UNIDADES POR BULTO para la posición ", min_value=0,value=None)
-                    blister_bulto = 0
-                    unidades_blister = 0 
+            hora_fin = datetime.now().strftime("%d-%m-%Y %H:%M:%S")
+            fecha_control = datetime.now().strftime("%d-%m-%Y")
+            st.session_state.df.loc[st.session_state.df["Posicion"] == posicion, "HoraFin"] = hora_fin
+            st.session_state.df.loc[st.session_state.df["Posicion"] == posicion, "Fecha"] = fecha_control
 
-                elif tiene_blister == "Sí":
-                    cantidad_bultos = st.number_input(f"Confirma la cantidad de BULTOS para la posición ", min_value=0,value=None)
-                    blister_bulto = st.number_input(f"Confirma la cantidad de BLISTER POR BULTO para la posición ", min_value=0,value=None)
-                    unidades_blister = st.number_input(f"Confirma la cantidad de UNIDADES POR BLISTER para la posición ", min_value=0,value=None)
-                    unidades_bulto = 0 
+            if posicion == current_row_data["Posicion"]:
+                st.success("Tarea completada para la posición.")
+                # Reinicia la entrada de posición escaneada
+                st.session_state.current_row += 1
+                st.session_state.escaneada_posicion = st.session_state.df.iloc[st.session_state.current_row]["Posicion"] 
+                # st.session_state.input_key += 1 
+                # Incrementa la fila actual
+                st.rerun()
 
-            posicion = data_row["Posicion"]
-            st.session_state.df.loc[st.session_state.df["Posicion"] == posicion, "Lote Escaneado"] = lote
-            st.session_state.df.loc[st.session_state.df["Posicion"] == posicion, "Paleta Escaneada"] = paleta
-            st.session_state.df.loc[st.session_state.df["Posicion"] == posicion, "Bultos Contados"] = cantidad_bultos
-            st.session_state.df.loc[st.session_state.df["Posicion"] == posicion, "Blister por Bulto"] = blister_bulto
-            st.session_state.df.loc[st.session_state.df["Posicion"] == posicion, "Unidad por Blister"] = unidades_blister
-            st.session_state.df.loc[st.session_state.df["Posicion"] == posicion, "Unidad por Bulto"] = unidades_bulto
-            st.session_state.df.loc[st.session_state.df["Posicion"] == posicion, "Fecha Vencimiento Observada"] = fecha
-            st.session_state.df.loc[st.session_state.df["Posicion"] == posicion, "HoraInicio"] = st.session_state.HoraInicio[posicion]
-
-            if st.button("Tarea Terminada"):
-
-                hora_fin = datetime.now().strftime("%d-%m-%Y %H:%M:%S")
-                fecha_control = datetime.now().strftime("%d-%m-%Y")
-                st.session_state.df.loc[st.session_state.df["Posicion"] == posicion, "HoraFin"] = hora_fin
-                st.session_state.df.loc[st.session_state.df["Posicion"] == posicion, "Fecha"] = fecha_control
-
-                if posicion == current_row_data["Posicion"]:
-                    st.success("Tarea completada para la posición.")
-                    # Reinicia la entrada de posición escaneada
-                    st.session_state.current_row += 1
-                    st.session_state.escaneada_posicion = st.session_state.df.iloc[st.session_state.current_row]["Posicion"] 
-                    # st.session_state.input_key += 1 
-                    # Incrementa la fila actual
-                    st.rerun()
-
-        else: 
-            st.warning("La posición ingresada es incorrecta.")
+    # else: 
+    #     st.warning("La posición ingresada es incorrecta.")
 
 # Cargar los datos de Google Sheets si no están en session_state
 # if "df" not in st.session_state:
