@@ -124,8 +124,6 @@ def mostrar_carta(data_row,posicion):
         st.session_state.df.loc[st.session_state.df["Posicion"] == posicion, "Fecha Vencimiento Observada"] = fecha
         st.session_state.df.loc[st.session_state.df["Posicion"] == posicion, "HoraInicio"] = st.session_state.HoraInicio[posicion]
 
-    
-
 
         if st.button("Tarea Terminada"):
 
