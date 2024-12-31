@@ -78,6 +78,17 @@ def mostrar_carta(data_row,posicion):
             hora_inicio = datetime.now()
             st.session_state.HoraInicio[posicion] = hora_inicio.strftime("%d-%m-%Y %H:%M:%S")
 
+        st.markdown(
+            """
+            <style>
+            div.stButton > button {
+                visibility: hidden;
+            }
+            </style>
+            """,
+            unsafe_allow_html=True,
+        )    
+
         lote = st.number_input(f"Escanea el LOTE para la posición ", value=None,min_value=0)
         paleta = st.number_input(f"Escanea la PALETA para la posición ", min_value=0,value=None)
         fecha = st.date_input(f"Selecciona la fecha de vencimiento para la posición ")
