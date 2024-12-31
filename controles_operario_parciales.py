@@ -24,7 +24,6 @@ def load_data(url):
     df = df.sort_values(by=['Ordenar_primero', 'Ordenar_segundo']).drop(columns=['Ordenar_primero', 'Ordenar_segundo'])
     return df
 
-
 # Cargar los datos
 df = load_data(data_url)
 
@@ -132,8 +131,6 @@ def mostrar_carta(data_row,posicion):
                     # Incrementa la fila actual
                     st.rerun()
 
-    else: 
-        st.warning("La posición ingresada es incorrecta.")
 
 
 # Verificar si hay más filas para procesar
