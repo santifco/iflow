@@ -123,10 +123,10 @@ def mostrar_carta(data_row,posicion):
             if posicion == current_row_data["Posicion"]:
                 st.success("Tarea completada para la posición.")
                 # Reinicia la entrada de posición escaneada
-                st.session_state.escaneada_posicion = ""
+                st.session_state.current_row += 1
+                st.session_state.escaneada_posicion = st.session_state.df.iloc[st.session_state.current_row]["Posicion"]
                 st.session_state.input_key += 1 
                 # Incrementa la fila actual
-                st.session_state.current_row += 1
                 st.rerun()
 
     else: 
