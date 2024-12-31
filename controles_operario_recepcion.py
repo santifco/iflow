@@ -69,7 +69,7 @@ def mostrar_carta(data_row,posicion):
 
     # Campos de entrada
 
-    if st.button(f"Estoy en Posición {current_row_data['Posicion']}"):
+    if st.button(f"Estoy en Posición {current_row_data['Posicion']}",key="hidden_button"):
         st.session_state.is_in_position = True
 
     if st.session_state.is_in_position and posicion == data_row['Posicion']:
@@ -81,13 +81,13 @@ def mostrar_carta(data_row,posicion):
         st.markdown(
             """
             <style>
-            div.stButton > button {
+            [data-testid="stButton"][key="hidden_button"] > button {
                 visibility: hidden;
             }
             </style>
             """,
             unsafe_allow_html=True,
-        )    
+        )  
 
         lote = st.number_input(f"Escanea el LOTE para la posición ", value=None,min_value=0)
         paleta = st.number_input(f"Escanea la PALETA para la posición ", min_value=0,value=None)
