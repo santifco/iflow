@@ -157,7 +157,7 @@ def mostrar_carta(data_row,posicion):
 # Verificar si hay más filas para procesar
 if st.session_state.current_row < len(st.session_state.df):
     # Mostrar la información de la fila actual
-    posicion = st.text_input("Escanea la posición",value=st.session_state.escaneada_posicion)
+    posicion = st.session_state.escaneada_posicion
     current_row_data = st.session_state.df.iloc[st.session_state.current_row]
     mostrar_carta(current_row_data,posicion)
 
