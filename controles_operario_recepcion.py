@@ -124,7 +124,7 @@ def mostrar_carta(data_row,posicion):
                 st.success("Tarea completada para la posición.")
                 # Reinicia la entrada de posición escaneada
                 st.session_state.current_row += 1
-                st.session_state.escaneada_posicion = st.session_state.df.iloc[st.session_state.current_row]["Posicion"]
+                st.session_state.escaneada_posicion = st.session_state.df.iloc[st.session_state.current_row]["Posicion"] + "b"
                 # st.session_state.input_key += 1 
                 # Incrementa la fila actual
                 st.rerun()
