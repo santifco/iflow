@@ -75,6 +75,7 @@ def mostrar_carta(data_row,posicion):
             st.session_state.is_in_position = True
             if current_row_data["Posicion"] not in st.session_state.HoraInicio:
                 st.session_state.HoraInicio[current_row_data["Posicion"]] = datetime.now().strftime("%d-%m-%Y %H:%M:%S")
+        st.rerun()
     
     else:
 
