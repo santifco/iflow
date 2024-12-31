@@ -148,8 +148,6 @@ def mostrar_carta(data_row,posicion):
 # if "escaneada_posicion" not in st.session_state:
 #         st.session_state.escaneada_posicion = ""  # Inicializar el valor como vacío
 
-st.write(st.session_state.df)
-
 # Verificar si hay más filas para procesar
 if st.session_state.current_row < len(st.session_state.df):
     # Mostrar la información de la fila actual
@@ -160,6 +158,7 @@ if st.session_state.current_row < len(st.session_state.df):
     )
     current_row_data = st.session_state.df.iloc[st.session_state.current_row]
     mostrar_carta(current_row_data,posicion)
+    st.write(st.session_state.df)
 
 else:
     st.write("Todas las filas han sido procesadas.")
