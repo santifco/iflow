@@ -6,7 +6,7 @@ from datetime import datetime
 
 
 # App title
-st.title("Escaneo y Control de Almacenaje 2")
+st.title("Escaneo y Control de Almacenaje")
 
 # URL de la hoja de Google Sheets
 sheet_url = 'https://docs.google.com/spreadsheets/d/15mDNh1PKS6SjxtGvEasMJvBWxt7BuWOH-IpRKbPHNwA/edit?gid=0#gid=0'
