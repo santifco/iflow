@@ -1,0 +1,56 @@
+        if data_row["Status Posicion"] == "DL":
+            
+            posicion_libre = st.radio("¿Existe algún Pallet en la posición?", options=["Sí", "No"])
+            articulo = 0 
+            fecha = 0
+            cantidad_bultos = 0
+            unidades_bulto = 0
+            blister_bulto = 0
+            unidades_blister = 0 
+
+        elif data_row["Status Posicion"].isin(["PC,PV"]):
+            
+            posicion_libre = "No"
+            articulo = st.number_input(f"Escanea el artículo para la posición {data_row['Posicion']}", min_value=0,value=None)
+            fecha = st.date_input(f"Selecciona la fecha de vencimiento para la posición {data_row['Posicion']}")
+            fecha = fecha.strftime("%d-%m-%Y")
+            cantidad_bultos = 0
+            unidades_bulto = 0
+            blister_bulto = 0
+            unidades_blister = 0 
+
+
+
+        elif data_row["Status Posicion"] == "BL":
+            
+            posicion_libre = "No"
+            # cantidad_confirmada = st.number_input(f"Confirma la cantidad de bultos para la posición {data_row['Posicion']}", min_value=0,value=None)
+            fecha = 0
+            articulo = 0
+
+            tiene_blister = st.radio("¿Tiene Blister?", options=["Sí", "No"])  
+
+            if tiene_blister == "No":
+                cantidad_bultos = st.number_input(f"Confirma la cantidad de BULTO para la posición ", min_value=0,value=None)
+                unidades_bulto = st.number_input(f"Confirma la cantidad de UNIDADES POR BULTO para la posición ", min_value=0,value=None)
+                blister_bulto = 0
+                unidades_blister = 0 
+
+            elif tiene_blister == "Sí":
+                cantidad_bultos = st.number_input(f"Confirma la cantidad de BULTOS para la posición ", min_value=0,value=None)
+                blister_bulto = st.number_input(f"Confirma la cantidad de BLISTER POR BULTO para la posición ", min_value=0,value=None)
+                unidades_blister = st.number_input(f"Confirma la cantidad de UNIDADES POR BLISTER para la posición ", min_value=0,value=None)
+                unidades_bulto = 0    
+  
+    # Campos de entrada
+    
+        # Actualizar el DataFrame en session_state
+        posicion = data_row["Posicion"]
+        st.session_state.df.loc[st.session_state.df["Posicion"] == posicion, "Articulo Escaneado"] = articulo
+        st.session_state.df.loc[st.session_state.df["Posicion"] == posicion, "Posición Libre"] = posicion_libre
+        st.session_state.df.loc[st.session_state.df["Posicion"] == posicion, "Fecha Vencimiento Observada"] = fecha
+        st.session_state.df.loc[st.session_state.df["Posicion"] == posicion, "HoraInicio"] = st.session_state.HoraInicio[posicion]
+        st.session_state.df.loc[st.session_state.df["Posicion"] == posicion, "Bultos Contados"] = cantidad_bultos
+        st.session_state.df.loc[st.session_state.df["Posicion"] == posicion, "Blister por Bulto"] = blister_bulto
+        st.session_state.df.loc[st.session_state.df["Posicion"] == posicion, "Unidad por Blister"] = unidades_blister
+        st.session_state.df.loc[st.session_state.df["Posicion"] == posicion, "Unidad por Bulto"] = unidades_bulto

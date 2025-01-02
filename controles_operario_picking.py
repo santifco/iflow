@@ -3,6 +3,7 @@ import pandas as pd
 import gspread
 from google.oauth2 import service_account
 from datetime import datetime
+from streamlit_gsheets import GSheetsConnection
 
 
 # App title
@@ -14,6 +15,7 @@ sheet_url = 'https://docs.google.com/spreadsheets/d/1J0YmuXlCFx_lg5DKGS_o_09nhkJ
 # Extraer el ID de la hoja y obtener el enlace al CSV
 sheet_id = sheet_url.split("/d/")[1].split("/")[0]
 data_url = f'https://docs.google.com/spreadsheets/d/{sheet_id}/gviz/tq?tqx=out:csv'
+
 
 # Cachear los datos cargados desde Google Sheets
 @st.cache_data
@@ -40,14 +42,14 @@ if "current_row" not in st.session_state:
 if "HoraInicio" not in st.session_state:
     st.session_state.HoraInicio = {}
 
-# if "input_key" not in st.session_state:
-#     st.session_state.input_key = 0
-
 if "escaneada_posicion" not in st.session_state:
-    st.session_state.escaneada_posicion = st.session_state.df.iloc[0]["Posicion"]
+    st.session_state.escaneada_posicion = ""
 
 if "is_in_position" not in st.session_state:
     st.session_state.is_in_position = False
+
+if "input_key" not in st.session_state:
+    st.session_state.input_key = 0
 
 
 # Función para mostrar la información en formato de carta
@@ -67,10 +69,7 @@ def mostrar_carta(data_row,posicion):
     """
     st.markdown(card_html, unsafe_allow_html=True)
 
-    if st.button(f"Estoy en Posición {current_row_data['Posicion']}",key="hidden_button"):
-        st.session_state.is_in_position = True
-
-    if st.session_state.is_in_position and posicion == data_row['Posicion']:
+    if posicion == data_row['Posicion']:
 
         if posicion not in st.session_state.HoraInicio:
             hora_inicio = datetime.now()
@@ -135,11 +134,10 @@ def mostrar_carta(data_row,posicion):
             if posicion == current_row_data["Posicion"]:
                 st.success("Tarea completada para la posición.")
                 # Reinicia la entrada de posición escaneada
-                st.session_state.current_row += 1
-                st.session_state.escaneada_posicion = st.session_state.df.iloc[st.session_state.current_row]["Posicion"]
-                st.session_state.is_in_position = False 
-                # st.session_state.input_key += 1 
+                st.session_state.escaneada_posicion = ""
+                st.session_state.input_key += 1 
                 # Incrementa la fila actual
+                st.session_state.current_row += 1
                 st.rerun()
 
 
@@ -148,7 +146,12 @@ def mostrar_carta(data_row,posicion):
 # Verificar si hay más filas para procesar
 if st.session_state.current_row < len(st.session_state.df):
     
-    posicion = st.session_state.escaneada_posicion
+    st.session_state.escaneada_posicion = ""
+    posicion = st.text_input(
+        "Escanea la posición",
+        value=st.session_state.escaneada_posicion,
+        key=f"input_{st.session_state.input_key}"  # Clave única para reiniciar el campo
+    )
     current_row_data = st.session_state.df.iloc[st.session_state.current_row]
     mostrar_carta(current_row_data,posicion)
 
