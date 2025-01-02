@@ -286,7 +286,7 @@ if "Control Almacenaje" in seleccion:
                 mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
             )
 
-            if st.button("Actualizar Google Sheets"):
+            if st.button("Actualizar Google Sheets Almacenaje"):
                 # Configurar el acceso a la API de Google Sheets con las credenciales
                 
                 # credentials_info = {
@@ -446,7 +446,7 @@ if "Control Parciales" in seleccion:
                 mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
             ) 
 
-            if st.button("Actualizar Google Sheets"):
+            if st.button("Actualizar Google Sheets Parciales"):
                 # Configurar el acceso a la API de Google Sheets con las credenciales
                 # credentials_info = st.secrets["gcp_service_account"]
                 # credentials_info = {
@@ -668,7 +668,7 @@ if "Control Recepción" in seleccion:
                 mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
             )
 
-            if st.button("Actualizar Google Sheets"):
+            if st.button("Actualizar Google Sheets Recepcion"):
                 # Configurar el acceso a la API de Google Sheets con las credenciales
                 # credentials_info = st.secrets["gcp_service_account"]
                 # credentials_info = {
@@ -898,7 +898,7 @@ if "Control Picking" in seleccion:
                 mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
             )
 
-            if st.button("Actualizar Google Sheets"):
+            if st.button("Actualizar Google Sheets Picking"):
                 # Configurar el acceso a la API de Google Sheets con las credenciales
                 # credentials_info = st.secrets["gcp_service_account"]
                 # credentials_info = {
