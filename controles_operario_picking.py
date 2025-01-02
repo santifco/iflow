@@ -3,7 +3,7 @@ import pandas as pd
 import gspread
 from google.oauth2 import service_account
 from datetime import datetime
-from streamlit_gsheets import GSheetsConnection
+
 
 
 # App title
