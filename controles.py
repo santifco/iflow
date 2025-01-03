@@ -248,7 +248,10 @@ if "Control Almacenaje" in seleccion:
 
 
             df_concatenado['Vencimiento'] = pd.to_datetime(df_concatenado['Vencimiento'], errors='coerce').dt.strftime('%d-%m-%Y')
-
+            df_concatenado["Posicion"] = df_concatenado["Posicion"].str.rstrip()
+            df_concatenado['Ordenar_primero'] = df_concatenado['Posicion'].str.split(' - ').str[0].str[2:4]
+            df_concatenado['Ordenar_segundo'] = df_concatenado['Posicion'].str.split(' - ').str[1].astype(int)
+            df_concatenado = df_concatenado.sort_values(by=['Ordenar_primero', 'Ordenar_segundo']).drop(columns=['Ordenar_primero', 'Ordenar_segundo'])
             # Tamaño de la población
             N_almacenaje = len(df_concatenado)
             st.write(f"Tamaño df_stock (número de filas en df_stock): {N_almacenaje}")
