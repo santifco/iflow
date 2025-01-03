@@ -248,10 +248,6 @@ if "Control Almacenaje" in seleccion:
 
 
             df_concatenado['Vencimiento'] = pd.to_datetime(df_concatenado['Vencimiento'], errors='coerce').dt.strftime('%d-%m-%Y')
-            df_concatenado["Posicion"] = df_concatenado["Posicion"].str.rstrip()
-            df_concatenado['Ordenar_primero'] = df_concatenado['Posicion'].str.split(' - ').str[0].str[2:4]
-            df_concatenado['Ordenar_segundo'] = df_concatenado['Posicion'].str.split(' - ').str[1].astype(int)
-            df_concatenado = df_concatenado.sort_values(by=['Ordenar_primero', 'Ordenar_segundo'])
             # Tamaño de la población
             N_almacenaje = len(df_concatenado)
             st.write(f"Tamaño df_stock (número de filas en df_stock): {N_almacenaje}")
@@ -878,6 +874,10 @@ if "Control Picking" in seleccion:
             else:
                 st.success(f"¡El resultado es una capacidad de {horas_requeridas_control} horas, lo cual es menor a las horas disponibles ({horas_disponibles})!")
                 horas_disponibles = round(horas_disponibles - horas_requeridas_control,2)
+                df_merged_picking["Posicion"] = df_merged_picking["Posicion"].str.rstrip()
+                df_merged_picking['Ordenar_primero'] = df_merged_picking['Posicion'].str.split(' - ').str[0].str[2:4]
+                df_merged_picking['Ordenar_segundo'] = df_merged_picking['Posicion'].str.split(' - ').str[1].astype(int)
+                df_merged_picking = df_merged_picking.sort_values(by=['Ordenar_primero', 'Ordenar_segundo']).drop(columns=['Ordenar_primero', 'Ordenar_segundo'])
                 st.write(df_merged_picking)
             
         
