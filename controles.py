@@ -967,6 +967,20 @@ if "Control Picking" in seleccion:
                 sheet.append_row(df_merged_picking.columns.tolist())  # Escribe los encabezados
                 sheet.append_rows(df_values)  # Escribe los datos del DataFrame
 
+                sheet_id = '1wan5qrTo_7_oUnXBUXgCuq_oJa24F5U6uhpDOe_LGf8'  # Reemplaza con tu sheet_id real
+                # Abre la hoja de Google usando el ID de la hoja
+                sheet = client.open_by_key(sheet_id).sheet1
+
+                df_merged_picking = df_merged_picking.fillna("0")
+                # Convirtiendo el DataFrame a una lista de listas
+                df_values = df_merged_picking.values.tolist()
+                
+                # Escribe los datos en el Google Sheet, sobrescribiendo todo
+                sheet.clear()  # Borrar el contenido anterior
+                sheet.append_row(df_merged_picking.columns.tolist())  # Escribe los encabezados
+                sheet.append_rows(df_values)  # Escribe los datos del DataFrame
+
+
                 st.success("¡Datos actualizados en Google Sheets con éxito!")
 
 
