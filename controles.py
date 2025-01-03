@@ -850,6 +850,7 @@ if "Control Picking" in seleccion:
 
 
         if datos_stock is not None and datos_reposicionamiento is not None:
+            df_reposicionamiento_picking = df_reposicionamiento_picking.dropna(subset=["Artículo"])
             # Realizar el merge de df_stock y df_reposicionamiento según la columna "Pallet"
             df_merged_picking = pd.merge(df_stock_picking, df_reposicionamiento_picking, left_on='Posicion', right_on='Posición Destino', how='inner')
             df_merged_picking = df_merged_picking[["Cod.Articulo","Temperatura","Rubro","Entidad","Descripcion Articulo","Pasillo","Columna","Nivel","Sector","Posicion","Bultos_x","Unidades_x","Vencimiento","Un.x Bulto"]]
