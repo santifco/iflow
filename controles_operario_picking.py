@@ -253,7 +253,6 @@ def mostrar_carta(data_row,posicion):
             # Obtener los valores de la fila actual y convertirlos a cadenas
             current_row_values = st.session_state.df.loc[real_index].values.tolist()
             # current_row_values = [str(value) for value in current_row_values]
-            st.write(current_row_values)
             current_row_values[0] = str(current_row_values[0])
 
             # Calcular el rango dinámico basado en el número de columnas
