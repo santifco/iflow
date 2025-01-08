@@ -21,7 +21,7 @@ data_url = f'https://docs.google.com/spreadsheets/d/{sheet_id}/gviz/tq?tqx=out:c
 
 
 # Cachear los datos cargados desde Google Sheets
-@st.cache_data
+# @st.cache_data
 def load_data(url):
     df = pd.read_csv(url)
     df["Posicion"] = df["Posicion"].str.rstrip()
