@@ -5,6 +5,7 @@ from google.oauth2 import service_account
 from datetime import datetime
 import string
 import time
+import numpy as np
 
 
 
@@ -251,11 +252,20 @@ def mostrar_carta(data_row,posicion):
             sheet.update("A1", [header_values])
             # Obtener los valores de la fila actual y convertirlos a cadenas
             current_row_values = st.session_state.df.loc[real_index].values.tolist()
-            current_row_values = [str(value) for value in current_row_values]
+            # current_row_values = [str(value) for value in current_row_values]
+            st.write(current_row_values)
+            current_row_values[0] = str(current_row_values[0])
 
             # Calcular el rango dinámico basado en el número de columnas
             num_columns = len(st.session_state.df.columns)  # Total de columnas
             last_column_letter = string.ascii_uppercase[num_columns - 1] if num_columns <= 26 else f"A{string.ascii_uppercase[num_columns - 27]}"  # AA, AB, etc.
+
+            current_row_values = [
+            int(value) if isinstance(value, (np.int64, np.int32)) else
+            float(value) if isinstance(value, (np.float64, np.float32)) else
+            value
+            for value in current_row_values
+            ]
 
             # Construir el rango (por ejemplo, A2:Z2)
             sheet_range = f"A{st.session_state.current_row + 2}:{last_column_letter}{st.session_state.current_row + 2}"
