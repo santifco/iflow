@@ -60,7 +60,6 @@ if "input_key" not in st.session_state:
 
 credentials_info = st.secrets["gcp_service_account"]
 
-
 # credentials_info = {
 #                 "type": "service_account",
 #                 "project_id": "inbound-pattern-429101-c5",
@@ -265,6 +264,8 @@ def mostrar_carta(data_row,posicion):
             value
             for value in current_row_values
             ]
+
+            st.write(current_row_values)
 
             # Construir el rango (por ejemplo, A2:Z2)
             sheet_range = f"A{st.session_state.current_row + 2}:{last_column_letter}{st.session_state.current_row + 2}"

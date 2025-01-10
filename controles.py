@@ -127,8 +127,8 @@ with st.expander("Carga de archivos"):
         # Filtrar las filas donde NO se cumpla que el valor después del segundo guion contiene "1"
         df_posicion  = df_posicion[~df_posicion['Depposc'].apply(filtrar_despues_segundo_guion_1)]
         df_posicion = df_posicion.rename(columns={'Entnombre': 'Entidad', 'Depposc': 'Posicion',"Depest":"Status Posicion","Artnom":"Descripcion Articulo"})
+        df_posicion = df_posicion.dropna(subset=["Posicion"])
 
-        
         df_posicion['Temperatura'] = df_posicion['Posicion'].apply(
             lambda x: "SECO" if any(valor in x for valor in valores_validos_secos) else
                     "REFRIGERADO" if any(valor in x for valor in valores_validos_refrigerado) else
@@ -151,7 +151,7 @@ with st.sidebar:
 
     p = st.slider("Proporción estimada de defectos (%)", 0, 50, 7) / 100.0
     op = st.slider("Selecciona la cantidad de operarios (Operarios)", 1, 10, 6)
-    opciones = ["Control Almacenaje", "Control Parciales", "Control Recepción", "Control Picking","Resultados"]
+    opciones = ["Control Almacenaje", "Control Parciales", "Control Recepción", "Control Picking","Control Total","Resultados"]
     seleccion = st.multiselect("Selecciona uno o más tipos de control:", opciones[0:-1],default=opciones[0])
 
 
@@ -174,7 +174,7 @@ if datos_posicion is not None:
 
 
 # Crear pestañas
-tab1, tab2, tab3,tab4,tab5  = st.tabs(opciones)
+tab1, tab2, tab3,tab4,tab5,tab6  = st.tabs(opciones)
 
 duracion_turno = 7.5
 productividad_recepcion = 30
@@ -201,7 +201,7 @@ if "Control Almacenaje" in seleccion:
             df_stock_almacenaje = df_stock.dropna(subset=["Pallet"])
             df_stock_almacenaje = df_stock_almacenaje[df_stock_almacenaje["Pallet"] != 0]
             df_stock_almacenaje = df_stock_almacenaje[df_stock_almacenaje['Nivel'] != 1]
-            df_stock_almacenaje = df_stock_almacenaje[df_stock_almacenaje['Status Posicion'].isin(["BL", "PC", "PV", "DL"])]
+            df_stock_almacenaje = df_stock_almacenaje[df_stock_almacenaje['Status Posicion'].isin(["BL", "PC", "PV"])]
             df_stock_almacenaje["Pallet"] = df_stock_almacenaje["Pallet"].astype(int)
             df_stock_almacenaje = df_stock_almacenaje[["Entidad","Temperatura","Cod.Articulo","Descripcion Articulo","Posicion","Lote","Pallet","Vencimiento","Status Posicion","Bultos","Unidades","Un.x Bulto"]]
             # Mostrar el DataFrame resultante
@@ -210,22 +210,9 @@ if "Control Almacenaje" in seleccion:
             # st.write(df_stock)
 
 
-
-        if datos_reposicionamiento is not None:
-            # Leer el archivo de reposicionamiento
-            df_reposicionamiento_almacenaje = df_reposicionamiento.dropna(subset=["Pallet"])
-            df_reposicionamiento_almacenaje = df_reposicionamiento_almacenaje[df_reposicionamiento_almacenaje["Pallet"] != 0]
-            df_reposicionamiento_almacenaje = df_reposicionamiento_almacenaje[df_reposicionamiento_almacenaje["Tipo de Movimiento Alt"]=="EP"]
-            df_reposicionamiento_almacenaje["Pallet"] = df_reposicionamiento_almacenaje["Pallet"].astype(int)
-            # Mostrar el DataFrame resultante
-            # st.write("Datos de Reposicionamiento:")
-            # st.write(df_reposicionamiento["Pallet"])
-            # st.write(df_reposicionamiento)
-
-
         if datos_posicion is not None:
             # Leer el archivo de posicion
-            df_posicion_almacenaje = df_posicion[df_posicion['Status Posicion'].isin(["DL"])]
+            df_posicion_almacenaje = df_posicion[(df_posicion['Status Posicion'].isin(["DL"])) & (df_posicion['Descripcion Articulo'].isna())]
             df_posicion_almacenaje = df_posicion_almacenaje.drop(['Depid', 'Depseccod'], axis=1)
             # Mostrar el DataFrame resultante
             # st.write("Datos de Posición:")
@@ -242,10 +229,8 @@ if "Control Almacenaje" in seleccion:
             
 
             df_concatenado = pd.concat([df_stock_almacenaje,df_posicion_almacenaje ], axis=0, ignore_index=True)
-
-            df_reposicionamiento_almacenaje = df_reposicionamiento_almacenaje[["Posición Destino","Rubro"]]
-
-
+            df_concatenado[["Unidades", "Un.x Bulto"]] = df_concatenado[["Unidades", "Un.x Bulto"]].fillna(0)
+            # df_reposicionamiento_almacenaje = df_reposicionamiento_almacenaje[["Posición Destino","Rubro"]]
 
             df_concatenado['Vencimiento'] = pd.to_datetime(df_concatenado['Vencimiento'], errors='coerce').dt.strftime('%d-%m-%Y')
             # Tamaño de la población
@@ -259,10 +244,18 @@ if "Control Almacenaje" in seleccion:
                 # st.warning(f"El resultado es una capacidad de {resultado_almacenaje} posiciones, lo cual es menor al tamaño de muestra esperado ({N}).")
                 # df_concatenado_reduced = df_concatenado.sample(n=resultado_almacenaje, random_state=1)
                 # st.write(f"Mostrando {resultado_almacenaje} filas seleccionadas aleatoriamente de la muestra:")
+                df_concatenado["Posicion"] = df_concatenado["Posicion"].str.rstrip()
+                df_concatenado['Ordenar_primero'] = df_concatenado['Posicion'].str.split(' - ').str[0].str[2:4]
+                df_concatenado['Ordenar_segundo'] = df_concatenado['Posicion'].str.split(' - ').str[1].astype(int)
+                df_concatenado = df_concatenado.sort_values(by=['Ordenar_primero', 'Ordenar_segundo']).drop(columns=['Ordenar_primero', 'Ordenar_segundo'])
                 st.write(df_concatenado)
             else:
-                st.success(f"¡El resultado es una capacidad de {horas_requeridas_control} horas, lo cual es menor a las horas disponibles ({horas_disponibles})!")
+                st.success(f"¡El resultado es un control de {horas_requeridas_control} horas, lo cual es menor a las horas disponibles ({horas_disponibles})!")
                 horas_disponibles = round(horas_disponibles - horas_requeridas_control,2)
+                df_concatenado["Posicion"] = df_concatenado["Posicion"].str.rstrip()
+                df_concatenado['Ordenar_primero'] = df_concatenado['Posicion'].str.split(' - ').str[0].str[2:4]
+                df_concatenado['Ordenar_segundo'] = df_concatenado['Posicion'].str.split(' - ').str[1].astype(int)
+                df_concatenado = df_concatenado.sort_values(by=['Ordenar_primero', 'Ordenar_segundo']).drop(columns=['Ordenar_primero', 'Ordenar_segundo'])
                 st.write(df_concatenado)
 
 
@@ -340,7 +333,7 @@ if "Control Almacenaje" in seleccion:
                 # Autenticar cliente de Google Sheets
                 client = gspread.authorize(creds)
                 # Coloca tu sheet_id aquí
-                sheet_id = '15mDNh1PKS6SjxtGvEasMJvBWxt7BuWOH-IpRKbPHNwA'  # Reemplaza con tu sheet_id real
+                sheet_id = '1hY3qg_3_6NNqwoFbVy7tfclIXcDRupjbe59IG7lXhsI'  # Reemplaza con tu sheet_id real
 
                 # Abre la hoja de Google usando el ID de la hoja
                 sheet = client.open_by_key(sheet_id).sheet1
@@ -348,6 +341,15 @@ if "Control Almacenaje" in seleccion:
                 df_concatenado = df_concatenado.fillna("0")
                 # Convirtiendo el DataFrame a una lista de listas
                 df_values = df_concatenado.values.tolist()
+                
+                # Escribe los datos en el Google Sheet, sobrescribiendo todo
+                sheet.clear()  # Borrar el contenido anterior
+                sheet.append_row(df_concatenado.columns.tolist())  # Escribe los encabezados
+                sheet.append_rows(df_values)  # Escribe los datos del DataFrame
+
+                sheet_id_2 = '1FBkWGCRarYeiAX0zYycd6RJZJZf4vTIBL2oZlfHbC5s'  # Reemplaza con tu sheet_id real
+                # Abre la hoja de Google usando el ID de la hoja
+                sheet = client.open_by_key(sheet_id_2).sheet1
                 
                 # Escribe los datos en el Google Sheet, sobrescribiendo todo
                 sheet.clear()  # Borrar el contenido anterior
@@ -420,10 +422,18 @@ if "Control Parciales" in seleccion:
                 # st.warning(f"El resultado es una capacidad de {resultado_parciales} posiciones, lo cual es menor al tamaño de muestra esperado ({N}).")
                 # df_merged_parciales_reduced = df_merged_parciales.sample(n=resultado_parciales, random_state=1)
                 # st.write(f"Mostrando {resultado_parciales} filas seleccionadas aleatoriamente de la muestra:")
+                df_merged_parciales["Posicion"] = df_merged_parciales["Posicion"].str.rstrip()
+                df_merged_parciales['Ordenar_primero'] = df_merged_parciales['Posicion'].str.split(' - ').str[0].str[2:4]
+                df_merged_parciales['Ordenar_segundo'] = df_merged_parciales['Posicion'].str.split(' - ').str[1].astype(int)
+                df_merged_parciales = df_merged_parciales.sort_values(by=['Ordenar_primero', 'Ordenar_segundo']).drop(columns=['Ordenar_primero', 'Ordenar_segundo'])
                 st.write(df_merged_parciales)
             else:
-                st.success(f"¡El resultado es una capacidad de {horas_requeridas_control} horas, lo cual es menor a las horas disponibles ({horas_disponibles})!")
+                st.success(f"¡El resultado es una control de {horas_requeridas_control} horas, lo cual es menor a las horas disponibles ({horas_disponibles})!")
                 horas_disponibles = round(horas_disponibles - horas_requeridas_control,2)
+                df_merged_parciales["Posicion"] = df_merged_parciales["Posicion"].str.rstrip()
+                df_merged_parciales['Ordenar_primero'] = df_merged_parciales['Posicion'].str.split(' - ').str[0].str[2:4]
+                df_merged_parciales['Ordenar_segundo'] = df_merged_parciales['Posicion'].str.split(' - ').str[1].astype(int)
+                df_merged_parciales = df_merged_parciales.sort_values(by=['Ordenar_primero', 'Ordenar_segundo']).drop(columns=['Ordenar_primero', 'Ordenar_segundo'])
                 st.write(df_merged_parciales)
 
             def convert_df_to_excel(df):
@@ -508,6 +518,15 @@ if "Control Parciales" in seleccion:
                 df_merged_parciales = df_merged_parciales.fillna("0")
                 # Convirtiendo el DataFrame a una lista de listas
                 df_values = df_merged_parciales.values.tolist()
+                
+                # Escribe los datos en el Google Sheet, sobrescribiendo todo
+                sheet.clear()  # Borrar el contenido anterior
+                sheet.append_row(df_merged_parciales.columns.tolist())  # Escribe los encabezados
+                sheet.append_rows(df_values)  # Escribe los datos del DataFrame
+
+                sheet_id_2 = '1OuRlrf7RR7P1o0FGIGKIWLMjSFo62Aa3NgiEvpTx2Ps'  # Reemplaza con tu sheet_id real
+                # Abre la hoja de Google usando el ID de la hoja
+                sheet = client.open_by_key(sheet_id_2).sheet1
                 
                 # Escribe los datos en el Google Sheet, sobrescribiendo todo
                 sheet.clear()  # Borrar el contenido anterior
@@ -640,11 +659,19 @@ if "Control Recepción" in seleccion:
                 # st.warning(f"El resultado es una capacidad de {resultado_recepcion} posiciones, lo cual es menor al tamaño de muestra esperado ({tamano_muestra}).")
                 # df_sample_reduced = df_sample.sample(n=resultado_recepcion, random_state=1)
                 # st.write(f"Mostrando {resultado_recepcion} filas seleccionadas aleatoriamente de la muestra:")
+                df_sample["Posicion"] = df_sample["Posicion"].str.rstrip()
+                df_sample['Ordenar_primero'] = df_sample['Posicion'].str.split(' - ').str[0].str[2:4]
+                df_sample['Ordenar_segundo'] = df_sample['Posicion'].str.split(' - ').str[1].astype(int)
+                df_sample = df_sample.sort_values(by=['Ordenar_primero', 'Ordenar_segundo']).drop(columns=['Ordenar_primero', 'Ordenar_segundo'])
                 st.write(df_sample)
             else:
-                st.success(f"¡El resultado es una capacidad de {horas_requeridas_control} horas, lo cual es menor a las horas disponibles ({horas_disponibles})!")
+                st.success(f"¡El resultado es un control de {horas_requeridas_control} horas, lo cual es menor a las horas disponibles ({horas_disponibles})!")
                 horas_disponibles = round(horas_disponibles - horas_requeridas_control,2)
                 st.write("Muestra aleatoria de df_filtrado:")
+                df_sample["Posicion"] = df_sample["Posicion"].str.rstrip()
+                df_sample['Ordenar_primero'] = df_sample['Posicion'].str.split(' - ').str[0].str[2:4]
+                df_sample['Ordenar_segundo'] = df_sample['Posicion'].str.split(' - ').str[1].astype(int)
+                df_sample = df_sample.sort_values(by=['Ordenar_primero', 'Ordenar_segundo']).drop(columns=['Ordenar_primero', 'Ordenar_segundo'])
                 st.write(df_sample)
 
 
@@ -668,50 +695,6 @@ if "Control Recepción" in seleccion:
             )
 
             if st.button("Actualizar Google Sheets Recepcion"):
-                # Configurar el acceso a la API de Google Sheets con las credenciales
-                # credentials_info = st.secrets["gcp_service_account"]
-                # credentials_info = {
-                #     "type": "service_account",
-                #     "project_id": "inbound-pattern-429101-c5",
-                #     "private_key_id": "9dcc01743c917fb186294a8c6d228d4c2fb005bc",
-                #     "private_key": """-----BEGIN PRIVATE KEY-----
-                # MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDPvpK+357PGmvc
-                # 6jxJTHyKfpUs/2861MGvfClaGMjEw9G8YmeeeH8PAkc/rZxaHpl2zcmpUQfTauxs
-                # 0mhbOD42jxRflbdi00yvHVkBBtYdzfvtGwepEUsP26yqOySm6PiVI/XKHWdct61B
-                # 28l/VW+mjXDVPiDiMATQRTJi4tYTgC5eSjhnkT4efY7gUMHmO2057cI+jmRob1WV
-                # PEEWLGt76R4IGnH/FtoW2B6lPoOb7KefRx2WgHfTu+zsXvqmbGbgRLSlheG4Zb6g
-                # h0dZXcyojx5vGgJT3ty4o5XgpA6n9EH2uURDXUBYQ9KE8mcNDM9VK6KQEYeBmIJr
-                # QOvMftM1AgMBAAECggEAAn4NSNdS4/vtzVvknLk+SUTmmuklQvARPtBfK1zqZSza
-                # cQ1XARha/p3r7ReQCpAFyJinRharmulIrFJJjmmF4HdUnycjIxxNUyH5GJLgJpM1
-                # cY1Ad6PNkKZSsKH41iVDCGk3N8mk4tH5rynGKKViwreabZX5sEuQdiEIlRXchgLN
-                # ransgsarOU/8+RI2W5JRt7wPAO56WsZc+zeOIyLS7RScibfdi8wMQYZF7PsPB5EG
-                # 6ps50hxHWZ18lgLgJO5iK6YZkINHwW8AWDaxonxTgn4eYT8iUDMol8D5i2AXM5x1
-                # JnRzhLKnNUdzug4RB7XrcCOsjoDOU2dW1VbXTNkyxQKBgQD4WbO23ktbkl64dmdA
-                # ZKhRSRcBfbUf8/+Olp8Dt/PTb53Rjvsm3XK5EUK6t9oMGgL131UuOcKysV1RCyzT
-                # I5jjiY5Q3Ws2L0N2IFfxSBI7Di2hxSWLaXgETsMUV0MBfv1TH/8E+3tEtoj26lZY
-                # A0GVOrGprEJVNcL3X3T83R3mNwKBgQDWJK8icbaJujm9HfXi9ODcG7YpPYKRcqJa
-                # LZclOiccRHIUN4SzouIfB6kp63k96W5Yzm6GeRgaiB/LQNPNTDFO4Q7Zrm7wci9o
-                # kzRUHWJcgKl7r8Q+TYXBPJVn0dZe65G5O/d+7cmQn+MUp0Gi5cnYu9eaeKHoJGY0
-                # P6vCKhab8wKBgC2cK8k14hkbNJIkDKpi0ha7maIIeC86HIEPYHzKV9lI8m7+F1n3
-                # 6Y3bganRAhae4FRPg9FNglhXApBTwRO1wepn5N8tCveUjosvPXduiQqXfAHttwt3
-                # fzcrT+B4djHcJKITij5cATOJYnYWa20WjADgGqjSngwQJ5JO0alu4oLZAoGAD138
-                # j203mzSY9iBTR+EozcLTVKxMVWGzkuMYqJw+uEGVKiw9wqJatb1X/2EdhzrcJ1VR
-                # Cydfem/wUCarzFy+YRm3dhmVbn3TNx7xL2QYbejxwKWBYLMxeQd+9T9SsecXwwIx
-                # pZMs1ssSgaXrCOSSkpIQS86CV+VczD0Rd1KL4s8CgYEAhfI92S/3eL6eOkm7yHL1
-                # 4331R/gomiO4QehLpyUZfirpqxNO/8BL6f25Jp5cC3dJeNu4xEbbMIMpEpT9C+ZJ
-                # 4WWYzDCC43HB8AbA8SgMDz7Vaa6h9zHJolLLrcsDMtiD4JT7VeV4UluWXIaRbg6p
-                # XYwWQL2d6uGePDriQHXIUmY=
-                # -----END PRIVATE KEY-----""",
-                #     "client_email": "google-sheets-api@inbound-pattern-429101-c5.iam.gserviceaccount.com",
-                #     "client_id": "107649396128661753097",
-                #     "auth_uri": "https://accounts.google.com/o/oauth2/auth",
-                #     "token_uri": "https://oauth2.googleapis.com/token",
-                #     "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
-                #     "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/google-sheets-api%40inbound-pattern-429101-c5.iam.gserviceaccount.com",
-                #     "universe_domain": "googleapis.com"
-                # }
-
-                # st.write(credentials_info)
 
                 # Configurar los scopes correctos
                 scopes = ["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"]
@@ -730,6 +713,15 @@ if "Control Recepción" in seleccion:
                 df_sample = df_sample.fillna("0")
                 # Convirtiendo el DataFrame a una lista de listas
                 df_values = df_sample.values.tolist()
+                
+                # Escribe los datos en el Google Sheet, sobrescribiendo todo
+                sheet.clear()  # Borrar el contenido anterior
+                sheet.append_row(df_sample.columns.tolist())  # Escribe los encabezados
+                sheet.append_rows(df_values)  # Escribe los datos del DataFrame
+
+                sheet_id_2 = '1BFyf3o8jYCleLtKwaMD9b90ZPhJBE8-yXeq74En_B_M'  # Reemplaza con tu sheet_id real
+                # Abre la hoja de Google usando el ID de la hoja
+                sheet = client.open_by_key(sheet_id_2).sheet1
                 
                 # Escribe los datos en el Google Sheet, sobrescribiendo todo
                 sheet.clear()  # Borrar el contenido anterior
@@ -866,14 +858,14 @@ if "Control Picking" in seleccion:
             horas_requeridas_control = round(N_picking/productividad_picking,2)
 
             if horas_requeridas_control > horas_disponibles:
-                st.warning(f"El resultado es una capacidad de {horas_requeridas_control} horas, lo cual es mayor a las horas disponibles ({horas_disponibles})!")
+                st.warning(f"El resultado es un control de {horas_requeridas_control} horas, lo cual es mayor a las horas disponibles ({horas_disponibles})!")
                 N_picking = int(horas_disponibles*productividad_picking)
                 st.warning(f"Se pueden controlar {N_picking} posiciones")
                 df_merged_picking_reduced = df_merged_picking.sample(n=N_picking, random_state=1)
                 st.write(f"Mostrando {N_picking} filas seleccionadas aleatoriamente de la muestra:")
                 st.write(df_merged_picking)
             else:
-                st.success(f"¡El resultado es una capacidad de {horas_requeridas_control} horas, lo cual es menor a las horas disponibles ({horas_disponibles})!")
+                st.success(f"¡El resultado es un control de {horas_requeridas_control} horas, lo cual es menor a las horas disponibles ({horas_disponibles})!")
                 horas_disponibles = round(horas_disponibles - horas_requeridas_control,2)
                 df_merged_picking["Posicion"] = df_merged_picking["Posicion"].str.rstrip()
                 df_merged_picking['Ordenar_primero'] = df_merged_picking['Posicion'].str.split(' - ').str[0].str[2:4]
@@ -995,9 +987,16 @@ if "Control Picking" in seleccion:
 else:
     pass
 
+if "Control Total" in seleccion: 
+
+    with tab5:
+    
+        st.title("Control Total")
+
+        st.write(df_stock)
 
 
-with tab5:
+with tab6:
 
     st.title("Resultados")
 
