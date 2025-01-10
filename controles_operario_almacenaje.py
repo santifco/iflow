@@ -115,7 +115,9 @@ def mostrar_carta(data_row,posicion):
     if st.button(f"Estoy en Posición {data_row['Posicion']}",key="hidden_button"):
         st.session_state.is_in_position = True
 
-    if st.session_state.is_in_position and posicion == data_row['Posicion']:
+    st.write(st.session_state.is_in_position)
+
+    if st.session_state.is_in_position:
 
         if posicion not in st.session_state.HoraInicio:
             hora_inicio = datetime.now()
@@ -171,9 +173,6 @@ def mostrar_carta(data_row,posicion):
         posicion = data_row["Posicion"]
 
         real_index = st.session_state.df.index[st.session_state.current_row]
-
-
-
 
         st.session_state.df.loc[real_index,"Articulo Escaneado"] = articulo
         st.session_state.df.loc[real_index,"Posición Libre"] = posicion_libre
