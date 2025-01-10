@@ -177,7 +177,7 @@ def mostrar_carta(data_row,posicion):
 
             current_row_data = st.session_state.df.iloc[real_index]
 
-            unidades_contadas = (
+            unidades_contadas = int(
                 st.session_state.df.loc[real_index, "Bultos Contados"] *
                 st.session_state.df.loc[real_index, "Blister por Bulto"] *
                 st.session_state.df.loc[real_index, "Unidad por Blister"] +
