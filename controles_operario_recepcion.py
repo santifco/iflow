@@ -58,12 +58,8 @@ client = gspread.authorize(creds)
 # Coloca tu sheet_id aquí
 sheet_id = '1BFyf3o8jYCleLtKwaMD9b90ZPhJBE8-yXeq74En_B_M'  # Reemplaza con tu sheet_id real
 
-
-
 # Abre la hoja de Google usando el ID de la hoja
 sheet = client.open_by_key(sheet_id).sheet1
-
-
 
 # URL de la hoja de Google Sheets
 sheet_url = 'https://docs.google.com/spreadsheets/d/1BFyf3o8jYCleLtKwaMD9b90ZPhJBE8-yXeq74En_B_M/edit?gid=0#gid=0'
@@ -88,6 +84,10 @@ def load_data(url):
 
 # Cargar los datos
 df = load_data(data_url)
+
+cols_to_convert = ["Unidades", "Un.x Bulto", "Bultos"]
+df[cols_to_convert] = df[cols_to_convert].apply(pd.to_numeric, errors="coerce").astype(int)
+
 
 # Guardar en session_state para modificar
 if "df" not in st.session_state:
