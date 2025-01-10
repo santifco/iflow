@@ -70,6 +70,9 @@ df = pd.DataFrame(data)
 df.columns = df.iloc[0]
 df = df[1:].reset_index(drop=True)
 
+cols_to_convert = ["Unidades", "Un.x Bulto", "Bultos"]
+df[cols_to_convert] = df[cols_to_convert].apply(pd.to_numeric, errors="coerce").fillna(0).astype(float)
+
 # Guardar en session_state para modificar
 if "df" not in st.session_state:
     st.session_state.df = df.copy()
@@ -151,65 +154,62 @@ def mostrar_carta(data_row,posicion):
 
         real_index = st.session_state.df.index[st.session_state.current_row]
 
-        try:
 
-            st.session_state.df.loc[real_index,"Lote Escaneado"] = lote
-            st.session_state.df.loc[real_index,"Paleta Escaneada"] = paleta
-            st.session_state.df.loc[real_index,"Bultos Contados"] = cantidad_bultos
-            st.session_state.df.loc[real_index,"Blister por Bulto"] = blister_bulto
-            st.session_state.df.loc[real_index,"Unidad por Blister"] = unidades_blister
-            st.session_state.df.loc[real_index,"Unidad por Bulto"] = unidades_bulto
-            st.session_state.df.loc[real_index,"Fecha Vencimiento Observada"] = fecha
-            st.session_state.df.loc[real_index,"HoraInicio"] = st.session_state.HoraInicio.get(posicion, None)
+        st.session_state.df.loc[real_index,"Lote Escaneado"] = lote
+        st.session_state.df.loc[real_index,"Paleta Escaneada"] = paleta
+        st.session_state.df.loc[real_index,"Bultos Contados"] = cantidad_bultos
+        st.session_state.df.loc[real_index,"Blister por Bulto"] = blister_bulto
+        st.session_state.df.loc[real_index,"Unidad por Blister"] = unidades_blister
+        st.session_state.df.loc[real_index,"Unidad por Bulto"] = unidades_bulto
+        st.session_state.df.loc[real_index,"Fecha Vencimiento Observada"] = fecha
+        st.session_state.df.loc[real_index,"HoraInicio"] = st.session_state.HoraInicio.get(posicion, None)
 
-            current_row_data = st.session_state.df.iloc[real_index]
+        current_row_data = st.session_state.df.iloc[real_index]
 
-            unidades_contadas = (
-                st.session_state.df.loc[real_index, "Bultos Contados"] *
-                st.session_state.df.loc[real_index, "Blister por Bulto"] *
-                st.session_state.df.loc[real_index, "Unidad por Blister"] +
-                st.session_state.df.loc[real_index, "Bultos Contados"] *
-                st.session_state.df.loc[real_index, "Unidad por Bulto"] 
-            )
+        unidades_contadas = (
+            st.session_state.df.loc[real_index, "Bultos Contados"] *
+            st.session_state.df.loc[real_index, "Blister por Bulto"] *
+            st.session_state.df.loc[real_index, "Unidad por Blister"] +
+            st.session_state.df.loc[real_index, "Bultos Contados"] *
+            st.session_state.df.loc[real_index, "Unidad por Bulto"] 
+        )
 
 
-            # Calcular "Diferencia Unidades"
-            diferencia_unidades = (
-                unidades_contadas - st.session_state.df.iloc[real_index]["Unidades"]
-            )
+        # Calcular "Diferencia Unidades"
+        diferencia_unidades = (
+            unidades_contadas - st.session_state.df.iloc[real_index]["Unidades"]
+        )
 
-            # Procesar fechas
-            vencimiento = pd.to_datetime(
-                st.session_state.df.loc[real_index,'Vencimiento'],
-                format='%d-%m-%Y',
-                errors='coerce'
-            )
+        # Procesar fechas
+        vencimiento = pd.to_datetime(
+            st.session_state.df.loc[real_index,'Vencimiento'],
+            format='%d-%m-%Y',
+            errors='coerce'
+        )
 
-            fecha_vencimiento_observada = pd.to_datetime(
-                st.session_state.df.loc[real_index,'Fecha Vencimiento Observada'],
-                format='%d-%m-%Y',
-                errors='coerce'
-            )
+        fecha_vencimiento_observada = pd.to_datetime(
+            st.session_state.df.loc[real_index,'Fecha Vencimiento Observada'],
+            format='%d-%m-%Y',
+            errors='coerce'
+        )
 
-            # Calcular "Diferencia Fecha Vencimiento"
-            diferencia_fecha_vencimiento = (
-                (vencimiento - fecha_vencimiento_observada).days
-                if pd.notnull(vencimiento) and pd.notnull(fecha_vencimiento_observada)
-                else None
-            )
+        # Calcular "Diferencia Fecha Vencimiento"
+        diferencia_fecha_vencimiento = (
+            (vencimiento - fecha_vencimiento_observada).days
+            if pd.notnull(vencimiento) and pd.notnull(fecha_vencimiento_observada)
+            else None
+        )
 
-            coincide_lote = st.session_state.df.loc[real_index, "Lote Escaneado"] = "Si" if st.session_state.df.loc[real_index, "Lote Escaneado"] == st.session_state.df.loc[real_index, "Lote"] else "No"
-            # coincide_paleta = st.session_state.df.loc[real_index, "Paleta Escaneada"] = "Si" if st.session_state.df.loc[real_index, "Lote Escaneado"] == st.session_state.df.loc[real_index, "Lote"] else "No"
-            # Crear y actualizar las columnas directamente en el DataFrame
-            st.session_state.df.loc[real_index, "Unidades Contadas"] = unidades_contadas
-            st.session_state.df.loc[real_index, "Diferencia Unidades"] = diferencia_unidades
-            st.session_state.df.loc[real_index, "Diferencia Fecha Vencimiento"] = diferencia_fecha_vencimiento
-            st.session_state.df.loc[real_index, "Coincide Lote"] = coincide_lote
+        coincide_lote = st.session_state.df.loc[real_index, "Lote Escaneado"] = "Si" if st.session_state.df.loc[real_index, "Lote Escaneado"] == st.session_state.df.loc[real_index, "Lote"] else "No"
+        # coincide_paleta = st.session_state.df.loc[real_index, "Paleta Escaneada"] = "Si" if st.session_state.df.loc[real_index, "Lote Escaneado"] == st.session_state.df.loc[real_index, "Lote"] else "No"
+        # Crear y actualizar las columnas directamente en el DataFrame
+        st.session_state.df.loc[real_index, "Unidades Contadas"] = unidades_contadas
+        st.session_state.df.loc[real_index, "Diferencia Unidades"] = diferencia_unidades
+        st.session_state.df.loc[real_index, "Diferencia Fecha Vencimiento"] = diferencia_fecha_vencimiento
+        st.session_state.df.loc[real_index, "Coincide Lote"] = coincide_lote
 
     
-        except:
-            pass
-
+        st.write(st.session_state.df)
 
         if st.button("Tarea Terminada"):
 

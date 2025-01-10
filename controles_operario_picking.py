@@ -73,6 +73,9 @@ df = pd.DataFrame(data)
 df.columns = df.iloc[0]
 df = df[1:].reset_index(drop=True)
 
+cols_to_convert = ["Unidades", "Un.x Bulto", "Bultos"]
+df[cols_to_convert] = df[cols_to_convert].apply(pd.to_numeric, errors="coerce").fillna(0).astype(float)
+
 # Guardar en session_state para modificar
 if "df" not in st.session_state:
     st.session_state.df = df.copy()
