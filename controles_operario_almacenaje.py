@@ -180,7 +180,7 @@ def mostrar_carta(data_row,posicion):
         st.session_state.df.loc[real_index,"Unidad por Blister"] = unidades_blister
         st.session_state.df.loc[real_index,"Unidad por Bulto"] = unidades_bulto
         st.session_state.df.loc[real_index,"Fecha Vencimiento Observada"] = fecha
-        st.session_state.df.loc[real_index,"HoraInicio"] = st.session_state.HoraInicio.get(posicion, None)
+        st.session_state.df.loc[real_index,"HoraInicio"] = st.session_state.HoraInicio.get(st.session_state.current_row, None)
 
         current_row_data = st.session_state.df.iloc[real_index]
 
