@@ -247,8 +247,6 @@ def mostrar_carta(data_row,posicion):
             for value in current_row_values
             ]
 
-            st.write(current_row_values)
-
             # Construir el rango (por ejemplo, A2:Z2)
             sheet_range = f"A{st.session_state.current_row + 2}:{last_column_letter}{st.session_state.current_row + 2}"
 
