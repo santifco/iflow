@@ -115,11 +115,10 @@ def mostrar_carta(data_row,posicion):
     if st.button(f"Estoy en Posición {data_row['Posicion']}",key="hidden_button"):
         st.session_state.is_in_position = True
 
-    if st.session_state.is_in_position and posicion == data_row['Posicion']:
+    if st.session_state.is_in_position:
 
-        if posicion not in st.session_state.HoraInicio:
-            hora_inicio = datetime.now()
-            st.session_state.HoraInicio[posicion] = hora_inicio.strftime("%d-%m-%Y %H:%M:%S")
+        hora_inicio = datetime.now()
+        st.session_state.HoraInicio[st.session_state.current_row] = hora_inicio.strftime("%d-%m-%Y %H:%M:%S")
 
     # Campos de entrada
         articulo = st.number_input(f"Escanea el artículo para la posición {data_row['Posicion']}", min_value=0,value=None)
@@ -163,7 +162,7 @@ def mostrar_carta(data_row,posicion):
             st.session_state.df.loc[real_index,"Unidad por Blister"] = unidades_blister
             st.session_state.df.loc[real_index,"Unidad por Bulto"] = unidades_bulto
             st.session_state.df.loc[real_index,"Fecha Vencimiento Observada"] = fecha
-            st.session_state.df.loc[real_index,"HoraInicio"] = st.session_state.HoraInicio.get(posicion, None)
+            st.session_state.df.loc[real_index,"HoraInicio"] = st.session_state.HoraInicio.get(st.session_state.current_row, None)
 
             current_row_data = st.session_state.df.iloc[real_index]
 
