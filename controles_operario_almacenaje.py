@@ -119,9 +119,8 @@ def mostrar_carta(data_row,posicion):
 
     if st.session_state.is_in_position:
 
-        if posicion not in st.session_state.HoraInicio:
-            hora_inicio = datetime.now()
-            st.session_state.HoraInicio[posicion] = hora_inicio.strftime("%d-%m-%Y %H:%M:%S")
+        hora_inicio = datetime.now()
+        st.session_state.HoraInicio[st.session_state.current_row] = hora_inicio.strftime("%d-%m-%Y %H:%M:%S")
 
         if data_row["Status Posicion"] == "DL":
             
@@ -265,12 +264,10 @@ def mostrar_carta(data_row,posicion):
             st.success("Tarea completada para la posición.")
             time.sleep(1)
             # Reinicia la entrada de posición escaneada
-            st.session_state.escaneada_posicion = ""
             st.session_state.is_in_position = False
             # Incrementa la fila actual
             st.session_state.current_row += 1
             st.rerun()
-
 
 
 # Verificar si hay más filas para procesar
@@ -279,8 +276,6 @@ if st.session_state.current_row < len(st.session_state.df):
     posicion = st.session_state.escaneada_posicion
     current_row_data = st.session_state.df.iloc[st.session_state.current_row]
     mostrar_carta(current_row_data,posicion)
-
-
 
 else:
     st.write("Todas las filas han sido procesadas.")
