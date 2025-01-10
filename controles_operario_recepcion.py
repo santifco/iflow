@@ -65,20 +65,29 @@ sheet = client.open_by_key(sheet_id).sheet1
 
 
 
-@st.cache_data
-def load_data_from_google_sheets(sheet):
-    data = sheet.get_all_values()
-    # Convertir la lista de listas en un DataFrame de pandas
-    df = pd.DataFrame(data)
-    # Asignar la primera fila como encabezados del DataFrame
-    df.columns = df.iloc[0]
-    df = df[1:].reset_index(drop=True)
-    cols_to_convert = ["Unidades", "Un.x Bulto", "Bultos"]
-    df[cols_to_convert] = df[cols_to_convert].apply(pd.to_numeric, errors="coerce").astype(int)
+# URL de la hoja de Google Sheets
+sheet_url = 'https://docs.google.com/spreadsheets/d/1BFyf3o8jYCleLtKwaMD9b90ZPhJBE8-yXeq74En_B_M/edit?gid=0#gid=0'
+
+# Extraer el ID de la hoja y obtener el enlace al CSV
+sheet_id = sheet_url.split("/d/")[1].split("/")[0]
+data_url = f'https://docs.google.com/spreadsheets/d/{sheet_id}/gviz/tq?tqx=out:csv'
+
+
+# Cachear los datos cargados desde Google Sheets
+# @st.cache_data
+def load_data(url):
+    df = pd.read_csv(url)
+    df["Posicion"] = df["Posicion"].str.rstrip()
+    df['Ordenar_primero'] = df['Posicion'].str.split(' - ').str[0].str[2:4]
+    df['Ordenar_segundo'] = df['Posicion'].str.split(' - ').str[1].astype(int)
+    df = df.sort_values(by=['Ordenar_primero', 'Ordenar_segundo']).drop(columns=['Ordenar_primero', 'Ordenar_segundo'])
+    df = df.loc[:, ~df.columns.str.contains("Unnamed")]
+
     return df
 
-# Cargar los datos con caché
-df = load_data_from_google_sheets(sheet)
+
+# Cargar los datos
+df = load_data(data_url)
 
 # Guardar en session_state para modificar
 if "df" not in st.session_state:
