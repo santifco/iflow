@@ -194,14 +194,11 @@ def mostrar_carta(data_row,posicion):
             st.session_state.df.loc[real_index, "Unidad por Bulto"] 
         )
 
-        st.write(unidades_contadas)
-
         # Calcular "Diferencia Unidades"
         diferencia_unidades = (
             unidades_contadas - st.session_state.df.iloc[real_index]["Unidades"]
         )
         
-        st.write(st.session_state.df.iloc[real_index]["Unidades"])
 
         # Procesar fechas
         vencimiento = pd.to_datetime(
