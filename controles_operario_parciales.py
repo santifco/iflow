@@ -72,7 +72,7 @@ df = df[1:].reset_index(drop=True)
 
 # Convertir las columnas a tipo numérico, reemplazar NaN por 0 y convertir a float
 cols_to_convert = ["Unidades", "Un.x Bulto", "Bultos"]
-df[cols_to_convert] = df[cols_to_convert].apply(pd.to_numeric, errors="coerce").fillna(0).astype(float)
+df[cols_to_convert] = df[cols_to_convert].apply(pd.to_numeric, errors="coerce").astype(int)
 
 # Mostrar el DataFrame actualizado
 
