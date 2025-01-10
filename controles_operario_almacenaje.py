@@ -228,10 +228,7 @@ def mostrar_carta(data_row,posicion):
         st.session_state.df.loc[real_index, "Diferencia Fecha Vencimiento"] = diferencia_fecha_vencimiento
         st.session_state.df.loc[real_index, "Coincide Articulo"] = coincide_articulo
 
-    
 
-
-        st.write(st.session_state.df)
 
         if st.button("Tarea Terminada"):
 
