@@ -266,6 +266,7 @@ def mostrar_carta(data_row,posicion):
             time.sleep(1)
             # Reinicia la entrada de posición escaneada
             st.session_state.escaneada_posicion = ""
+            st.session_state.is_in_position = False
             # Incrementa la fila actual
             st.session_state.current_row += 1
             st.rerun()
