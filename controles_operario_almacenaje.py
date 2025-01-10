@@ -115,12 +115,11 @@ def mostrar_carta(data_row,posicion):
     if st.button(f"Estoy en Posición {data_row['Posicion']}",key="hidden_button"):
         st.session_state.is_in_position = True
 
-    st.write(st.session_state.is_in_position)
-
     if st.session_state.is_in_position:
 
-        hora_inicio = datetime.now()
-        st.session_state.HoraInicio[st.session_state.current_row] = hora_inicio.strftime("%d-%m-%Y %H:%M:%S")
+        if st.session_state.current_row not in st.session_state.HoraInicio:
+            hora_inicio = datetime.now()
+            st.session_state.HoraInicio[st.session_state.current_row] = hora_inicio.strftime("%d-%m-%Y %H:%M:%S")
 
         if data_row["Status Posicion"] == "DL":
             

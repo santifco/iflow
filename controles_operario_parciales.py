@@ -117,8 +117,9 @@ def mostrar_carta(data_row,posicion):
 
     if st.session_state.is_in_position:
 
-        hora_inicio = datetime.now()
-        st.session_state.HoraInicio[st.session_state.current_row] = hora_inicio.strftime("%d-%m-%Y %H:%M:%S")
+        if st.session_state.current_row not in st.session_state.HoraInicio:
+            hora_inicio = datetime.now()
+            st.session_state.HoraInicio[st.session_state.current_row] = hora_inicio.strftime("%d-%m-%Y %H:%M:%S")
 
     # Campos de entrada
         articulo = st.number_input(f"Escanea el artículo para la posición {data_row['Posicion']}", min_value=0,value=None)

@@ -115,10 +115,11 @@ def mostrar_carta(data_row,posicion):
 
     if posicion == data_row['Posicion']:
 
-        if posicion not in st.session_state.HoraInicio:
+        if st.session_state.current_row not in st.session_state.HoraInicio:
+
             hora_inicio = datetime.now()
-            st.session_state.HoraInicio[posicion] = hora_inicio.strftime("%d-%m-%Y %H:%M:%S")
-                    
+            st.session_state.HoraInicio[st.session_state.current_row] = hora_inicio.strftime("%d-%m-%Y %H:%M:%S")
+                
 
         # st.write(f"Hora de inicio: {st.session_state.HoraInicio[posicion]}")
         articulo = st.number_input(f"Escanea el artículo para la posición {data_row['Posicion']}", min_value=0,value=None)
@@ -171,7 +172,7 @@ def mostrar_carta(data_row,posicion):
             st.session_state.df.loc[real_index,"Unidades Sueltos"] = cantidad_unidades_sueltos
             st.session_state.df.loc[real_index,"Blister Sueltos"] = cantidad_blister_sueltos
             st.session_state.df.loc[real_index,"Fecha Vencimiento Observada"] = fecha
-            st.session_state.df.loc[real_index,"HoraInicio"] = st.session_state.HoraInicio.get(posicion, None)
+            st.session_state.df.loc[real_index,"HoraInicio"] = st.session_state.HoraInicio.get(st.session_state.current_row, None)
 
 
 
