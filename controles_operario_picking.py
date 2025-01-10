@@ -12,52 +12,6 @@ import numpy as np
 # App title
 st.title("Escaneo y Control de Picking")
 
-# URL de la hoja de Google Sheets
-sheet_url = 'https://docs.google.com/spreadsheets/d/1J0YmuXlCFx_lg5DKGS_o_09nhkJaGVh7PLrjsyV2Nsc/edit?gid=0#gid=0'
-
-# Extraer el ID de la hoja y obtener el enlace al CSV
-sheet_id = sheet_url.split("/d/")[1].split("/")[0]
-data_url = f'https://docs.google.com/spreadsheets/d/{sheet_id}/gviz/tq?tqx=out:csv'
-
-
-# Cachear los datos cargados desde Google Sheets
-# @st.cache_data
-def load_data(url):
-    df = pd.read_csv(url)
-    df["Posicion"] = df["Posicion"].str.rstrip()
-    df['Ordenar_primero'] = df['Posicion'].str.split(' - ').str[0].str[2:4]
-    df['Ordenar_segundo'] = df['Posicion'].str.split(' - ').str[1].astype(int)
-    df = df.sort_values(by=['Ordenar_primero', 'Ordenar_segundo']).drop(columns=['Ordenar_primero', 'Ordenar_segundo'])
-    df = df.loc[:, ~df.columns.str.contains("Unnamed")]
-
-    return df
-
-
-# Cargar los datos
-df = load_data(data_url)
-
-
-# Guardar en session_state para modificar
-if "df" not in st.session_state:
-    st.session_state.df = df.copy()
-
-# Inicializar estados si no existen
-if "current_row" not in st.session_state:
-    st.session_state.current_row = 0
-
-if "HoraInicio" not in st.session_state:
-    st.session_state.HoraInicio = {}
-
-if "escaneada_posicion" not in st.session_state:
-    st.session_state.escaneada_posicion = ""
-
-if "is_in_position" not in st.session_state:
-    st.session_state.is_in_position = False
-
-if "input_key" not in st.session_state:
-    st.session_state.input_key = 0
-
-
 credentials_info = st.secrets["gcp_service_account"]
 
 # credentials_info = {
@@ -110,6 +64,34 @@ sheet_id = '1wan5qrTo_7_oUnXBUXgCuq_oJa24F5U6uhpDOe_LGf8'  # Reemplaza con tu sh
 # Abre la hoja de Google usando el ID de la hoja
 sheet = client.open_by_key(sheet_id).sheet1
 
+data = sheet.get_all_values()
+
+# Convertir la lista de listas en un DataFrame de pandas
+df = pd.DataFrame(data)
+
+# Asignar la primera fila como encabezados del DataFrame
+df.columns = df.iloc[0]
+df = df[1:].reset_index(drop=True)
+
+# Guardar en session_state para modificar
+if "df" not in st.session_state:
+    st.session_state.df = df.copy()
+
+# Inicializar estados si no existen
+if "current_row" not in st.session_state:
+    st.session_state.current_row = 0
+
+if "HoraInicio" not in st.session_state:
+    st.session_state.HoraInicio = {}
+
+if "escaneada_posicion" not in st.session_state:
+    st.session_state.escaneada_posicion = ""
+
+if "is_in_position" not in st.session_state:
+    st.session_state.is_in_position = False
+
+if "input_key" not in st.session_state:
+    st.session_state.input_key = 0
 
 # Función para mostrar la información en formato de carta
 def mostrar_carta(data_row,posicion):
