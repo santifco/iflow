@@ -61,14 +61,31 @@ sheet_id = '1FBkWGCRarYeiAX0zYycd6RJZJZf4vTIBL2oZlfHbC5s'  # Reemplaza con tu sh
 # Abre la hoja de Google usando el ID de la hoja
 sheet = client.open_by_key(sheet_id).sheet1
 
-data = sheet.get_all_values()
+sheet_url = 'https://docs.google.com/spreadsheets/d/1hY3qg_3_6NNqwoFbVy7tfclIXcDRupjbe59IG7lXhsI/edit?gid=0#gid=0'
+sheet_id = sheet_url.split("/d/")[1].split("/")[0]
+data_url = f'https://docs.google.com/spreadsheets/d/{sheet_id}/gviz/tq?tqx=out:csv'
 
-# Convertir la lista de listas en un DataFrame de pandas
-df = pd.DataFrame(data)
+def load_data(url):
+    df = pd.read_csv(url)
+    df["Posicion"] = df["Posicion"].str.rstrip()
+    df['Ordenar_primero'] = df['Posicion'].str.split(' - ').str[0].str[2:4]
+    df['Ordenar_segundo'] = df['Posicion'].str.split(' - ').str[1].astype(int)
+    df = df.sort_values(by=['Ordenar_primero', 'Ordenar_segundo']).drop(columns=['Ordenar_primero', 'Ordenar_segundo'])
+    df = df.loc[:, ~df.columns.str.contains("Unnamed")]
 
-# Asignar la primera fila como encabezados del DataFrame
-df.columns = df.iloc[0]
-df = df[1:].reset_index(drop=True)
+    return df
+
+# Cargar los datos
+df = load_data(data_url)
+
+# data = sheet.get_all_values()
+
+# # Convertir la lista de listas en un DataFrame de pandas
+# df = pd.DataFrame(data)
+
+# # Asignar la primera fila como encabezados del DataFrame
+# df.columns = df.iloc[0]
+# df = df[1:].reset_index(drop=True)
 
 cols_to_convert = ["Unidades", "Un.x Bulto", "Bultos"]
 df[cols_to_convert] = df[cols_to_convert].apply(pd.to_numeric, errors="coerce").astype(int)
