@@ -55,19 +55,37 @@ credentials_info = st.secrets["gcp_service_account"]
 #                 "universe_domain": "googleapis.com"
 #             }
 
-scopes = ["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"]
-creds = service_account.Credentials.from_service_account_info(credentials_info, scopes=scopes)
-client = gspread.authorize(creds)
-# Coloca tu sheet_id aquí
-sheet_id = '1wan5qrTo_7_oUnXBUXgCuq_oJa24F5U6uhpDOe_LGf8'  # Reemplaza con tu sheet_id real
+# URL de la hoja de Google Sheets
+sheet_url = 'https://docs.google.com/spreadsheets/d/1J0YmuXlCFx_lg5DKGS_o_09nhkJaGVh7PLrjsyV2Nsc/edit?gid=0#gid=0'
+sheet_id = sheet_url.split("/d/")[1].split("/")[0]
+data_url = f'https://docs.google.com/spreadsheets/d/{sheet_id}/gviz/tq?tqx=out:csv'
 
-# Abre la hoja de Google usando el ID de la hoja
-sheet = client.open_by_key(sheet_id).sheet1
+def load_data(url):
+    df = pd.read_csv(url)
+    df["Posicion"] = df["Posicion"].str.rstrip()
+    df['Ordenar_primero'] = df['Posicion'].str.split(' - ').str[0].str[2:4]
+    df['Ordenar_segundo'] = df['Posicion'].str.split(' - ').str[1].astype(int)
+    df = df.sort_values(by=['Ordenar_primero', 'Ordenar_segundo']).drop(columns=['Ordenar_primero', 'Ordenar_segundo'])
+    df = df.loc[:, ~df.columns.str.contains("Unnamed")]
 
-data = sheet.get_all_values()
+    return df
 
-# Convertir la lista de listas en un DataFrame de pandas
-df = pd.DataFrame(data)
+# Cargar los datos
+df = load_data(data_url)
+
+# scopes = ["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"]
+# creds = service_account.Credentials.from_service_account_info(credentials_info, scopes=scopes)
+# client = gspread.authorize(creds)
+# # Coloca tu sheet_id aquí
+# sheet_id = '1wan5qrTo_7_oUnXBUXgCuq_oJa24F5U6uhpDOe_LGf8'  # Reemplaza con tu sheet_id real
+
+# # Abre la hoja de Google usando el ID de la hoja
+# sheet = client.open_by_key(sheet_id).sheet1
+
+# data = sheet.get_all_values()
+
+# # Convertir la lista de listas en un DataFrame de pandas
+# df = pd.DataFrame(data)
 
 # Asignar la primera fila como encabezados del DataFrame
 df.columns = df.iloc[0]
