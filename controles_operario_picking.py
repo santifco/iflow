@@ -73,14 +73,14 @@ def load_data(url):
 # Cargar los datos
 df = load_data(data_url)
 
-# scopes = ["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"]
-# creds = service_account.Credentials.from_service_account_info(credentials_info, scopes=scopes)
-# client = gspread.authorize(creds)
-# # Coloca tu sheet_id aquí
-# sheet_id = '1wan5qrTo_7_oUnXBUXgCuq_oJa24F5U6uhpDOe_LGf8'  # Reemplaza con tu sheet_id real
+scopes = ["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"]
+creds = service_account.Credentials.from_service_account_info(credentials_info, scopes=scopes)
+client = gspread.authorize(creds)
+# Coloca tu sheet_id aquí
+sheet_id = '1wan5qrTo_7_oUnXBUXgCuq_oJa24F5U6uhpDOe_LGf8'  # Reemplaza con tu sheet_id real
 
-# # Abre la hoja de Google usando el ID de la hoja
-# sheet = client.open_by_key(sheet_id).sheet1
+# Abre la hoja de Google usando el ID de la hoja
+sheet = client.open_by_key(sheet_id).sheet1
 
 # data = sheet.get_all_values()
 
