@@ -217,7 +217,7 @@ def mostrar_carta(data_row,posicion):
                 if pd.notnull(vencimiento) and pd.notnull(fecha_vencimiento_observada)
                 else None
             )
-
+            
             coincide_articulo = st.session_state.df.loc[real_index, "Articulo Escaneado"] = "Si" if st.session_state.df.loc[real_index, "Articulo Escaneado"] == st.session_state.df.loc[real_index, "Cod.Articulo"] else "No"
             # coincide_paleta = st.session_state.df.loc[real_index, "Paleta Escaneada"] = "Si" if st.session_state.df.loc[real_index, "Lote Escaneado"] == st.session_state.df.loc[real_index, "Lote"] else "No"
             # Crear y actualizar las columnas directamente en el DataFrame

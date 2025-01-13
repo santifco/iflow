@@ -88,7 +88,7 @@ df = load_data(data_url)
 # df = df[1:].reset_index(drop=True)
 
 # Convertir las columnas a tipo numérico, reemplazar NaN por 0 y convertir a float
-cols_to_convert = ["Unidades", "Un.x Bulto", "Bultos"]
+cols_to_convert = ["Unidades", "Un.x Bulto", "Bultos","Articulo","Pallet","Lote"]
 df[cols_to_convert] = df[cols_to_convert].apply(pd.to_numeric, errors="coerce").astype(int)
 
 
@@ -139,7 +139,7 @@ def mostrar_carta(data_row,posicion):
             hora_inicio = datetime.now()
             st.session_state.HoraInicio[st.session_state.current_row] = hora_inicio.strftime("%d-%m-%Y %H:%M:%S")
         
-        lote = st.number_input(f"Escanea el LOTE para la posición ", value=None,min_value=0)
+        lote = st.number_input(f"Ingresa el LOTE para la posición ", value=None,min_value=0)
         paleta = st.number_input(f"Escanea la PALETA para la posición ", min_value=0,value=None)
         fecha = st.date_input(f"Selecciona la fecha de vencimiento para la posición ")
         fecha = fecha.strftime("%d-%m-%Y")
@@ -175,7 +175,7 @@ def mostrar_carta(data_row,posicion):
 
         try:
 
-            st.session_state.df.loc[real_index,"Lote Escaneado"] = lote
+            st.session_state.df.loc[real_index,"Lote Ingresado"] = lote
             st.session_state.df.loc[real_index,"Paleta Escaneada"] = paleta
             st.session_state.df.loc[real_index,"Bultos Contados"] = cantidad_bultos
             st.session_state.df.loc[real_index,"Blister por Bulto"] = blister_bulto
@@ -220,13 +220,15 @@ def mostrar_carta(data_row,posicion):
                 else None
             )
 
-            coincide_lote = "Si" if st.session_state.df.loc[real_index, "Lote Escaneado"] == st.session_state.df.loc[real_index, "Lote"] else "No"
+            coincide_lote = "Si" if st.session_state.df.loc[real_index, "Lote Ingresado"] == st.session_state.df.loc[real_index, "Lote"] else "No"
+            coincide_paleta = "Si" if st.session_state.df.loc[real_index, "Paleta Escaneada"] == st.session_state.df.loc[real_index, "Pallet"] else "No"
             # coincide_paleta = st.session_state.df.loc[real_index, "Paleta Escaneada"] = "Si" if st.session_state.df.loc[real_index, "Lote Escaneado"] == st.session_state.df.loc[real_index, "Lote"] else "No"
             # Crear y actualizar las columnas directamente en el DataFrame
             st.session_state.df.loc[real_index, "Unidades Contadas"] = unidades_contadas
             st.session_state.df.loc[real_index, "Diferencia Unidades"] = diferencia_unidades
             st.session_state.df.loc[real_index, "Diferencia Fecha Vencimiento"] = diferencia_fecha_vencimiento
             st.session_state.df.loc[real_index, "Coincide Lote"] = coincide_lote
+            st.session_state.df.loc[real_index, "Coincide Pallet"] = coincide_paleta
 
     
         except:
