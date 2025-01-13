@@ -220,7 +220,7 @@ def mostrar_carta(data_row,posicion):
                 else None
             )
 
-            coincide_lote = st.session_state.df.loc[real_index, "Lote Escaneado"] = "Si" if st.session_state.df.loc[real_index, "Lote Escaneado"] == st.session_state.df.loc[real_index, "Lote"] else "No"
+            coincide_lote = "Si" if st.session_state.df.loc[real_index, "Lote Escaneado"] == st.session_state.df.loc[real_index, "Lote"] else "No"
             # coincide_paleta = st.session_state.df.loc[real_index, "Paleta Escaneada"] = "Si" if st.session_state.df.loc[real_index, "Lote Escaneado"] == st.session_state.df.loc[real_index, "Lote"] else "No"
             # Crear y actualizar las columnas directamente en el DataFrame
             st.session_state.df.loc[real_index, "Unidades Contadas"] = unidades_contadas
