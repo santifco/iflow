@@ -88,8 +88,8 @@ df = load_data(data_url)
 # df = pd.DataFrame(data)
 
 # Asignar la primera fila como encabezados del DataFrame
-df.columns = df.iloc[0]
-df = df[1:].reset_index(drop=True)
+# df.columns = df.iloc[0]
+# df = df[1:].reset_index(drop=True)
 
 cols_to_convert = ["Unidades", "Un.x Bulto", "Bultos"]
 df[cols_to_convert] = df[cols_to_convert].apply(pd.to_numeric, errors="coerce").astype(int)
