@@ -752,9 +752,41 @@ if "Control Picking" in seleccion:
         if datos_stock is not None:
             # Leer el archivo de stock
             df_stock_picking = df_stock.dropna(subset=["Pallet"])
+
             df_stock_picking = df_stock_picking[df_stock_picking["Pallet"] != 0]
             df_stock_picking = df_stock_picking[df_stock_picking['Nivel'] == 1]
             df_stock_picking["Pallet"] = df_stock_picking["Pallet"].astype(int)
+
+            # Suponiendo que df_stock_picking ya está cargado
+            df_stock_picking = df_stock_picking.groupby('Posicion').agg({
+                'Entidad': 'first',  # Si es única por posición, tomar la primera ocurrencia
+                'Consulta': 'first',
+                'Articulo': 'first',
+                'Presentacion': 'first',
+                'Cod.Articulo': 'first',
+                'Descripcion Articulo': 'first',
+                'Id Deposito': 'first',
+                'id Sector': 'first',
+                'Pasillo': 'first',
+                'Columna': 'first',
+                'Nivel': 'first',
+                'Sector': 'first',
+                'Pallet': 'first',  # Cantidad de pallets distintos en la posición
+                'Lote': 'first',  # Cantidad de lotes distintos en la posición
+                'Fecha Ingreso': 'first',  # Fecha más antigua de ingreso
+                'Vencimiento': 'first',  # Fecha de vencimiento más próxima
+                'Dias hasta Vencimiento': 'first',  # Tomar el menor valor (más crítico)
+                'Dias Criticidad': 'first',
+                'Fecha Criticidad': 'first',  # Fecha más próxima de criticidad
+                'Dias hasta Criticidad': 'first',
+                'Status Posicion': 'first',  # Si es única por posición
+                'Un.x Bulto': 'first',
+                'Bultos': 'sum',  # Sumar los bultos totales
+                'Unidades': 'sum',  # Sumar unidades totales
+                'Unidades Sueltas': 'sum',  # Sumar unidades sueltas totales
+                'Temperatura': 'first'  # Promedio de la temperatura
+            }).reset_index()
+
             # Mostrar el DataFrame resultante
             # st.write("Datos de Stock:")
             # st.write(df_stock["Pallet"])
