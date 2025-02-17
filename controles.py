@@ -213,6 +213,7 @@ if "Control Almacenaje" in seleccion:
         if datos_posicion is not None:
             # Leer el archivo de posicion
             df_posicion_almacenaje = df_posicion[(df_posicion['Status Posicion'].isin(["DL"])) & (df_posicion['Descripcion Articulo'].isna())]
+            df_posicion_almacenaje = df_posicion_almacenaje.dropna(subset=["Posicion"])
             df_posicion_almacenaje = df_posicion_almacenaje.drop(['Depid', 'Depseccod'], axis=1)
             # Mostrar el DataFrame resultante
             # st.write("Datos de Posición:")
@@ -246,7 +247,11 @@ if "Control Almacenaje" in seleccion:
                 # st.write(f"Mostrando {resultado_almacenaje} filas seleccionadas aleatoriamente de la muestra:")
                 df_concatenado["Posicion"] = df_concatenado["Posicion"].str.rstrip()
                 df_concatenado['Ordenar_primero'] = df_concatenado['Posicion'].str.split(' - ').str[0].str[2:4]
-                df_concatenado['Ordenar_segundo'] = df_concatenado['Posicion'].str.split(' - ').str[1].astype(int)
+                df_concatenado['Ordenar_segundo'] = pd.to_numeric(
+                    df_concatenado['Posicion'].str.split(' - ').str[1], errors='coerce'
+                )
+                df_concatenado = df_concatenado.dropna(subset=['Ordenar_segundo'])
+                df_concatenado['Ordenar_segundo'] = df_concatenado['Ordenar_segundo'].astype(int)
                 df_concatenado = df_concatenado.sort_values(by=['Ordenar_primero', 'Ordenar_segundo']).drop(columns=['Ordenar_primero', 'Ordenar_segundo'])
                 st.write(df_concatenado)
             else:
