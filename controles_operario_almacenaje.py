@@ -52,6 +52,31 @@ credentials_info = st.secrets["gcp_service_account"]
 #                 "universe_domain": "googleapis.com"
 #             }
 
+
+def encontrar_siguiente_fila_vacia(sheet):
+    """
+    Busca la primera fila en la que 'HoraInicio' está vacía en Google Sheets.
+    """
+    # Obtener todos los valores de la hoja de cálculo
+    data = sheet.get_all_values()
+
+    # Obtener los encabezados de la hoja
+    headers = data[0]
+
+    # Buscar la columna de 'HoraInicio'
+    if "HoraInicio" in headers:
+        col_index = headers.index("HoraInicio")
+    else:
+        st.error("No se encontró la columna 'HoraInicio' en la hoja de Google Sheets.")
+        return None
+
+    # Recorrer las filas para encontrar la primera fila con 'HoraInicio' vacío
+    for i, row in enumerate(data[1:], start=1):  # Saltamos la fila de encabezado
+        if len(row) <= col_index or row[col_index] == "":
+            return (i-1)  # Retorna el índice de la fila vacía (1-based index)
+
+    return None  # Si todas las filas están llenas, retorna None
+
 scopes = ["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"]
 creds = service_account.Credentials.from_service_account_info(credentials_info, scopes=scopes)
 client = gspread.authorize(creds)
@@ -60,6 +85,9 @@ sheet_id = '1FBkWGCRarYeiAX0zYycd6RJZJZf4vTIBL2oZlfHbC5s'  # Reemplaza con tu sh
 
 # Abre la hoja de Google usando el ID de la hoja
 sheet = client.open_by_key(sheet_id).sheet1
+
+if "current_row" not in st.session_state or st.session_state.current_row is None:
+    st.session_state.current_row = encontrar_siguiente_fila_vacia(sheet)
 
 sheet_url = 'https://docs.google.com/spreadsheets/d/1hY3qg_3_6NNqwoFbVy7tfclIXcDRupjbe59IG7lXhsI/edit?gid=0#gid=0'
 sheet_id = sheet_url.split("/d/")[1].split("/")[0]
