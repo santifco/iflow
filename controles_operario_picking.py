@@ -69,7 +69,7 @@ def encontrar_siguiente_fila_vacia(sheet):
     if "HoraInicio" in headers:
         col_index = headers.index("HoraInicio")
     else:
-        st.error("No se encontró la columna 'HoraInicio' en la hoja de Google Sheets.")
+        # st.error("No se encontró la columna 'HoraInicio' en la hoja de Google Sheets.")
         return None
 
     # Recorrer las filas para encontrar la primera fila con 'HoraInicio' vacío
