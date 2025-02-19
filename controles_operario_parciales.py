@@ -90,6 +90,8 @@ sheet = client.open_by_key(sheet_id).sheet1
 
 if "current_row" not in st.session_state or st.session_state.current_row is None:
     st.session_state.current_row = encontrar_siguiente_fila_vacia(sheet)
+    if st.session_state.current_row == None:
+        st.session_state.current_row = 0
 
 # data = sheet.get_all_values()
 
