@@ -52,10 +52,47 @@ credentials_info = st.secrets["gcp_service_account"]
 #                 "universe_domain": "googleapis.com"
 #             }
 
+# URL de la hoja de Google Sheets
+sheet_url = 'https://docs.google.com/spreadsheets/d/1x2z8puH9uRbWuhhddVtEdy8w6QoqxB__3RiHiib9KYk/edit?gid=0#gid=0'
+sheet_id = sheet_url.split("/d/")[1].split("/")[0]
+data_url = f'https://docs.google.com/spreadsheets/d/{sheet_id}/gviz/tq?tqx=out:csv'
 
-def encontrar_siguiente_fila_vacia(sheet):
+@st.cache_data
+def load_data(url):
+    df = pd.read_csv(url)
+    return df
+
+# Cargar los datos
+df = load_data(data_url)
+
+# Obtener valores únicos de la primera columna
+primera_columna_lista = df.iloc[:, 0].dropna().unique().tolist()
+
+# Inicializar sesión si no existe
+if "user_logged_in" not in st.session_state:
+    st.session_state.user_logged_in = False
+    st.session_state.selected_value = None
+
+# Login
+if not st.session_state.user_logged_in:
+    st.title("Inicio de Sesión")
+
+    # Input para seleccionar un valor de la lista
+    selected_value = st.selectbox("Selecciona un valor válido:", primera_columna_lista)
+
+    if st.button("Ingresar"):
+        if selected_value in primera_columna_lista:
+            st.session_state.user_logged_in = True
+            st.session_state.selected_value = selected_value
+            st.rerun()
+        else:
+            st.error("Valor no válido. Selecciona un valor de la lista.")
+
+def encontrar_siguiente_fila_vacia(sheet, usuario_filtrado):
     """
-    Busca la primera fila en la que 'HoraInicio' está vacía en Google Sheets.
+    Busca la primera fila en la que 'HoraInicio' está vacía en Google Sheets para un usuario filtrado.
+    Si no encuentra ninguna fila vacía, devuelve la primera fila para el usuario filtrado.
+    El índice devuelto será el índice global de la fila en el conjunto completo de datos.
     """
     # Obtener todos los valores de la hoja de cálculo
     data = sheet.get_all_values()
@@ -63,19 +100,33 @@ def encontrar_siguiente_fila_vacia(sheet):
     # Obtener los encabezados de la hoja
     headers = data[0]
 
+    col_index = None
+
     # Buscar la columna de 'HoraInicio'
     if "HoraInicio" in headers:
         col_index = headers.index("HoraInicio")
     else:
-        # st.error("No se encontró la columna 'HoraInicio' en la hoja de Google Sheets.")
+        pass
+
+    usuario_index = headers.index("Usuario")
+    # Filtrar las filas por el valor del usuario filtrado
+    data_filtrada = [row for row in data[1:] if row[usuario_index] == usuario_filtrado]
+    # Si no hay datos para el usuario filtrado, retornar None
+    if not data_filtrada:
         return None
 
-    # Recorrer las filas para encontrar la primera fila con 'HoraInicio' vacío
-    for i, row in enumerate(data[1:], start=1):  # Saltamos la fila de encabezado
-        if len(row) <= col_index or row[col_index] == "":
-            return (i-1)  # Retorna el índice de la fila vacía (1-based index)
-
-    return None  # Si todas las filas están llenas, retorna None
+    if col_index ==None:
+        return (data.index(data_filtrada[0]))-1
+    else:
+    # Recorrer las filas filtradas para encontrar la primera fila con 'HoraInicio' vacío
+        for i, row in enumerate(data_filtrada, start=1):  # Usamos el índice en la lista filtrada
+            # El índice global de la fila es la posición relativa en el conjunto completo de datos
+            global_index = data.index(row)  # Encuentra el índice en el conjunto completo de datos
+            
+            if len(row) <= col_index or row[col_index] == "":
+                return (global_index-1)  # Retorna el índice global de la fila vacía
+    # Si no se encuentra una fila vacía, retornar la primera fila del usuario filtrado
+      # Devuelve el índice global de la primera fila del usuario filtrado
 
 scopes = ["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"]
 creds = service_account.Credentials.from_service_account_info(credentials_info, scopes=scopes)
@@ -86,10 +137,6 @@ sheet_id = '1FBkWGCRarYeiAX0zYycd6RJZJZf4vTIBL2oZlfHbC5s'  # Reemplaza con tu sh
 # Abre la hoja de Google usando el ID de la hoja
 sheet = client.open_by_key(sheet_id).sheet1
 
-if "current_row" not in st.session_state or st.session_state.current_row is None:
-    st.session_state.current_row = encontrar_siguiente_fila_vacia(sheet)
-    if st.session_state.current_row == None:
-        st.session_state.current_row = 0
 
 sheet_url = 'https://docs.google.com/spreadsheets/d/1hY3qg_3_6NNqwoFbVy7tfclIXcDRupjbe59IG7lXhsI/edit?gid=0#gid=0'
 sheet_id = sheet_url.split("/d/")[1].split("/")[0]
@@ -116,6 +163,9 @@ df = load_data(data_url)
 # # Asignar la primera fila como encabezados del DataFrame
 # df.columns = df.iloc[0]
 # df = df[1:].reset_index(drop=True)
+
+if "current_row" not in st.session_state or st.session_state.current_row is None:
+    st.session_state.current_row = encontrar_siguiente_fila_vacia(sheet,st.session_state.selected_value)
 
 cols_to_convert = ["Unidades", "Un.x Bulto", "Bultos"]
 df[cols_to_convert] = df[cols_to_convert].apply(pd.to_numeric, errors="coerce").astype(int)
@@ -317,11 +367,14 @@ def mostrar_carta(data_row,posicion):
 
 
 # Verificar si hay más filas para procesar
-if st.session_state.current_row < len(st.session_state.df):
+if st.session_state.user_logged_in:
+
+    # Verificar si hay más filas para procesar
+    if st.session_state.current_row < (st.session_state.df.index[st.session_state.df["Usuario"] == st.session_state.selected_value]).max():
     # Mostrar la información de la fila actual
-    posicion = st.session_state.escaneada_posicion
-    current_row_data = st.session_state.df.iloc[st.session_state.current_row]
-    mostrar_carta(current_row_data,posicion)
+        posicion = st.session_state.escaneada_posicion
+        current_row_data = st.session_state.df.iloc[st.session_state.current_row]
+        mostrar_carta(current_row_data,posicion)
 
 else:
     st.write("Todas las filas han sido procesadas.")

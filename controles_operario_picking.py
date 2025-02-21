@@ -56,20 +56,26 @@ credentials_info = st.secrets["gcp_service_account"]
 #             }
 
 # URL de la hoja de Google Sheets
-sheet_url = 'https://docs.google.com/spreadsheets/d/1x2z8puH9uRbWuhhddVtEdy8w6QoqxB__3RiHiib9KYk/edit?gid=0#gid=0'
+# URL de la hoja de Google Sheets
+sheet_url = 'https://docs.google.com/spreadsheets/d/1J0YmuXlCFx_lg5DKGS_o_09nhkJaGVh7PLrjsyV2Nsc/edit?gid=0#gid=0'
 sheet_id = sheet_url.split("/d/")[1].split("/")[0]
 data_url = f'https://docs.google.com/spreadsheets/d/{sheet_id}/gviz/tq?tqx=out:csv'
 
-@st.cache_data
 def load_data(url):
     df = pd.read_csv(url)
+    df["Posicion"] = df["Posicion"].str.rstrip()
+    df['Ordenar_primero'] = df['Posicion'].str.split(' - ').str[0].str[2:4]
+    df['Ordenar_segundo'] = df['Posicion'].str.split(' - ').str[1].astype(int)
+    df = df.sort_values(by=['Ordenar_primero', 'Ordenar_segundo']).drop(columns=['Ordenar_primero', 'Ordenar_segundo'])
+    df = df.loc[:, ~df.columns.str.contains("Unnamed")]
+
     return df
 
 # Cargar los datos
 df = load_data(data_url)
 
 # Obtener valores únicos de la primera columna
-primera_columna_lista = df.iloc[:, 0].dropna().unique().tolist()
+primera_columna_lista = df["Usuario"].dropna().unique().tolist()
 
 # Inicializar sesión si no existe
 if "user_logged_in" not in st.session_state:
@@ -131,23 +137,7 @@ def encontrar_siguiente_fila_vacia(sheet, usuario_filtrado):
     # Si no se encuentra una fila vacía, retornar la primera fila del usuario filtrado
       # Devuelve el índice global de la primera fila del usuario filtrado
 
-# URL de la hoja de Google Sheets
-sheet_url = 'https://docs.google.com/spreadsheets/d/1J0YmuXlCFx_lg5DKGS_o_09nhkJaGVh7PLrjsyV2Nsc/edit?gid=0#gid=0'
-sheet_id = sheet_url.split("/d/")[1].split("/")[0]
-data_url = f'https://docs.google.com/spreadsheets/d/{sheet_id}/gviz/tq?tqx=out:csv'
 
-def load_data(url):
-    df = pd.read_csv(url)
-    df["Posicion"] = df["Posicion"].str.rstrip()
-    df['Ordenar_primero'] = df['Posicion'].str.split(' - ').str[0].str[2:4]
-    df['Ordenar_segundo'] = df['Posicion'].str.split(' - ').str[1].astype(int)
-    df = df.sort_values(by=['Ordenar_primero', 'Ordenar_segundo']).drop(columns=['Ordenar_primero', 'Ordenar_segundo'])
-    df = df.loc[:, ~df.columns.str.contains("Unnamed")]
-
-    return df
-
-# Cargar los datos
-df = load_data(data_url)
 
 scopes = ["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"]
 creds = service_account.Credentials.from_service_account_info(credentials_info, scopes=scopes)

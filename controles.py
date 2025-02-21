@@ -20,48 +20,48 @@ from google.oauth2 import service_account
 
 st.set_page_config(page_title="Controles Logisticos", layout="wide")
 
-credentials_info = st.secrets["gcp_service_account"]
+# credentials_info = st.secrets["gcp_service_account"]
 
-# credentials_info = {
-#     "type": "service_account",
-#     "project_id": "inbound-pattern-429101-c5",
-#     "private_key_id": "9dcc01743c917fb186294a8c6d228d4c2fb005bc",
-#     "private_key": """-----BEGIN PRIVATE KEY-----
-# MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDPvpK+357PGmvc
-# 6jxJTHyKfpUs/2861MGvfClaGMjEw9G8YmeeeH8PAkc/rZxaHpl2zcmpUQfTauxs
-# 0mhbOD42jxRflbdi00yvHVkBBtYdzfvtGwepEUsP26yqOySm6PiVI/XKHWdct61B
-# 28l/VW+mjXDVPiDiMATQRTJi4tYTgC5eSjhnkT4efY7gUMHmO2057cI+jmRob1WV
-# PEEWLGt76R4IGnH/FtoW2B6lPoOb7KefRx2WgHfTu+zsXvqmbGbgRLSlheG4Zb6g
-# h0dZXcyojx5vGgJT3ty4o5XgpA6n9EH2uURDXUBYQ9KE8mcNDM9VK6KQEYeBmIJr
-# QOvMftM1AgMBAAECggEAAn4NSNdS4/vtzVvknLk+SUTmmuklQvARPtBfK1zqZSza
-# cQ1XARha/p3r7ReQCpAFyJinRharmulIrFJJjmmF4HdUnycjIxxNUyH5GJLgJpM1
-# cY1Ad6PNkKZSsKH41iVDCGk3N8mk4tH5rynGKKViwreabZX5sEuQdiEIlRXchgLN
-# ransgsarOU/8+RI2W5JRt7wPAO56WsZc+zeOIyLS7RScibfdi8wMQYZF7PsPB5EG
-# 6ps50hxHWZ18lgLgJO5iK6YZkINHwW8AWDaxonxTgn4eYT8iUDMol8D5i2AXM5x1
-# JnRzhLKnNUdzug4RB7XrcCOsjoDOU2dW1VbXTNkyxQKBgQD4WbO23ktbkl64dmdA
-# ZKhRSRcBfbUf8/+Olp8Dt/PTb53Rjvsm3XK5EUK6t9oMGgL131UuOcKysV1RCyzT
-# I5jjiY5Q3Ws2L0N2IFfxSBI7Di2hxSWLaXgETsMUV0MBfv1TH/8E+3tEtoj26lZY
-# A0GVOrGprEJVNcL3X3T83R3mNwKBgQDWJK8icbaJujm9HfXi9ODcG7YpPYKRcqJa
-# LZclOiccRHIUN4SzouIfB6kp63k96W5Yzm6GeRgaiB/LQNPNTDFO4Q7Zrm7wci9o
-# kzRUHWJcgKl7r8Q+TYXBPJVn0dZe65G5O/d+7cmQn+MUp0Gi5cnYu9eaeKHoJGY0
-# P6vCKhab8wKBgC2cK8k14hkbNJIkDKpi0ha7maIIeC86HIEPYHzKV9lI8m7+F1n3
-# 6Y3bganRAhae4FRPg9FNglhXApBTwRO1wepn5N8tCveUjosvPXduiQqXfAHttwt3
-# fzcrT+B4djHcJKITij5cATOJYnYWa20WjADgGqjSngwQJ5JO0alu4oLZAoGAD138
-# j203mzSY9iBTR+EozcLTVKxMVWGzkuMYqJw+uEGVKiw9wqJatb1X/2EdhzrcJ1VR
-# Cydfem/wUCarzFy+YRm3dhmVbn3TNx7xL2QYbejxwKWBYLMxeQd+9T9SsecXwwIx
-# pZMs1ssSgaXrCOSSkpIQS86CV+VczD0Rd1KL4s8CgYEAhfI92S/3eL6eOkm7yHL1
-# 4331R/gomiO4QehLpyUZfirpqxNO/8BL6f25Jp5cC3dJeNu4xEbbMIMpEpT9C+ZJ
-# 4WWYzDCC43HB8AbA8SgMDz7Vaa6h9zHJolLLrcsDMtiD4JT7VeV4UluWXIaRbg6p
-# XYwWQL2d6uGePDriQHXIUmY=
-# -----END PRIVATE KEY-----""",
-#     "client_email": "google-sheets-api@inbound-pattern-429101-c5.iam.gserviceaccount.com",
-#     "client_id": "107649396128661753097",
-#     "auth_uri": "https://accounts.google.com/o/oauth2/auth",
-#     "token_uri": "https://oauth2.googleapis.com/token",
-#     "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
-#     "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/google-sheets-api%40inbound-pattern-429101-c5.iam.gserviceaccount.com",
-#     "universe_domain": "googleapis.com"
-# }
+credentials_info = {
+    "type": "service_account",
+    "project_id": "inbound-pattern-429101-c5",
+    "private_key_id": "9dcc01743c917fb186294a8c6d228d4c2fb005bc",
+    "private_key": """-----BEGIN PRIVATE KEY-----
+MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDPvpK+357PGmvc
+6jxJTHyKfpUs/2861MGvfClaGMjEw9G8YmeeeH8PAkc/rZxaHpl2zcmpUQfTauxs
+0mhbOD42jxRflbdi00yvHVkBBtYdzfvtGwepEUsP26yqOySm6PiVI/XKHWdct61B
+28l/VW+mjXDVPiDiMATQRTJi4tYTgC5eSjhnkT4efY7gUMHmO2057cI+jmRob1WV
+PEEWLGt76R4IGnH/FtoW2B6lPoOb7KefRx2WgHfTu+zsXvqmbGbgRLSlheG4Zb6g
+h0dZXcyojx5vGgJT3ty4o5XgpA6n9EH2uURDXUBYQ9KE8mcNDM9VK6KQEYeBmIJr
+QOvMftM1AgMBAAECggEAAn4NSNdS4/vtzVvknLk+SUTmmuklQvARPtBfK1zqZSza
+cQ1XARha/p3r7ReQCpAFyJinRharmulIrFJJjmmF4HdUnycjIxxNUyH5GJLgJpM1
+cY1Ad6PNkKZSsKH41iVDCGk3N8mk4tH5rynGKKViwreabZX5sEuQdiEIlRXchgLN
+ransgsarOU/8+RI2W5JRt7wPAO56WsZc+zeOIyLS7RScibfdi8wMQYZF7PsPB5EG
+6ps50hxHWZ18lgLgJO5iK6YZkINHwW8AWDaxonxTgn4eYT8iUDMol8D5i2AXM5x1
+JnRzhLKnNUdzug4RB7XrcCOsjoDOU2dW1VbXTNkyxQKBgQD4WbO23ktbkl64dmdA
+ZKhRSRcBfbUf8/+Olp8Dt/PTb53Rjvsm3XK5EUK6t9oMGgL131UuOcKysV1RCyzT
+I5jjiY5Q3Ws2L0N2IFfxSBI7Di2hxSWLaXgETsMUV0MBfv1TH/8E+3tEtoj26lZY
+A0GVOrGprEJVNcL3X3T83R3mNwKBgQDWJK8icbaJujm9HfXi9ODcG7YpPYKRcqJa
+LZclOiccRHIUN4SzouIfB6kp63k96W5Yzm6GeRgaiB/LQNPNTDFO4Q7Zrm7wci9o
+kzRUHWJcgKl7r8Q+TYXBPJVn0dZe65G5O/d+7cmQn+MUp0Gi5cnYu9eaeKHoJGY0
+P6vCKhab8wKBgC2cK8k14hkbNJIkDKpi0ha7maIIeC86HIEPYHzKV9lI8m7+F1n3
+6Y3bganRAhae4FRPg9FNglhXApBTwRO1wepn5N8tCveUjosvPXduiQqXfAHttwt3
+fzcrT+B4djHcJKITij5cATOJYnYWa20WjADgGqjSngwQJ5JO0alu4oLZAoGAD138
+j203mzSY9iBTR+EozcLTVKxMVWGzkuMYqJw+uEGVKiw9wqJatb1X/2EdhzrcJ1VR
+Cydfem/wUCarzFy+YRm3dhmVbn3TNx7xL2QYbejxwKWBYLMxeQd+9T9SsecXwwIx
+pZMs1ssSgaXrCOSSkpIQS86CV+VczD0Rd1KL4s8CgYEAhfI92S/3eL6eOkm7yHL1
+4331R/gomiO4QehLpyUZfirpqxNO/8BL6f25Jp5cC3dJeNu4xEbbMIMpEpT9C+ZJ
+4WWYzDCC43HB8AbA8SgMDz7Vaa6h9zHJolLLrcsDMtiD4JT7VeV4UluWXIaRbg6p
+XYwWQL2d6uGePDriQHXIUmY=
+-----END PRIVATE KEY-----""",
+    "client_email": "google-sheets-api@inbound-pattern-429101-c5.iam.gserviceaccount.com",
+    "client_id": "107649396128661753097",
+    "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+    "token_uri": "https://oauth2.googleapis.com/token",
+    "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+    "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/google-sheets-api%40inbound-pattern-429101-c5.iam.gserviceaccount.com",
+    "universe_domain": "googleapis.com"
+}
 
 valores_validos_secos = [
     "BA", "BB", "BC", "BD", "BE", "BF", "BG", "BH",
@@ -310,6 +310,9 @@ if "Control Almacenaje" in seleccion:
                 df_concatenado = df_concatenado.dropna(subset=['Ordenar_segundo'])
                 df_concatenado['Ordenar_segundo'] = df_concatenado['Ordenar_segundo'].astype(int)
                 df_concatenado = df_concatenado.sort_values(by=['Ordenar_primero', 'Ordenar_segundo']).drop(columns=['Ordenar_primero', 'Ordenar_segundo'])
+                
+                df_concatenado = asignar_usuarios(usuarios, df_concatenado)
+
                 st.write(df_concatenado)
             else:
                 st.success(f"¡El resultado es un control de {horas_requeridas_control} horas, lo cual es menor a las horas disponibles ({horas_disponibles})!")
@@ -318,6 +321,9 @@ if "Control Almacenaje" in seleccion:
                 df_concatenado['Ordenar_primero'] = df_concatenado['Posicion'].str.split(' - ').str[0].str[2:4]
                 df_concatenado['Ordenar_segundo'] = df_concatenado['Posicion'].str.split(' - ').str[1].astype(int)
                 df_concatenado = df_concatenado.sort_values(by=['Ordenar_primero', 'Ordenar_segundo']).drop(columns=['Ordenar_primero', 'Ordenar_segundo'])
+                
+                df_concatenado = asignar_usuarios(usuarios, df_concatenado)
+                
                 st.write(df_concatenado)
 
 
@@ -481,13 +487,18 @@ if "Control Parciales" in seleccion:
             horas_requeridas_control = round(N_parciales/productividad_parciales,2)
 
             if horas_requeridas_control > horas_disponibles:
-                # st.warning(f"El resultado es una capacidad de {resultado_parciales} posiciones, lo cual es menor al tamaño de muestra esperado ({N}).")
-                # df_merged_parciales_reduced = df_merged_parciales.sample(n=resultado_parciales, random_state=1)
-                # st.write(f"Mostrando {resultado_parciales} filas seleccionadas aleatoriamente de la muestra:")
+                st.warning(f"¡El resultado es una control de {horas_requeridas_control} horas, lo cual es menor a las horas disponibles ({horas_disponibles})!")
+                N_parciales = int(horas_disponibles*productividad_parciales)
+                st.warning(f"Se pueden controlar {N_parciales} posiciones")
+                df_merged_parciales_reduced = df_merged_parciales.sample(n=N_parciales, random_state=1)
+                st.write(f"Mostrando {N_parciales} filas seleccionadas aleatoriamente de la muestra:")
                 df_merged_parciales["Posicion"] = df_merged_parciales["Posicion"].str.rstrip()
                 df_merged_parciales['Ordenar_primero'] = df_merged_parciales['Posicion'].str.split(' - ').str[0].str[2:4]
                 df_merged_parciales['Ordenar_segundo'] = df_merged_parciales['Posicion'].str.split(' - ').str[1].astype(int)
                 df_merged_parciales = df_merged_parciales.sort_values(by=['Ordenar_primero', 'Ordenar_segundo']).drop(columns=['Ordenar_primero', 'Ordenar_segundo'])
+                
+                df_merged_parciales = asignar_usuarios(usuarios, df_merged_parciales)
+
                 st.write(df_merged_parciales)
             else:
                 st.success(f"¡El resultado es una control de {horas_requeridas_control} horas, lo cual es menor a las horas disponibles ({horas_disponibles})!")
@@ -496,6 +507,9 @@ if "Control Parciales" in seleccion:
                 df_merged_parciales['Ordenar_primero'] = df_merged_parciales['Posicion'].str.split(' - ').str[0].str[2:4]
                 df_merged_parciales['Ordenar_segundo'] = df_merged_parciales['Posicion'].str.split(' - ').str[1].astype(int)
                 df_merged_parciales = df_merged_parciales.sort_values(by=['Ordenar_primero', 'Ordenar_segundo']).drop(columns=['Ordenar_primero', 'Ordenar_segundo'])
+                
+                df_merged_parciales = asignar_usuarios(usuarios, df_merged_parciales)
+
                 st.write(df_merged_parciales)
 
             def convert_df_to_excel(df):
@@ -715,16 +729,21 @@ if "Control Recepción" in seleccion:
             df_sample = df_sample.rename(columns={'Bultos_x': 'Bultos', 'Unidades_x': 'Unidades'})
 
 
-            horas_requeridas_control = round(N/productividad_recepcion,2)
+            horas_requeridas_control = round(tamano_muestra_recepcion/productividad_recepcion,2)
 
             if horas_requeridas_control > horas_disponibles:
-                # st.warning(f"El resultado es una capacidad de {resultado_recepcion} posiciones, lo cual es menor al tamaño de muestra esperado ({tamano_muestra}).")
-                # df_sample_reduced = df_sample.sample(n=resultado_recepcion, random_state=1)
-                # st.write(f"Mostrando {resultado_recepcion} filas seleccionadas aleatoriamente de la muestra:")
+                st.warning(f"¡El resultado es un control de {horas_requeridas_control} horas, lo cual es mayor a las horas disponibles ({horas_disponibles})!")
+                N_recepcion = int(horas_disponibles*productividad_recepcion)
+                st.warning(f"Se pueden controlar {N_recepcion} posiciones")
+                df_sample = df_sample.sample(n=N_recepcion, random_state=1)
+                st.write(f"Mostrando {N_recepcion} filas seleccionadas aleatoriamente de la muestra:")
                 df_sample["Posicion"] = df_sample["Posicion"].str.rstrip()
                 df_sample['Ordenar_primero'] = df_sample['Posicion'].str.split(' - ').str[0].str[2:4]
                 df_sample['Ordenar_segundo'] = df_sample['Posicion'].str.split(' - ').str[1].astype(int)
                 df_sample = df_sample.sort_values(by=['Ordenar_primero', 'Ordenar_segundo']).drop(columns=['Ordenar_primero', 'Ordenar_segundo'])
+                
+                df_sample = asignar_usuarios(usuarios, df_sample)
+                
                 st.write(df_sample)
             else:
                 st.success(f"¡El resultado es un control de {horas_requeridas_control} horas, lo cual es menor a las horas disponibles ({horas_disponibles})!")
@@ -734,6 +753,9 @@ if "Control Recepción" in seleccion:
                 df_sample['Ordenar_primero'] = df_sample['Posicion'].str.split(' - ').str[0].str[2:4]
                 df_sample['Ordenar_segundo'] = df_sample['Posicion'].str.split(' - ').str[1].astype(int)
                 df_sample = df_sample.sort_values(by=['Ordenar_primero', 'Ordenar_segundo']).drop(columns=['Ordenar_primero', 'Ordenar_segundo'])
+                
+                df_sample = asignar_usuarios(usuarios, df_sample)
+
                 st.write(df_sample)
 
 
@@ -968,6 +990,9 @@ if "Control Picking" in seleccion:
                 df_merged_picking['Ordenar_primero'] = df_merged_picking['Posicion'].str.split(' - ').str[0].str[2:4]
                 df_merged_picking['Ordenar_segundo'] = df_merged_picking['Posicion'].str.split(' - ').str[1].astype(int)
                 df_merged_picking = df_merged_picking.sort_values(by=['Ordenar_primero', 'Ordenar_segundo']).drop(columns=['Ordenar_primero', 'Ordenar_segundo'])
+                
+                df_merged_picking = asignar_usuarios(usuarios, df_merged_picking)
+
                 st.write(df_merged_picking)
             
         
