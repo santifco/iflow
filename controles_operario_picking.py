@@ -12,52 +12,90 @@ import numpy as np
 # App title
 st.title("Escaneo y Control de Picking")
 
-credentials_info = st.secrets["gcp_service_account"]
+# credentials_info = st.secrets["gcp_service_account"]
 
-# credentials_info = {
-#                 "type": "service_account",
-#                 "project_id": "inbound-pattern-429101-c5",
-#                 "private_key_id": "9dcc01743c917fb186294a8c6d228d4c2fb005bc",
-#                 "private_key": """-----BEGIN PRIVATE KEY-----
-#             MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDPvpK+357PGmvc
-#             6jxJTHyKfpUs/2861MGvfClaGMjEw9G8YmeeeH8PAkc/rZxaHpl2zcmpUQfTauxs
-#             0mhbOD42jxRflbdi00yvHVkBBtYdzfvtGwepEUsP26yqOySm6PiVI/XKHWdct61B
-#             28l/VW+mjXDVPiDiMATQRTJi4tYTgC5eSjhnkT4efY7gUMHmO2057cI+jmRob1WV
-#             PEEWLGt76R4IGnH/FtoW2B6lPoOb7KefRx2WgHfTu+zsXvqmbGbgRLSlheG4Zb6g
-#             h0dZXcyojx5vGgJT3ty4o5XgpA6n9EH2uURDXUBYQ9KE8mcNDM9VK6KQEYeBmIJr
-#             QOvMftM1AgMBAAECggEAAn4NSNdS4/vtzVvknLk+SUTmmuklQvARPtBfK1zqZSza
-#             cQ1XARha/p3r7ReQCpAFyJinRharmulIrFJJjmmF4HdUnycjIxxNUyH5GJLgJpM1
-#             cY1Ad6PNkKZSsKH41iVDCGk3N8mk4tH5rynGKKViwreabZX5sEuQdiEIlRXchgLN
-#             ransgsarOU/8+RI2W5JRt7wPAO56WsZc+zeOIyLS7RScibfdi8wMQYZF7PsPB5EG
-#             6ps50hxHWZ18lgLgJO5iK6YZkINHwW8AWDaxonxTgn4eYT8iUDMol8D5i2AXM5x1
-#             JnRzhLKnNUdzug4RB7XrcCOsjoDOU2dW1VbXTNkyxQKBgQD4WbO23ktbkl64dmdA
-#             ZKhRSRcBfbUf8/+Olp8Dt/PTb53Rjvsm3XK5EUK6t9oMGgL131UuOcKysV1RCyzT
-#             I5jjiY5Q3Ws2L0N2IFfxSBI7Di2hxSWLaXgETsMUV0MBfv1TH/8E+3tEtoj26lZY
-#             A0GVOrGprEJVNcL3X3T83R3mNwKBgQDWJK8icbaJujm9HfXi9ODcG7YpPYKRcqJa
-#             LZclOiccRHIUN4SzouIfB6kp63k96W5Yzm6GeRgaiB/LQNPNTDFO4Q7Zrm7wci9o
-#             kzRUHWJcgKl7r8Q+TYXBPJVn0dZe65G5O/d+7cmQn+MUp0Gi5cnYu9eaeKHoJGY0
-#             P6vCKhab8wKBgC2cK8k14hkbNJIkDKpi0ha7maIIeC86HIEPYHzKV9lI8m7+F1n3
-#             6Y3bganRAhae4FRPg9FNglhXApBTwRO1wepn5N8tCveUjosvPXduiQqXfAHttwt3
-#             fzcrT+B4djHcJKITij5cATOJYnYWa20WjADgGqjSngwQJ5JO0alu4oLZAoGAD138
-#             j203mzSY9iBTR+EozcLTVKxMVWGzkuMYqJw+uEGVKiw9wqJatb1X/2EdhzrcJ1VR
-#             Cydfem/wUCarzFy+YRm3dhmVbn3TNx7xL2QYbejxwKWBYLMxeQd+9T9SsecXwwIx
-#             pZMs1ssSgaXrCOSSkpIQS86CV+VczD0Rd1KL4s8CgYEAhfI92S/3eL6eOkm7yHL1
-#             4331R/gomiO4QehLpyUZfirpqxNO/8BL6f25Jp5cC3dJeNu4xEbbMIMpEpT9C+ZJ
-#             4WWYzDCC43HB8AbA8SgMDz7Vaa6h9zHJolLLrcsDMtiD4JT7VeV4UluWXIaRbg6p
-#             XYwWQL2d6uGePDriQHXIUmY=
-#             -----END PRIVATE KEY-----""",
-#                 "client_email": "google-sheets-api@inbound-pattern-429101-c5.iam.gserviceaccount.com",
-#                 "client_id": "107649396128661753097",
-#                 "auth_uri": "https://accounts.google.com/o/oauth2/auth",
-#                 "token_uri": "https://oauth2.googleapis.com/token",
-#                 "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
-#                 "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/google-sheets-api%40inbound-pattern-429101-c5.iam.gserviceaccount.com",
-#                 "universe_domain": "googleapis.com"
-#             }
+credentials_info = {
+                "type": "service_account",
+                "project_id": "inbound-pattern-429101-c5",
+                "private_key_id": "9dcc01743c917fb186294a8c6d228d4c2fb005bc",
+                "private_key": """-----BEGIN PRIVATE KEY-----
+            MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDPvpK+357PGmvc
+            6jxJTHyKfpUs/2861MGvfClaGMjEw9G8YmeeeH8PAkc/rZxaHpl2zcmpUQfTauxs
+            0mhbOD42jxRflbdi00yvHVkBBtYdzfvtGwepEUsP26yqOySm6PiVI/XKHWdct61B
+            28l/VW+mjXDVPiDiMATQRTJi4tYTgC5eSjhnkT4efY7gUMHmO2057cI+jmRob1WV
+            PEEWLGt76R4IGnH/FtoW2B6lPoOb7KefRx2WgHfTu+zsXvqmbGbgRLSlheG4Zb6g
+            h0dZXcyojx5vGgJT3ty4o5XgpA6n9EH2uURDXUBYQ9KE8mcNDM9VK6KQEYeBmIJr
+            QOvMftM1AgMBAAECggEAAn4NSNdS4/vtzVvknLk+SUTmmuklQvARPtBfK1zqZSza
+            cQ1XARha/p3r7ReQCpAFyJinRharmulIrFJJjmmF4HdUnycjIxxNUyH5GJLgJpM1
+            cY1Ad6PNkKZSsKH41iVDCGk3N8mk4tH5rynGKKViwreabZX5sEuQdiEIlRXchgLN
+            ransgsarOU/8+RI2W5JRt7wPAO56WsZc+zeOIyLS7RScibfdi8wMQYZF7PsPB5EG
+            6ps50hxHWZ18lgLgJO5iK6YZkINHwW8AWDaxonxTgn4eYT8iUDMol8D5i2AXM5x1
+            JnRzhLKnNUdzug4RB7XrcCOsjoDOU2dW1VbXTNkyxQKBgQD4WbO23ktbkl64dmdA
+            ZKhRSRcBfbUf8/+Olp8Dt/PTb53Rjvsm3XK5EUK6t9oMGgL131UuOcKysV1RCyzT
+            I5jjiY5Q3Ws2L0N2IFfxSBI7Di2hxSWLaXgETsMUV0MBfv1TH/8E+3tEtoj26lZY
+            A0GVOrGprEJVNcL3X3T83R3mNwKBgQDWJK8icbaJujm9HfXi9ODcG7YpPYKRcqJa
+            LZclOiccRHIUN4SzouIfB6kp63k96W5Yzm6GeRgaiB/LQNPNTDFO4Q7Zrm7wci9o
+            kzRUHWJcgKl7r8Q+TYXBPJVn0dZe65G5O/d+7cmQn+MUp0Gi5cnYu9eaeKHoJGY0
+            P6vCKhab8wKBgC2cK8k14hkbNJIkDKpi0ha7maIIeC86HIEPYHzKV9lI8m7+F1n3
+            6Y3bganRAhae4FRPg9FNglhXApBTwRO1wepn5N8tCveUjosvPXduiQqXfAHttwt3
+            fzcrT+B4djHcJKITij5cATOJYnYWa20WjADgGqjSngwQJ5JO0alu4oLZAoGAD138
+            j203mzSY9iBTR+EozcLTVKxMVWGzkuMYqJw+uEGVKiw9wqJatb1X/2EdhzrcJ1VR
+            Cydfem/wUCarzFy+YRm3dhmVbn3TNx7xL2QYbejxwKWBYLMxeQd+9T9SsecXwwIx
+            pZMs1ssSgaXrCOSSkpIQS86CV+VczD0Rd1KL4s8CgYEAhfI92S/3eL6eOkm7yHL1
+            4331R/gomiO4QehLpyUZfirpqxNO/8BL6f25Jp5cC3dJeNu4xEbbMIMpEpT9C+ZJ
+            4WWYzDCC43HB8AbA8SgMDz7Vaa6h9zHJolLLrcsDMtiD4JT7VeV4UluWXIaRbg6p
+            XYwWQL2d6uGePDriQHXIUmY=
+            -----END PRIVATE KEY-----""",
+                "client_email": "google-sheets-api@inbound-pattern-429101-c5.iam.gserviceaccount.com",
+                "client_id": "107649396128661753097",
+                "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+                "token_uri": "https://oauth2.googleapis.com/token",
+                "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+                "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/google-sheets-api%40inbound-pattern-429101-c5.iam.gserviceaccount.com",
+                "universe_domain": "googleapis.com"
+            }
 
-def encontrar_siguiente_fila_vacia(sheet):
+# URL de la hoja de Google Sheets
+sheet_url = 'https://docs.google.com/spreadsheets/d/1x2z8puH9uRbWuhhddVtEdy8w6QoqxB__3RiHiib9KYk/edit?gid=0#gid=0'
+sheet_id = sheet_url.split("/d/")[1].split("/")[0]
+data_url = f'https://docs.google.com/spreadsheets/d/{sheet_id}/gviz/tq?tqx=out:csv'
+
+@st.cache_data
+def load_data(url):
+    df = pd.read_csv(url)
+    return df
+
+# Cargar los datos
+df = load_data(data_url)
+
+# Obtener valores únicos de la primera columna
+primera_columna_lista = df.iloc[:, 0].dropna().unique().tolist()
+
+# Inicializar sesión si no existe
+if "user_logged_in" not in st.session_state:
+    st.session_state.user_logged_in = False
+    st.session_state.selected_value = None
+
+# Login
+if not st.session_state.user_logged_in:
+    st.title("Inicio de Sesión")
+
+    # Input para seleccionar un valor de la lista
+    selected_value = st.selectbox("Selecciona un valor válido:", primera_columna_lista)
+
+    if st.button("Ingresar"):
+        if selected_value in primera_columna_lista:
+            st.session_state.user_logged_in = True
+            st.session_state.selected_value = selected_value
+            st.rerun()
+        else:
+            st.error("Valor no válido. Selecciona un valor de la lista.")
+
+def encontrar_siguiente_fila_vacia(sheet, usuario_filtrado):
     """
-    Busca la primera fila en la que 'HoraInicio' está vacía en Google Sheets.
+    Busca la primera fila en la que 'HoraInicio' está vacía en Google Sheets para un usuario filtrado.
+    Si no encuentra ninguna fila vacía, devuelve la primera fila para el usuario filtrado.
+    El índice devuelto será el índice global de la fila en el conjunto completo de datos.
     """
     # Obtener todos los valores de la hoja de cálculo
     data = sheet.get_all_values()
@@ -65,20 +103,33 @@ def encontrar_siguiente_fila_vacia(sheet):
     # Obtener los encabezados de la hoja
     headers = data[0]
 
+    col_index = None
+
     # Buscar la columna de 'HoraInicio'
     if "HoraInicio" in headers:
         col_index = headers.index("HoraInicio")
     else:
-        # st.error("No se encontró la columna 'HoraInicio' en la hoja de Google Sheets.")
+        pass
+
+    usuario_index = headers.index("Usuario")
+    # Filtrar las filas por el valor del usuario filtrado
+    data_filtrada = [row for row in data[1:] if row[usuario_index] == usuario_filtrado]
+    # Si no hay datos para el usuario filtrado, retornar None
+    if not data_filtrada:
         return None
 
-    # Recorrer las filas para encontrar la primera fila con 'HoraInicio' vacío
-    for i, row in enumerate(data[1:], start=1):  # Saltamos la fila de encabezado
-        if len(row) <= col_index or row[col_index] == "":
-            return (i-1)  # Retorna el índice de la fila vacía (1-based index)
-
-    return None  # Si todas las filas están llenas, retorna None
-
+    if col_index ==None:
+        return (data.index(data_filtrada[0]))-1
+    else:
+    # Recorrer las filas filtradas para encontrar la primera fila con 'HoraInicio' vacío
+        for i, row in enumerate(data_filtrada, start=1):  # Usamos el índice en la lista filtrada
+            # El índice global de la fila es la posición relativa en el conjunto completo de datos
+            global_index = data.index(row)  # Encuentra el índice en el conjunto completo de datos
+            
+            if len(row) <= col_index or row[col_index] == "":
+                return (global_index-1)  # Retorna el índice global de la fila vacía
+    # Si no se encuentra una fila vacía, retornar la primera fila del usuario filtrado
+      # Devuelve el índice global de la primera fila del usuario filtrado
 
 # URL de la hoja de Google Sheets
 sheet_url = 'https://docs.google.com/spreadsheets/d/1J0YmuXlCFx_lg5DKGS_o_09nhkJaGVh7PLrjsyV2Nsc/edit?gid=0#gid=0'
@@ -107,12 +158,15 @@ sheet_id = '1wan5qrTo_7_oUnXBUXgCuq_oJa24F5U6uhpDOe_LGf8'  # Reemplaza con tu sh
 # Abre la hoja de Google usando el ID de la hoja
 sheet = client.open_by_key(sheet_id).sheet1
 
-if "current_row" not in st.session_state or st.session_state.current_row is None:
-    st.session_state.current_row = encontrar_siguiente_fila_vacia(sheet)
-    if st.session_state.current_row == None:
-        st.session_state.current_row = 0
 
-# data = sheet.get_all_values()
+
+if "current_row" not in st.session_state or st.session_state.current_row is None:
+    st.session_state.current_row = encontrar_siguiente_fila_vacia(sheet,st.session_state.selected_value)
+
+    # if st.session_state.current_row == None:
+    #     st.session_state.current_row = 0
+
+
 
 # # Convertir la lista de listas en un DataFrame de pandas
 # df = pd.DataFrame(data)
@@ -312,26 +366,26 @@ def mostrar_carta(data_row,posicion):
             st.session_state.escaneada_posicion = ""
             st.session_state.input_key += 1 
             # Incrementa la fila actual
-            st.session_state.current_row = encontrar_siguiente_fila_vacia(sheet)
+            st.session_state.current_row = encontrar_siguiente_fila_vacia(sheet,st.session_state.selected_value)
             st.rerun()
 
 
+if st.session_state.user_logged_in:
 
+    # Verificar si hay más filas para procesar
+    if st.session_state.current_row < (st.session_state.df.index[st.session_state.df["Usuario"] == st.session_state.selected_value]).max():
 
-# Verificar si hay más filas para procesar
-if st.session_state.current_row < len(st.session_state.df):
-    
-    st.session_state.escaneada_posicion = ""
-    posicion = st.text_input(
-        "Escanea la posición",
-        value=st.session_state.escaneada_posicion,
-        key=f"input_{st.session_state.input_key}"  # Clave única para reiniciar el campo
-    )
-    current_row_data = st.session_state.df.iloc[st.session_state.current_row]
-    mostrar_carta(current_row_data,posicion)
+        st.session_state.escaneada_posicion = ""
+        posicion = st.text_input(
+            "Escanea la posición",
+            value=st.session_state.escaneada_posicion,
+            key=f"input_{st.session_state.input_key}"  # Clave única para reiniciar el campo
+        )
+        current_row_data = st.session_state.df.iloc[st.session_state.current_row]
+        mostrar_carta(current_row_data,posicion)
 
-else:
-    st.write("Todas las filas han sido procesadas.")
+    else:
+        st.write("Todas las filas han sido procesadas.")
 
 # # Botón final para actualizar el Google Sheet con todos los cambios
 # if st.button("Actualizar Google Sheets"):

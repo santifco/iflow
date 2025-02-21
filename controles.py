@@ -20,48 +20,48 @@ from google.oauth2 import service_account
 
 st.set_page_config(page_title="Controles Logisticos", layout="wide")
 
-credentials_info = st.secrets["gcp_service_account"]
+# credentials_info = st.secrets["gcp_service_account"]
 
-# credentials_info = {
-#     "type": "service_account",
-#     "project_id": "inbound-pattern-429101-c5",
-#     "private_key_id": "9dcc01743c917fb186294a8c6d228d4c2fb005bc",
-#     "private_key": """-----BEGIN PRIVATE KEY-----
-# MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDPvpK+357PGmvc
-# 6jxJTHyKfpUs/2861MGvfClaGMjEw9G8YmeeeH8PAkc/rZxaHpl2zcmpUQfTauxs
-# 0mhbOD42jxRflbdi00yvHVkBBtYdzfvtGwepEUsP26yqOySm6PiVI/XKHWdct61B
-# 28l/VW+mjXDVPiDiMATQRTJi4tYTgC5eSjhnkT4efY7gUMHmO2057cI+jmRob1WV
-# PEEWLGt76R4IGnH/FtoW2B6lPoOb7KefRx2WgHfTu+zsXvqmbGbgRLSlheG4Zb6g
-# h0dZXcyojx5vGgJT3ty4o5XgpA6n9EH2uURDXUBYQ9KE8mcNDM9VK6KQEYeBmIJr
-# QOvMftM1AgMBAAECggEAAn4NSNdS4/vtzVvknLk+SUTmmuklQvARPtBfK1zqZSza
-# cQ1XARha/p3r7ReQCpAFyJinRharmulIrFJJjmmF4HdUnycjIxxNUyH5GJLgJpM1
-# cY1Ad6PNkKZSsKH41iVDCGk3N8mk4tH5rynGKKViwreabZX5sEuQdiEIlRXchgLN
-# ransgsarOU/8+RI2W5JRt7wPAO56WsZc+zeOIyLS7RScibfdi8wMQYZF7PsPB5EG
-# 6ps50hxHWZ18lgLgJO5iK6YZkINHwW8AWDaxonxTgn4eYT8iUDMol8D5i2AXM5x1
-# JnRzhLKnNUdzug4RB7XrcCOsjoDOU2dW1VbXTNkyxQKBgQD4WbO23ktbkl64dmdA
-# ZKhRSRcBfbUf8/+Olp8Dt/PTb53Rjvsm3XK5EUK6t9oMGgL131UuOcKysV1RCyzT
-# I5jjiY5Q3Ws2L0N2IFfxSBI7Di2hxSWLaXgETsMUV0MBfv1TH/8E+3tEtoj26lZY
-# A0GVOrGprEJVNcL3X3T83R3mNwKBgQDWJK8icbaJujm9HfXi9ODcG7YpPYKRcqJa
-# LZclOiccRHIUN4SzouIfB6kp63k96W5Yzm6GeRgaiB/LQNPNTDFO4Q7Zrm7wci9o
-# kzRUHWJcgKl7r8Q+TYXBPJVn0dZe65G5O/d+7cmQn+MUp0Gi5cnYu9eaeKHoJGY0
-# P6vCKhab8wKBgC2cK8k14hkbNJIkDKpi0ha7maIIeC86HIEPYHzKV9lI8m7+F1n3
-# 6Y3bganRAhae4FRPg9FNglhXApBTwRO1wepn5N8tCveUjosvPXduiQqXfAHttwt3
-# fzcrT+B4djHcJKITij5cATOJYnYWa20WjADgGqjSngwQJ5JO0alu4oLZAoGAD138
-# j203mzSY9iBTR+EozcLTVKxMVWGzkuMYqJw+uEGVKiw9wqJatb1X/2EdhzrcJ1VR
-# Cydfem/wUCarzFy+YRm3dhmVbn3TNx7xL2QYbejxwKWBYLMxeQd+9T9SsecXwwIx
-# pZMs1ssSgaXrCOSSkpIQS86CV+VczD0Rd1KL4s8CgYEAhfI92S/3eL6eOkm7yHL1
-# 4331R/gomiO4QehLpyUZfirpqxNO/8BL6f25Jp5cC3dJeNu4xEbbMIMpEpT9C+ZJ
-# 4WWYzDCC43HB8AbA8SgMDz7Vaa6h9zHJolLLrcsDMtiD4JT7VeV4UluWXIaRbg6p
-# XYwWQL2d6uGePDriQHXIUmY=
-# -----END PRIVATE KEY-----""",
-#     "client_email": "google-sheets-api@inbound-pattern-429101-c5.iam.gserviceaccount.com",
-#     "client_id": "107649396128661753097",
-#     "auth_uri": "https://accounts.google.com/o/oauth2/auth",
-#     "token_uri": "https://oauth2.googleapis.com/token",
-#     "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
-#     "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/google-sheets-api%40inbound-pattern-429101-c5.iam.gserviceaccount.com",
-#     "universe_domain": "googleapis.com"
-# }
+credentials_info = {
+    "type": "service_account",
+    "project_id": "inbound-pattern-429101-c5",
+    "private_key_id": "9dcc01743c917fb186294a8c6d228d4c2fb005bc",
+    "private_key": """-----BEGIN PRIVATE KEY-----
+MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDPvpK+357PGmvc
+6jxJTHyKfpUs/2861MGvfClaGMjEw9G8YmeeeH8PAkc/rZxaHpl2zcmpUQfTauxs
+0mhbOD42jxRflbdi00yvHVkBBtYdzfvtGwepEUsP26yqOySm6PiVI/XKHWdct61B
+28l/VW+mjXDVPiDiMATQRTJi4tYTgC5eSjhnkT4efY7gUMHmO2057cI+jmRob1WV
+PEEWLGt76R4IGnH/FtoW2B6lPoOb7KefRx2WgHfTu+zsXvqmbGbgRLSlheG4Zb6g
+h0dZXcyojx5vGgJT3ty4o5XgpA6n9EH2uURDXUBYQ9KE8mcNDM9VK6KQEYeBmIJr
+QOvMftM1AgMBAAECggEAAn4NSNdS4/vtzVvknLk+SUTmmuklQvARPtBfK1zqZSza
+cQ1XARha/p3r7ReQCpAFyJinRharmulIrFJJjmmF4HdUnycjIxxNUyH5GJLgJpM1
+cY1Ad6PNkKZSsKH41iVDCGk3N8mk4tH5rynGKKViwreabZX5sEuQdiEIlRXchgLN
+ransgsarOU/8+RI2W5JRt7wPAO56WsZc+zeOIyLS7RScibfdi8wMQYZF7PsPB5EG
+6ps50hxHWZ18lgLgJO5iK6YZkINHwW8AWDaxonxTgn4eYT8iUDMol8D5i2AXM5x1
+JnRzhLKnNUdzug4RB7XrcCOsjoDOU2dW1VbXTNkyxQKBgQD4WbO23ktbkl64dmdA
+ZKhRSRcBfbUf8/+Olp8Dt/PTb53Rjvsm3XK5EUK6t9oMGgL131UuOcKysV1RCyzT
+I5jjiY5Q3Ws2L0N2IFfxSBI7Di2hxSWLaXgETsMUV0MBfv1TH/8E+3tEtoj26lZY
+A0GVOrGprEJVNcL3X3T83R3mNwKBgQDWJK8icbaJujm9HfXi9ODcG7YpPYKRcqJa
+LZclOiccRHIUN4SzouIfB6kp63k96W5Yzm6GeRgaiB/LQNPNTDFO4Q7Zrm7wci9o
+kzRUHWJcgKl7r8Q+TYXBPJVn0dZe65G5O/d+7cmQn+MUp0Gi5cnYu9eaeKHoJGY0
+P6vCKhab8wKBgC2cK8k14hkbNJIkDKpi0ha7maIIeC86HIEPYHzKV9lI8m7+F1n3
+6Y3bganRAhae4FRPg9FNglhXApBTwRO1wepn5N8tCveUjosvPXduiQqXfAHttwt3
+fzcrT+B4djHcJKITij5cATOJYnYWa20WjADgGqjSngwQJ5JO0alu4oLZAoGAD138
+j203mzSY9iBTR+EozcLTVKxMVWGzkuMYqJw+uEGVKiw9wqJatb1X/2EdhzrcJ1VR
+Cydfem/wUCarzFy+YRm3dhmVbn3TNx7xL2QYbejxwKWBYLMxeQd+9T9SsecXwwIx
+pZMs1ssSgaXrCOSSkpIQS86CV+VczD0Rd1KL4s8CgYEAhfI92S/3eL6eOkm7yHL1
+4331R/gomiO4QehLpyUZfirpqxNO/8BL6f25Jp5cC3dJeNu4xEbbMIMpEpT9C+ZJ
+4WWYzDCC43HB8AbA8SgMDz7Vaa6h9zHJolLLrcsDMtiD4JT7VeV4UluWXIaRbg6p
+XYwWQL2d6uGePDriQHXIUmY=
+-----END PRIVATE KEY-----""",
+    "client_email": "google-sheets-api@inbound-pattern-429101-c5.iam.gserviceaccount.com",
+    "client_id": "107649396128661753097",
+    "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+    "token_uri": "https://oauth2.googleapis.com/token",
+    "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+    "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/google-sheets-api%40inbound-pattern-429101-c5.iam.gserviceaccount.com",
+    "universe_domain": "googleapis.com"
+}
 
 valores_validos_secos = [
     "BA", "BB", "BC", "BD", "BE", "BF", "BG", "BH",
@@ -78,7 +78,63 @@ valores_validos_refrigerado = [
     "RC", "RE", "RD", "RC", "RB","CI","CH","CG","CF"
 ]
 
+def asignar_usuarios(primera_columna_lista, df_concatenado):
+    """
+    Asigna equitativamente los valores de primera_columna_lista a la columna 'Usuario' en df_concatenado,
+    distribuyendo los valores restantes desde los últimos usuarios de la lista.
 
+    Parámetros:
+    - primera_columna_lista: Lista de valores de usuario.
+    - df_concatenado: DataFrame al que se le asignarán los usuarios.
+
+    Retorna:
+    - DataFrame con la nueva columna 'Usuario'.
+    """
+    num_usuarios = len(primera_columna_lista)
+    num_filas = len(df_concatenado)
+
+    if num_usuarios == 0 or num_filas == 0:
+        raise ValueError("La lista de usuarios o el DataFrame están vacíos.")
+
+    # Si solo hay un usuario, asignarlo a todas las filas
+    if num_usuarios == 1:
+        df_concatenado["Usuario"] = primera_columna_lista[0]
+        return df_concatenado
+
+    # Calcular cuántas filas debe tener cada usuario
+    filas_por_usuario = num_filas // num_usuarios
+    usuarios_asignados = []
+
+    # Asignar usuarios equitativamente
+    for usuario in primera_columna_lista:
+        usuarios_asignados.extend([usuario] * filas_por_usuario)
+
+    # Distribuir filas restantes comenzando por los últimos usuarios de la lista
+    restantes = num_filas % num_usuarios
+    if restantes > 0:
+        usuarios_asignados.extend(primera_columna_lista[:restantes])
+
+    # Asegurar que la cantidad de usuarios asignados coincida con la cantidad de filas
+    df_concatenado["Usuario"] = usuarios_asignados[:num_filas]
+
+    return df_concatenado
+
+
+
+
+
+# URL de la hoja de Google Sheets
+sheet_url = 'https://docs.google.com/spreadsheets/d/1x2z8puH9uRbWuhhddVtEdy8w6QoqxB__3RiHiib9KYk/edit?gid=0#gid=0'
+sheet_id = sheet_url.split("/d/")[1].split("/")[0]
+data_url = f'https://docs.google.com/spreadsheets/d/{sheet_id}/gviz/tq?tqx=out:csv'
+
+def load_data(url):
+    df = pd.read_csv(url)
+    return df
+
+# Cargar los datos
+df = load_data(data_url)
+primera_columna_lista = df.iloc[:, 0].tolist()
 
 cal = Argentina()
 
@@ -150,10 +206,10 @@ with st.sidebar:
         entidad_seleccionados = st.sidebar.multiselect('Entidad:', entidades_unicas, default=["Todos"])
 
     p = st.slider("Proporción estimada de defectos (%)", 0, 50, 7) / 100.0
-    op = st.slider("Selecciona la cantidad de operarios (Operarios)", 1, 10, 6)
+    duracion_turno = st.slider("Selecciona la duración del turno", 1, 8, 2)
     opciones = ["Control Almacenaje", "Control Parciales", "Control Recepción", "Control Picking","Control Total","Resultados"]
     seleccion = st.multiselect("Selecciona uno o más tipos de control:", opciones[0:-1],default=opciones[0])
-
+    usuarios = st.multiselect("Selecciona uno o más usuarios:", primera_columna_lista,default=primera_columna_lista[0])
 
 if datos_posicion is not None:
 
@@ -176,11 +232,12 @@ if datos_posicion is not None:
 # Crear pestañas
 tab1, tab2, tab3,tab4,tab5,tab6  = st.tabs(opciones)
 
-duracion_turno = 7.5
+# duracion_turno = 7.5
 productividad_recepcion = 30
 productividad_almacenaje = 60
 productividad_picking = 18
 productividad_parciales = 22
+op = len(usuarios)
 horas_disponibles = op * duracion_turno
 
 
@@ -900,6 +957,9 @@ if "Control Picking" in seleccion:
                 st.warning(f"Se pueden controlar {N_picking} posiciones")
                 df_merged_picking_reduced = df_merged_picking.sample(n=N_picking, random_state=1)
                 st.write(f"Mostrando {N_picking} filas seleccionadas aleatoriamente de la muestra:")
+
+                df_merged_picking = asignar_usuarios(usuarios, df_merged_picking)
+
                 st.write(df_merged_picking)
             else:
                 st.success(f"¡El resultado es un control de {horas_requeridas_control} horas, lo cual es menor a las horas disponibles ({horas_disponibles})!")
