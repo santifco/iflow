@@ -370,7 +370,7 @@ def mostrar_carta(data_row,posicion):
 if st.session_state.user_logged_in:
 
     # Verificar si hay más filas para procesar
-    if st.session_state.current_row < (st.session_state.df.index[st.session_state.df["Usuario"] == st.session_state.selected_value]).max():
+    if st.session_state.current_row <= (st.session_state.df.index[st.session_state.df["Usuario"] == st.session_state.selected_value]).max():
     # Mostrar la información de la fila actual
         posicion = st.session_state.escaneada_posicion
         current_row_data = st.session_state.df.iloc[st.session_state.current_row]
