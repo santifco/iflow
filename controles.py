@@ -80,6 +80,8 @@ valores_validos_refrigerado = [
 
 valores_validos_controlada = ["CI","CH","CG","CF"]
 
+valores_validos_supercongelados=["FR","SR"]
+
 def asignar_usuarios(primera_columna_lista, df_concatenado):
     """
     Asigna equitativamente los valores de primera_columna_lista a la columna 'Usuario' en df_concatenado,
@@ -158,6 +160,7 @@ with st.expander("Carga de archivos"):
                     "REFRIGERADO" if any(valor in x for valor in valores_validos_refrigerado) else
                     "CONGELADO" if any(valor in x for valor in valores_validos_congelados) else
                     "CONTROLADA" if any(valor in x for valor in valores_validos_controlada) else
+                    "SUPER CONGELADOS" if any(valor in x for valor in valores_validos_supercongelados) else
                     "NO TIENE"
         )
 
@@ -296,7 +299,7 @@ if "Control Almacenaje" in seleccion:
             df_concatenado['Vencimiento'] = pd.to_datetime(df_concatenado['Vencimiento'], errors='coerce').dt.strftime('%d-%m-%Y')
             # Tamaño de la población
             N_almacenaje = len(df_concatenado)
-            st.write(f"Tamaño df_stock (número de filas en df_stock): {N_almacenaje}")
+            # st.write(f"Tamaño df_stock (número de filas en df_stock): {N_almacenaje}")
 
             
             horas_requeridas_control = round(N_almacenaje/productividad_almacenaje,2)
@@ -318,7 +321,7 @@ if "Control Almacenaje" in seleccion:
 
                 st.write(df_concatenado)
             else:
-                st.success(f"¡El resultado es un control de {horas_requeridas_control} horas, lo cual es menor a las horas disponibles ({horas_disponibles})!")
+                # st.success(f"¡El resultado es un control de {horas_requeridas_control} horas, lo cual es menor a las horas disponibles ({horas_disponibles})!")
                 horas_disponibles = round(horas_disponibles - horas_requeridas_control,2)
                 df_concatenado["Posicion"] = df_concatenado["Posicion"].str.rstrip()
                 df_concatenado['Ordenar_primero'] = df_concatenado['Posicion'].str.split(' - ').str[0].str[2:4]
@@ -341,13 +344,13 @@ if "Control Almacenaje" in seleccion:
             # Crear un archivo Excel de un DataFrame (en este caso df_merged)
             excel_file = convert_df_to_excel(df_concatenado)
 
-            # Botón para descargar el archivo Excel
-            st.download_button(
-                label="Download data as Excel Almacenaje",
-                data=excel_file,
-                file_name="df_merged_almacenaje.xlsx",
-                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            )
+            # # Botón para descargar el archivo Excel
+            # st.download_button(
+            #     label="Download data as Excel Almacenaje",
+            #     data=excel_file,
+            #     file_name="df_merged_almacenaje.xlsx",
+            #     mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            # )
 
             if st.button("Actualizar Google Sheets Almacenaje"):
                 # Configurar el acceso a la API de Google Sheets con las credenciales
@@ -484,17 +487,17 @@ if "Control Parciales" in seleccion:
                 df_merged_parciales = df_merged_parciales.rename(columns={'Bultos_x': 'Bultos', 'Unidades_x': 'Unidades'})
                 # Tamaño de la población
                 N_parciales = len(df_merged_parciales)
-                st.write(f"Tamaño de df_stock (número de filas en df_merged_parciales): {N_parciales}")
+                # st.write(f"Tamaño de df_stock (número de filas en df_merged_parciales): {N_parciales}")
 
 
             horas_requeridas_control = round(N_parciales/productividad_parciales,2)
 
             if horas_requeridas_control > horas_disponibles:
-                st.warning(f"¡El resultado es una control de {horas_requeridas_control} horas, lo cual es menor a las horas disponibles ({horas_disponibles})!")
+                # st.warning(f"¡El resultado es una control de {horas_requeridas_control} horas, lo cual es menor a las horas disponibles ({horas_disponibles})!")
                 N_parciales = int(horas_disponibles*productividad_parciales)
-                st.warning(f"Se pueden controlar {N_parciales} posiciones")
+                # st.warning(f"Se pueden controlar {N_parciales} posiciones")
                 df_merged_parciales_reduced = df_merged_parciales.sample(n=N_parciales, random_state=1)
-                st.write(f"Mostrando {N_parciales} filas seleccionadas aleatoriamente de la muestra:")
+                # st.write(f"Mostrando {N_parciales} filas seleccionadas aleatoriamente de la muestra:")
                 df_merged_parciales["Posicion"] = df_merged_parciales["Posicion"].str.rstrip()
                 df_merged_parciales['Ordenar_primero'] = df_merged_parciales['Posicion'].str.split(' - ').str[0].str[2:4]
                 df_merged_parciales['Ordenar_segundo'] = df_merged_parciales['Posicion'].str.split(' - ').str[1].astype(int)
@@ -504,7 +507,7 @@ if "Control Parciales" in seleccion:
 
                 st.write(df_merged_parciales)
             else:
-                st.success(f"¡El resultado es una control de {horas_requeridas_control} horas, lo cual es menor a las horas disponibles ({horas_disponibles})!")
+                # st.success(f"¡El resultado es una control de {horas_requeridas_control} horas, lo cual es menor a las horas disponibles ({horas_disponibles})!")
                 horas_disponibles = round(horas_disponibles - horas_requeridas_control,2)
                 df_merged_parciales["Posicion"] = df_merged_parciales["Posicion"].str.rstrip()
                 df_merged_parciales['Ordenar_primero'] = df_merged_parciales['Posicion'].str.split(' - ').str[0].str[2:4]
@@ -526,13 +529,13 @@ if "Control Parciales" in seleccion:
             # Crear un archivo Excel de un DataFrame (en este caso df_merged)
             excel_file = convert_df_to_excel(df_merged_parciales)
 
-            # Botón para descargar el archivo Excel
-            st.download_button(
-                label="Download data as Excel Parciales",
-                data=excel_file,
-                file_name="df_merged_parciales.xlsx",
-                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            ) 
+            # # Botón para descargar el archivo Excel
+            # st.download_button(
+            #     label="Download data as Excel Parciales",
+            #     data=excel_file,
+            #     file_name="df_merged_parciales.xlsx",
+            #     mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            # ) 
 
             if st.button("Actualizar Google Sheets Parciales"):
                 # Configurar el acceso a la API de Google Sheets con las credenciales
@@ -696,7 +699,7 @@ if "Control Recepción" in seleccion:
 
             # Tamaño de la población
             N = len(df_filtered)
-            st.write(f"Tamaño de la población (número de filas en df_filtered): {N}")
+            # st.write(f"Tamaño de la población (número de filas en df_filtered): {N}")
 
             # Parámetros para el cálculo del tamaño de muestra
             nivel_confianza = 0.95
@@ -713,7 +716,7 @@ if "Control Recepción" in seleccion:
 
             # Calcular el tamaño de la muestra
             tamano_muestra_recepcion = calcular_tamano_muestra(N, z, e, p)
-            st.write(f"El tamaño de muestra necesario es: {tamano_muestra_recepcion}")
+            # st.write(f"El tamaño de muestra necesario es: {tamano_muestra_recepcion}")
 
             # Seleccionar una muestra aleatoria de tamaño n
             df_sample = df_filtered.sample(n=tamano_muestra_recepcion, random_state=1)
@@ -735,9 +738,9 @@ if "Control Recepción" in seleccion:
             horas_requeridas_control = round(tamano_muestra_recepcion/productividad_recepcion,2)
 
             if horas_requeridas_control > horas_disponibles:
-                st.warning(f"¡El resultado es un control de {horas_requeridas_control} horas, lo cual es mayor a las horas disponibles ({horas_disponibles})!")
+                # st.warning(f"¡El resultado es un control de {horas_requeridas_control} horas, lo cual es mayor a las horas disponibles ({horas_disponibles})!")
                 N_recepcion = int(horas_disponibles*productividad_recepcion)
-                st.warning(f"Se pueden controlar {N_recepcion} posiciones")
+                # st.warning(f"Se pueden controlar {N_recepcion} posiciones")
                 df_sample = df_sample.sample(n=N_recepcion, random_state=1)
                 st.write(f"Mostrando {N_recepcion} filas seleccionadas aleatoriamente de la muestra:")
                 df_sample["Posicion"] = df_sample["Posicion"].str.rstrip()
@@ -749,9 +752,9 @@ if "Control Recepción" in seleccion:
                 
                 st.write(df_sample)
             else:
-                st.success(f"¡El resultado es un control de {horas_requeridas_control} horas, lo cual es menor a las horas disponibles ({horas_disponibles})!")
+                # st.success(f"¡El resultado es un control de {horas_requeridas_control} horas, lo cual es menor a las horas disponibles ({horas_disponibles})!")
                 horas_disponibles = round(horas_disponibles - horas_requeridas_control,2)
-                st.write("Muestra aleatoria de df_filtrado:")
+                # st.write("Muestra aleatoria de df_filtrado:")
                 df_sample["Posicion"] = df_sample["Posicion"].str.rstrip()
                 df_sample['Ordenar_primero'] = df_sample['Posicion'].str.split(' - ').str[0].str[2:4]
                 df_sample['Ordenar_segundo'] = df_sample['Posicion'].str.split(' - ').str[1].astype(int)
@@ -773,13 +776,13 @@ if "Control Recepción" in seleccion:
             # Crear un archivo Excel de un DataFrame (en este caso df_merged)
             excel_file = convert_df_to_excel(df_sample)
 
-            # Botón para descargar el archivo Excel
-            st.download_button(
-                label="Download data as Excel Recepcion",
-                data=excel_file,
-                file_name="df_merged_recepcion.xlsx",
-                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            )
+            # # Botón para descargar el archivo Excel
+            # st.download_button(
+            #     label="Download data as Excel Recepcion",
+            #     data=excel_file,
+            #     file_name="df_merged_recepcion.xlsx",
+            #     mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            # )
 
             if st.button("Actualizar Google Sheets Recepcion"):
 
@@ -969,25 +972,25 @@ if "Control Picking" in seleccion:
             df_merged_picking = df_merged_picking.rename(columns={'Bultos_x': 'Bultos', 'Unidades_x': 'Unidades'})
             # Tamaño de la población
             N = len(df_stock_picking)
-            st.write(f"Tamaño de la población (número de filas en df_merged_picking): {N}")
+            # st.write(f"Tamaño de la población (número de filas en df_merged_picking): {N}")
             N_picking = len(df_merged_picking)
-            st.write(f"Tamaño de la muestra (número de filas en df_merged_picking): {N_picking}")
+            # st.write(f"Tamaño de la muestra (número de filas en df_merged_picking): {N_picking}")
 
 
             horas_requeridas_control = round(N_picking/productividad_picking,2)
 
             if horas_requeridas_control > horas_disponibles:
-                st.warning(f"El resultado es un control de {horas_requeridas_control} horas, lo cual es mayor a las horas disponibles ({horas_disponibles})!")
+                # st.warning(f"El resultado es un control de {horas_requeridas_control} horas, lo cual es mayor a las horas disponibles ({horas_disponibles})!")
                 N_picking = int(horas_disponibles*productividad_picking)
-                st.warning(f"Se pueden controlar {N_picking} posiciones")
+                # st.warning(f"Se pueden controlar {N_picking} posiciones")
                 df_merged_picking = df_merged_picking.sample(n=N_picking, random_state=1)
-                st.write(f"Mostrando {N_picking} filas seleccionadas aleatoriamente de la muestra:")
+                # st.write(f"Mostrando {N_picking} filas seleccionadas aleatoriamente de la muestra:")
 
                 df_merged_picking = asignar_usuarios(usuarios, df_merged_picking)
 
                 st.write(df_merged_picking)
             else:
-                st.success(f"¡El resultado es un control de {horas_requeridas_control} horas, lo cual es menor a las horas disponibles ({horas_disponibles})!")
+                # st.success(f"¡El resultado es un control de {horas_requeridas_control} horas, lo cual es menor a las horas disponibles ({horas_disponibles})!")
                 horas_disponibles = round(horas_disponibles - horas_requeridas_control,2)
                 df_merged_picking["Posicion"] = df_merged_picking["Posicion"].str.rstrip()
                 df_merged_picking['Ordenar_primero'] = df_merged_picking['Posicion'].str.split(' - ').str[0].str[2:4]
@@ -1011,13 +1014,13 @@ if "Control Picking" in seleccion:
             # Crear un archivo Excel de un DataFrame (en este caso df_merged)
             excel_file = convert_df_to_excel(df_merged_picking)
 
-            # Botón para descargar el archivo Excel
-            st.download_button(
-                label="Download data as Excel Picking",
-                data=excel_file,
-                file_name="df_merged_picking.xlsx",
-                mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            )
+            # # Botón para descargar el archivo Excel
+            # st.download_button(
+            #     label="Download data as Excel Picking",
+            #     data=excel_file,
+            #     file_name="df_merged_picking.xlsx",
+            #     mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+            # )
 
             if st.button("Actualizar Google Sheets Picking"):
                 # Configurar el acceso a la API de Google Sheets con las credenciales
