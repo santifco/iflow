@@ -378,8 +378,8 @@ if st.session_state.user_logged_in:
         current_row_data = st.session_state.df.iloc[st.session_state.current_row]
         mostrar_carta(current_row_data,posicion)
 
-else:
-    st.write("Todas las filas han sido procesadas.")
+    else:
+        st.write("Todas las filas han sido procesadas.")
 
 # # Botón final para actualizar el Google Sheet con todos los cambios
 # if st.button("Actualizar Google Sheets"):
