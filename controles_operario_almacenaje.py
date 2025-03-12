@@ -221,7 +221,11 @@ def mostrar_carta(data_row,posicion):
         if data_row["Status Posicion"] == "DL":
             
             posicion_libre = st.radio("¿Existe algún Pallet en la posición?", options=["Sí", "No"])
-            articulo = "No" 
+            
+            if posicion_libre == "No" :
+                articulo = 0
+            elif posicion_libre =="Sí":
+                articulo = st.number_input(f"Escanea el artículo para la posición {data_row['Posicion']}", min_value=0,value=None)
             fecha = 0
             cantidad_bultos = 0
             unidades_bulto = 0
@@ -245,7 +249,7 @@ def mostrar_carta(data_row,posicion):
             # cantidad_confirmada = st.number_input(f"Confirma la cantidad de bultos para la posición {data_row['Posicion']}", min_value=0,value=None)
             fecha = 0
             articulo = st.number_input(f"Escanea el artículo para la posición {data_row['Posicion']}", min_value=0,value=None)
-
+            
             tiene_blister = st.radio("¿Tiene Blister?", options=["Sí", "No"])  
 
             if tiene_blister == "No":
@@ -313,6 +317,7 @@ def mostrar_carta(data_row,posicion):
                 if pd.notnull(vencimiento) and pd.notnull(fecha_vencimiento_observada)
                 else None
             )
+
 
             coincide_articulo = "Si" if st.session_state.df.loc[real_index, "Articulo Escaneado"] == st.session_state.df.loc[real_index, "Cod.Articulo"] else "No"
             # coincide_paleta = st.session_state.df.loc[real_index, "Paleta Escaneada"] = "Si" if st.session_state.df.loc[real_index, "Lote Escaneado"] == st.session_state.df.loc[real_index, "Lote"] else "No"
