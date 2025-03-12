@@ -221,15 +221,15 @@ def mostrar_carta(data_row,posicion):
         if data_row["Status Posicion"] == "DL":
             
             posicion_libre = st.radio("¿Existe algún Pallet en la posición?", options=["Sí", "No"])
-            articulo = 0 
+            articulo = "No" 
             fecha = 0
             cantidad_bultos = 0
             unidades_bulto = 0
             blister_bulto = 0
             unidades_blister = 0 
 
-        elif data_row["Status Posicion"].isin(["PC,PV"]):
-            
+        elif data_row["Status Posicion"] in ["PC", "PV"]:
+
             posicion_libre = "No"
             articulo = st.number_input(f"Escanea el artículo para la posición {data_row['Posicion']}", min_value=0,value=None)
             fecha = st.date_input(f"Selecciona la fecha de vencimiento para la posición {data_row['Posicion']}")
@@ -239,14 +239,12 @@ def mostrar_carta(data_row,posicion):
             blister_bulto = 0
             unidades_blister = 0 
 
-
-
         elif data_row["Status Posicion"] == "BL":
             
             posicion_libre = "No"
             # cantidad_confirmada = st.number_input(f"Confirma la cantidad de bultos para la posición {data_row['Posicion']}", min_value=0,value=None)
             fecha = 0
-            articulo = 0
+            articulo = st.number_input(f"Escanea el artículo para la posición {data_row['Posicion']}", min_value=0,value=None)
 
             tiene_blister = st.radio("¿Tiene Blister?", options=["Sí", "No"])  
 
@@ -269,59 +267,63 @@ def mostrar_carta(data_row,posicion):
 
         real_index = st.session_state.df.index[st.session_state.current_row]
 
-        st.session_state.df.loc[real_index,"Articulo Escaneado"] = articulo
-        st.session_state.df.loc[real_index,"Posición Libre"] = posicion_libre
-        st.session_state.df.loc[real_index,"Bultos Contados"] = cantidad_bultos
-        st.session_state.df.loc[real_index,"Blister por Bulto"] = blister_bulto
-        st.session_state.df.loc[real_index,"Unidad por Blister"] = unidades_blister
-        st.session_state.df.loc[real_index,"Unidad por Bulto"] = unidades_bulto
-        st.session_state.df.loc[real_index,"Fecha Vencimiento Observada"] = fecha
-        st.session_state.df.loc[real_index,"HoraInicio"] = st.session_state.HoraInicio.get(st.session_state.current_row, None)
+        try:
 
-        current_row_data = st.session_state.df.iloc[real_index]
+            st.session_state.df.loc[real_index,"Articulo Escaneado"] = articulo
+            st.session_state.df.loc[real_index,"Posición Libre"] = posicion_libre
+            st.session_state.df.loc[real_index,"Bultos Contados"] = cantidad_bultos
+            st.session_state.df.loc[real_index,"Blister por Bulto"] = blister_bulto
+            st.session_state.df.loc[real_index,"Unidad por Blister"] = unidades_blister
+            st.session_state.df.loc[real_index,"Unidad por Bulto"] = unidades_bulto
+            st.session_state.df.loc[real_index,"Fecha Vencimiento Observada"] = fecha
+            st.session_state.df.loc[real_index,"HoraInicio"] = st.session_state.HoraInicio.get(st.session_state.current_row, None)
 
-        unidades_contadas = int(
-            st.session_state.df.loc[real_index, "Bultos Contados"] *
-            st.session_state.df.loc[real_index, "Blister por Bulto"] *
-            st.session_state.df.loc[real_index, "Unidad por Blister"] +
-            st.session_state.df.loc[real_index, "Bultos Contados"] *
-            st.session_state.df.loc[real_index, "Unidad por Bulto"] 
-        )
+            current_row_data = st.session_state.df.iloc[real_index]
 
-        # Calcular "Diferencia Unidades"
-        diferencia_unidades = (
-            unidades_contadas - st.session_state.df.iloc[real_index]["Unidades"]
-        )
-        
+            unidades_contadas = int(
+                st.session_state.df.loc[real_index, "Bultos Contados"] *
+                st.session_state.df.loc[real_index, "Blister por Bulto"] *
+                st.session_state.df.loc[real_index, "Unidad por Blister"] +
+                st.session_state.df.loc[real_index, "Bultos Contados"] *
+                st.session_state.df.loc[real_index, "Unidad por Bulto"] 
+            )
 
-        # Procesar fechas
-        vencimiento = pd.to_datetime(
-            st.session_state.df.loc[real_index,'Vencimiento'],
-            format='%d-%m-%Y',
-            errors='coerce'
-        )
+            # Calcular "Diferencia Unidades"
+            diferencia_unidades = (
+                unidades_contadas - st.session_state.df.iloc[real_index]["Unidades"]
+            )
+            
 
-        fecha_vencimiento_observada = pd.to_datetime(
-            st.session_state.df.loc[real_index,'Fecha Vencimiento Observada'],
-            format='%d-%m-%Y',
-            errors='coerce'
-        )
+            # Procesar fechas
+            vencimiento = pd.to_datetime(
+                st.session_state.df.loc[real_index,'Vencimiento'],
+                format='%d-%m-%Y',
+                errors='coerce'
+            )
 
-        # Calcular "Diferencia Fecha Vencimiento"
-        diferencia_fecha_vencimiento = (
-            (vencimiento - fecha_vencimiento_observada).days
-            if pd.notnull(vencimiento) and pd.notnull(fecha_vencimiento_observada)
-            else None
-        )
+            fecha_vencimiento_observada = pd.to_datetime(
+                st.session_state.df.loc[real_index,'Fecha Vencimiento Observada'],
+                format='%d-%m-%Y',
+                errors='coerce'
+            )
 
-        coincide_articulo = "Si" if st.session_state.df.loc[real_index, "Articulo Escaneado"] == st.session_state.df.loc[real_index, "Cod.Articulo"] else "No"
-        # coincide_paleta = st.session_state.df.loc[real_index, "Paleta Escaneada"] = "Si" if st.session_state.df.loc[real_index, "Lote Escaneado"] == st.session_state.df.loc[real_index, "Lote"] else "No"
-        # Crear y actualizar las columnas directamente en el DataFrame
-        st.session_state.df.loc[real_index, "Unidades Contadas"] = unidades_contadas
-        st.session_state.df.loc[real_index, "Diferencia Unidades"] = diferencia_unidades
-        st.session_state.df.loc[real_index, "Diferencia Fecha Vencimiento"] = diferencia_fecha_vencimiento
-        st.session_state.df.loc[real_index, "Coincide Articulo"] = coincide_articulo
+            # Calcular "Diferencia Fecha Vencimiento"
+            diferencia_fecha_vencimiento = (
+                (vencimiento - fecha_vencimiento_observada).days
+                if pd.notnull(vencimiento) and pd.notnull(fecha_vencimiento_observada)
+                else None
+            )
 
+            coincide_articulo = "Si" if st.session_state.df.loc[real_index, "Articulo Escaneado"] == st.session_state.df.loc[real_index, "Cod.Articulo"] else "No"
+            # coincide_paleta = st.session_state.df.loc[real_index, "Paleta Escaneada"] = "Si" if st.session_state.df.loc[real_index, "Lote Escaneado"] == st.session_state.df.loc[real_index, "Lote"] else "No"
+            # Crear y actualizar las columnas directamente en el DataFrame
+            st.session_state.df.loc[real_index, "Unidades Contadas"] = unidades_contadas
+            st.session_state.df.loc[real_index, "Diferencia Unidades"] = diferencia_unidades
+            st.session_state.df.loc[real_index, "Diferencia Fecha Vencimiento"] = diferencia_fecha_vencimiento
+            st.session_state.df.loc[real_index, "Coincide Articulo"] = coincide_articulo
+
+        except:
+            pass
 
 
         if st.button("Tarea Terminada"):
