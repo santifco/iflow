@@ -123,7 +123,7 @@ def asignar_usuarios(primera_columna_lista, df_concatenado):
 
     return df_concatenado
 
-
+#
 
 
 
@@ -984,6 +984,9 @@ if "Control Picking" in seleccion:
                 N_picking = int(horas_disponibles*productividad_picking)
                 # st.warning(f"Se pueden controlar {N_picking} posiciones")
                 df_merged_picking = df_merged_picking.sample(n=N_picking, random_state=1)
+                df_merged_picking['Ordenar_primero'] = df_merged_picking['Posicion'].str.split(' - ').str[0].str[2:4]
+                df_merged_picking['Ordenar_segundo'] = df_merged_picking['Posicion'].str.split(' - ').str[1].astype(int)
+                df_merged_picking = df_merged_picking.sort_values(by=['Ordenar_primero', 'Ordenar_segundo']).drop(columns=['Ordenar_primero', 'Ordenar_segundo'])
                 # st.write(f"Mostrando {N_picking} filas seleccionadas aleatoriamente de la muestra:")
 
                 df_merged_picking = asignar_usuarios(usuarios, df_merged_picking)
@@ -1001,7 +1004,12 @@ if "Control Picking" in seleccion:
 
                 st.write(df_merged_picking)
             
-        
+
+            cantidad_filas = len(df_merged_picking)
+
+            # Mostrar el texto en Streamlit con la cantidad de filas
+            st.write(f"Cantidad de posiciones a controlar: {cantidad_filas}")
+
 
             def convert_df_to_excel(df):
                 output = BytesIO()
@@ -1128,45 +1136,40 @@ with tab6:
 
     st.title("Resultados")
 
-    if datos_stock is not None and datos_reposicionamiento is not None and seleccion is not None:
+
+    if "Control Picking" in seleccion:
 
         try:
-            # Asignar valores a cada uno de los controles
-            controles = ["Control Almacenaje", "Control Parciales", "Control Recepción", "Control Picking"]
-            valores = [N_almacenaje, N_parciales, tamano_muestra_recepcion, N_picking]  # Ejemplo de valores asignados a cada control
 
-            # Crear un DataFrame con los datos
-            df = pd.DataFrame({
-                'Control': controles,
-                'Valor': valores
-            })
+            scopes = ["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"]
+            creds = service_account.Credentials.from_service_account_info(credentials_info, scopes=scopes)
+            client = gspread.authorize(creds)
+            # Coloca tu sheet_id aquí
+            sheet_id = '1wan5qrTo_7_oUnXBUXgCuq_oJa24F5U6uhpDOe_LGf8'  # Reemplaza con tu sheet_id real
+            # Abre la hoja de Google usando el ID de la hoja
+            sheet = client.open_by_key(sheet_id).sheet1
+            # Obtiene todos los registros de la hoja
+            data = sheet.get_all_records()
+            # Convierte los datos a un DataFrame de pandas
+            df = pd.DataFrame(data)
 
-            # Mostrar el DataFrame en Streamlit
-            st.write("Datos de controles:")
+            total_filas = len(df)
+
+            # Obtener la cantidad de filas no nulas en la columna 'HoraInicio'
+            filas_no_nulas = df['HoraInicio'].notnull().sum()
+
+            # Calcular el porcentaje de avance
+            avance = (filas_no_nulas / total_filas) * 100
+
+            # Mostrar el porcentaje de avance en una barra de progreso en Streamlit
+            st.progress(avance)
+
+            # Mostrar el porcentaje en formato de texto
+            st.write(f"Porcentaje de avance: {avance:.2f}%")
+
+            df = df[df['Diferencia Unidades'] != 0]
+
             st.write(df)
-
-            # Crear un gráfico de barras usando Plotly
-            fig = px.bar(df, x='Control', y='Valor', title="Valores por tipo de Control", 
-                        labels={'Valor': 'Cantidad de Posiciones', 'Control': 'Tipo de Control'})
-
-            # Mostrar el gráfico en Streamlit
-            st.plotly_chart(fig)
-
-            df_concatenado_estados = df_concatenado["Status Posicion"].value_counts().reset_index()
-            df_concatenado_estados.columns = ['Status Posicion', 'Cantidad']
-
-            st.write(df_concatenado_estados)
-
-                        # Crear un gráfico de barras usando Plotly
-            fig_2 = px.bar(df_concatenado_estados, x='Status Posicion', y='Cantidad', title="Valores por tipo de Control", 
-                        labels={'Valor': 'Cantidad de Posiciones', 'Control': 'Tipo de Control'})
-
-            # Mostrar el gráfico en Streamlit
-            st.plotly_chart(fig_2)
-
 
         except:
             pass
-    
-    else:
-        pass
