@@ -158,8 +158,7 @@ if "current_row" not in st.session_state or st.session_state.current_row is None
     #     st.session_state.current_row = 0
 
 
-st.write(st.session_state.current_row)
-st.write(st.session_state.df)
+
 # # Convertir la lista de listas en un DataFrame de pandas
 # df = pd.DataFrame(data)
 
