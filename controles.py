@@ -20,48 +20,48 @@ from google.oauth2 import service_account
 
 st.set_page_config(page_title="Controles Logisticos", layout="wide")
 
-# credentials_info = st.secrets["gcp_service_account"]
+credentials_info = st.secrets["gcp_service_account"]
 
-credentials_info = {
-    "type": "service_account",
-    "project_id": "inbound-pattern-429101-c5",
-    "private_key_id": "9dcc01743c917fb186294a8c6d228d4c2fb005bc",
-    "private_key": """-----BEGIN PRIVATE KEY-----
-MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDPvpK+357PGmvc
-6jxJTHyKfpUs/2861MGvfClaGMjEw9G8YmeeeH8PAkc/rZxaHpl2zcmpUQfTauxs
-0mhbOD42jxRflbdi00yvHVkBBtYdzfvtGwepEUsP26yqOySm6PiVI/XKHWdct61B
-28l/VW+mjXDVPiDiMATQRTJi4tYTgC5eSjhnkT4efY7gUMHmO2057cI+jmRob1WV
-PEEWLGt76R4IGnH/FtoW2B6lPoOb7KefRx2WgHfTu+zsXvqmbGbgRLSlheG4Zb6g
-h0dZXcyojx5vGgJT3ty4o5XgpA6n9EH2uURDXUBYQ9KE8mcNDM9VK6KQEYeBmIJr
-QOvMftM1AgMBAAECggEAAn4NSNdS4/vtzVvknLk+SUTmmuklQvARPtBfK1zqZSza
-cQ1XARha/p3r7ReQCpAFyJinRharmulIrFJJjmmF4HdUnycjIxxNUyH5GJLgJpM1
-cY1Ad6PNkKZSsKH41iVDCGk3N8mk4tH5rynGKKViwreabZX5sEuQdiEIlRXchgLN
-ransgsarOU/8+RI2W5JRt7wPAO56WsZc+zeOIyLS7RScibfdi8wMQYZF7PsPB5EG
-6ps50hxHWZ18lgLgJO5iK6YZkINHwW8AWDaxonxTgn4eYT8iUDMol8D5i2AXM5x1
-JnRzhLKnNUdzug4RB7XrcCOsjoDOU2dW1VbXTNkyxQKBgQD4WbO23ktbkl64dmdA
-ZKhRSRcBfbUf8/+Olp8Dt/PTb53Rjvsm3XK5EUK6t9oMGgL131UuOcKysV1RCyzT
-I5jjiY5Q3Ws2L0N2IFfxSBI7Di2hxSWLaXgETsMUV0MBfv1TH/8E+3tEtoj26lZY
-A0GVOrGprEJVNcL3X3T83R3mNwKBgQDWJK8icbaJujm9HfXi9ODcG7YpPYKRcqJa
-LZclOiccRHIUN4SzouIfB6kp63k96W5Yzm6GeRgaiB/LQNPNTDFO4Q7Zrm7wci9o
-kzRUHWJcgKl7r8Q+TYXBPJVn0dZe65G5O/d+7cmQn+MUp0Gi5cnYu9eaeKHoJGY0
-P6vCKhab8wKBgC2cK8k14hkbNJIkDKpi0ha7maIIeC86HIEPYHzKV9lI8m7+F1n3
-6Y3bganRAhae4FRPg9FNglhXApBTwRO1wepn5N8tCveUjosvPXduiQqXfAHttwt3
-fzcrT+B4djHcJKITij5cATOJYnYWa20WjADgGqjSngwQJ5JO0alu4oLZAoGAD138
-j203mzSY9iBTR+EozcLTVKxMVWGzkuMYqJw+uEGVKiw9wqJatb1X/2EdhzrcJ1VR
-Cydfem/wUCarzFy+YRm3dhmVbn3TNx7xL2QYbejxwKWBYLMxeQd+9T9SsecXwwIx
-pZMs1ssSgaXrCOSSkpIQS86CV+VczD0Rd1KL4s8CgYEAhfI92S/3eL6eOkm7yHL1
-4331R/gomiO4QehLpyUZfirpqxNO/8BL6f25Jp5cC3dJeNu4xEbbMIMpEpT9C+ZJ
-4WWYzDCC43HB8AbA8SgMDz7Vaa6h9zHJolLLrcsDMtiD4JT7VeV4UluWXIaRbg6p
-XYwWQL2d6uGePDriQHXIUmY=
------END PRIVATE KEY-----""",
-    "client_email": "google-sheets-api@inbound-pattern-429101-c5.iam.gserviceaccount.com",
-    "client_id": "107649396128661753097",
-    "auth_uri": "https://accounts.google.com/o/oauth2/auth",
-    "token_uri": "https://oauth2.googleapis.com/token",
-    "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
-    "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/google-sheets-api%40inbound-pattern-429101-c5.iam.gserviceaccount.com",
-    "universe_domain": "googleapis.com"
-}
+# credentials_info = {
+#     "type": "service_account",
+#     "project_id": "inbound-pattern-429101-c5",
+#     "private_key_id": "9dcc01743c917fb186294a8c6d228d4c2fb005bc",
+#     "private_key": """-----BEGIN PRIVATE KEY-----
+# MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDPvpK+357PGmvc
+# 6jxJTHyKfpUs/2861MGvfClaGMjEw9G8YmeeeH8PAkc/rZxaHpl2zcmpUQfTauxs
+# 0mhbOD42jxRflbdi00yvHVkBBtYdzfvtGwepEUsP26yqOySm6PiVI/XKHWdct61B
+# 28l/VW+mjXDVPiDiMATQRTJi4tYTgC5eSjhnkT4efY7gUMHmO2057cI+jmRob1WV
+# PEEWLGt76R4IGnH/FtoW2B6lPoOb7KefRx2WgHfTu+zsXvqmbGbgRLSlheG4Zb6g
+# h0dZXcyojx5vGgJT3ty4o5XgpA6n9EH2uURDXUBYQ9KE8mcNDM9VK6KQEYeBmIJr
+# QOvMftM1AgMBAAECggEAAn4NSNdS4/vtzVvknLk+SUTmmuklQvARPtBfK1zqZSza
+# cQ1XARha/p3r7ReQCpAFyJinRharmulIrFJJjmmF4HdUnycjIxxNUyH5GJLgJpM1
+# cY1Ad6PNkKZSsKH41iVDCGk3N8mk4tH5rynGKKViwreabZX5sEuQdiEIlRXchgLN
+# ransgsarOU/8+RI2W5JRt7wPAO56WsZc+zeOIyLS7RScibfdi8wMQYZF7PsPB5EG
+# 6ps50hxHWZ18lgLgJO5iK6YZkINHwW8AWDaxonxTgn4eYT8iUDMol8D5i2AXM5x1
+# JnRzhLKnNUdzug4RB7XrcCOsjoDOU2dW1VbXTNkyxQKBgQD4WbO23ktbkl64dmdA
+# ZKhRSRcBfbUf8/+Olp8Dt/PTb53Rjvsm3XK5EUK6t9oMGgL131UuOcKysV1RCyzT
+# I5jjiY5Q3Ws2L0N2IFfxSBI7Di2hxSWLaXgETsMUV0MBfv1TH/8E+3tEtoj26lZY
+# A0GVOrGprEJVNcL3X3T83R3mNwKBgQDWJK8icbaJujm9HfXi9ODcG7YpPYKRcqJa
+# LZclOiccRHIUN4SzouIfB6kp63k96W5Yzm6GeRgaiB/LQNPNTDFO4Q7Zrm7wci9o
+# kzRUHWJcgKl7r8Q+TYXBPJVn0dZe65G5O/d+7cmQn+MUp0Gi5cnYu9eaeKHoJGY0
+# P6vCKhab8wKBgC2cK8k14hkbNJIkDKpi0ha7maIIeC86HIEPYHzKV9lI8m7+F1n3
+# 6Y3bganRAhae4FRPg9FNglhXApBTwRO1wepn5N8tCveUjosvPXduiQqXfAHttwt3
+# fzcrT+B4djHcJKITij5cATOJYnYWa20WjADgGqjSngwQJ5JO0alu4oLZAoGAD138
+# j203mzSY9iBTR+EozcLTVKxMVWGzkuMYqJw+uEGVKiw9wqJatb1X/2EdhzrcJ1VR
+# Cydfem/wUCarzFy+YRm3dhmVbn3TNx7xL2QYbejxwKWBYLMxeQd+9T9SsecXwwIx
+# pZMs1ssSgaXrCOSSkpIQS86CV+VczD0Rd1KL4s8CgYEAhfI92S/3eL6eOkm7yHL1
+# 4331R/gomiO4QehLpyUZfirpqxNO/8BL6f25Jp5cC3dJeNu4xEbbMIMpEpT9C+ZJ
+# 4WWYzDCC43HB8AbA8SgMDz7Vaa6h9zHJolLLrcsDMtiD4JT7VeV4UluWXIaRbg6p
+# XYwWQL2d6uGePDriQHXIUmY=
+# -----END PRIVATE KEY-----""",
+#     "client_email": "google-sheets-api@inbound-pattern-429101-c5.iam.gserviceaccount.com",
+#     "client_id": "107649396128661753097",
+#     "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+#     "token_uri": "https://oauth2.googleapis.com/token",
+#     "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+#     "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/google-sheets-api%40inbound-pattern-429101-c5.iam.gserviceaccount.com",
+#     "universe_domain": "googleapis.com"
+# }
 
 valores_validos_secos = [
     "BA", "BB", "BC", "BD", "BE", "BF", "BG", "BH",
@@ -1139,6 +1139,7 @@ with tab6:
 
     if "Control Picking" in seleccion:
 
+
         try:
 
             scopes = ["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"]
@@ -1156,20 +1157,67 @@ with tab6:
             total_filas = len(df)
 
             # Obtener la cantidad de filas no nulas en la columna 'HoraInicio'
-            filas_no_nulas = df['HoraInicio'].notnull().sum()
+            filas_no_nulas = df['HoraInicio'].notna() & df['HoraInicio'].astype(str).str.strip().ne('')
+            filas_no_nulas = filas_no_nulas.sum()
 
             # Calcular el porcentaje de avance
-            avance = (filas_no_nulas / total_filas) * 100
+            avance = (filas_no_nulas / total_filas)
 
             # Mostrar el porcentaje de avance en una barra de progreso en Streamlit
             st.progress(avance)
 
             # Mostrar el porcentaje en formato de texto
-            st.write(f"Porcentaje de avance: {avance:.2f}%")
+            st.write(f"Porcentaje de avance: {(avance)*100:.2f}%")
 
-            df = df[df['Diferencia Unidades'] != 0]
+            df = df[df['Diferencia Unidades'].ne(0) & df['Diferencia Unidades'].notna() & df['Diferencia Unidades'].astype(str).str.strip().ne('')]
 
-            st.write(df)
+            df_monitoreo = df[["Entidad","Temperatura","Cod.Articulo","Descripcion Articulo","Posicion","Diferencia Unidades"]]
+
+            st.write(df_monitoreo)
+
+            if st.button("Actualizar Google Sheets Picking"):
+                
+
+                df = df[["Cod.Articulo","Temperatura","Rubro","Entidad","Descripcion Articulo","Pasillo","Columna","Nivel","Sector","Posicion","Bultos","Unidades","Vencimiento","Un.x Bulto","Usuario"]]   
+
+                scopes = ["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"]
+                creds = service_account.Credentials.from_service_account_info(credentials_info, scopes=scopes)
+
+                # st.write(creds)
+
+                # Autenticar cliente de Google Sheets
+                client = gspread.authorize(creds)
+                # Coloca tu sheet_id aquí
+                sheet_id = '1J0YmuXlCFx_lg5DKGS_o_09nhkJaGVh7PLrjsyV2Nsc'  # Reemplaza con tu sheet_id real
+
+                # Abre la hoja de Google usando el ID de la hoja
+                sheet = client.open_by_key(sheet_id).sheet1
+
+                df = df.fillna("0")
+                # Convirtiendo el DataFrame a una lista de listas
+                df_values = df.values.tolist()
+                
+                # Escribe los datos en el Google Sheet, sobrescribiendo todo
+                sheet.clear()  # Borrar el contenido anterior
+                sheet.append_row(df.columns.tolist())  # Escribe los encabezados
+                sheet.append_rows(df_values)  # Escribe los datos del DataFrame
+
+                sheet_id_2 = '1wan5qrTo_7_oUnXBUXgCuq_oJa24F5U6uhpDOe_LGf8'  # Reemplaza con tu sheet_id real
+                # Abre la hoja de Google usando el ID de la hoja
+                sheet = client.open_by_key(sheet_id_2).sheet1
+
+                df = df.fillna("0")
+                # Convirtiendo el DataFrame a una lista de listas
+                df_values = df.values.tolist()
+                
+                # Escribe los datos en el Google Sheet, sobrescribiendo todo
+                sheet.clear()  # Borrar el contenido anterior
+                sheet.append_row(df.columns.tolist())  # Escribe los encabezados
+                sheet.append_rows(df_values)  # Escribe los datos del DataFrame
+
+
+                st.success("¡Datos actualizados en Google Sheets con éxito!")
 
         except:
+
             pass
