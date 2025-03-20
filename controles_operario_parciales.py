@@ -309,6 +309,9 @@ def mostrar_carta(data_row,posicion):
             st.session_state.df.loc[real_index, "HoraFin"] = hora_fin
             st.session_state.df.loc[real_index,"Fecha"] = fecha_control
 
+            hora_inicio = st.session_state.df.loc[real_index, "HoraInicio"]
+            hora_fin = st.session_state.df.loc[real_index, "HoraFin"]
+
             # Asegúrate de que ambos son objetos datetime
             hora_inicio = pd.to_datetime(hora_inicio, format="%d-%m-%Y %H:%M:%S")
             hora_fin = pd.to_datetime(hora_fin, format="%d-%m-%Y %H:%M:%S")

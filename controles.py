@@ -1139,6 +1139,7 @@ with tab6:
 
     if "Control Picking" in seleccion:
 
+        st.subheader("Control Picking")
 
         try:
 
@@ -1152,12 +1153,12 @@ with tab6:
             # Obtiene todos los registros de la hoja
             data = sheet.get_all_records()
             # Convierte los datos a un DataFrame de pandas
-            df = pd.DataFrame(data)
+            df_resultado_picking = pd.DataFrame(data)
 
-            total_filas = len(df)
+            total_filas = len(df_resultado_picking)
 
             # Obtener la cantidad de filas no nulas en la columna 'HoraInicio'
-            filas_no_nulas = df['HoraInicio'].notna() & df['HoraInicio'].astype(str).str.strip().ne('')
+            filas_no_nulas = df_resultado_picking['HoraInicio'].notna() & df_resultado_picking['HoraInicio'].astype(str).str.strip().ne('')
             filas_no_nulas = filas_no_nulas.sum()
 
             # Calcular el porcentaje de avance
@@ -1169,13 +1170,13 @@ with tab6:
             # Mostrar el porcentaje en formato de texto
             st.write(f"Porcentaje de avance: {(avance)*100:.2f}%")
 
-            df = df[df['Diferencia Unidades'].ne(0) & df['Diferencia Unidades'].notna() & df['Diferencia Unidades'].astype(str).str.strip().ne('')]
+            df_resultado_picking = df_resultado_picking[df_resultado_picking['Diferencia Unidades'].ne(0) & df_resultado_picking['Diferencia Unidades'].notna() & df_resultado_picking['Diferencia Unidades'].astype(str).str.strip().ne('')]
 
-            df_monitoreo = df[["Entidad","Temperatura","Cod.Articulo","Descripcion Articulo","Posicion","Diferencia Unidades"]]
+            df_resultado_picking_monitoreo = df_resultado_picking[["Entidad","Temperatura","Cod.Articulo","Descripcion Articulo","Posicion","Diferencia Unidades"]]
 
-            st.write(df_monitoreo)
+            st.write(df_resultado_picking_monitoreo)
 
-            if st.button("Actualizar Google Sheets Picking"):
+            if st.button("Recontrolar Picking"):
                 
 
                 # Definir función para agregar datos en la última fila disponible
@@ -1205,20 +1206,191 @@ with tab6:
                         return False
 
                 # Definir las columnas que se van a exportar
-                columnas = ["Cod.Articulo", "Temperatura", "Rubro", "Entidad", "Descripcion Articulo", 
-                            "Pasillo", "Columna", "Nivel", "Sector", "Posicion", "Bultos", "Unidades", 
-                            "Vencimiento", "Un.x Bulto", "Usuario"]
-                df = df[columnas]
+                # columnas = ["Cod.Articulo", "Temperatura", "Rubro", "Entidad", "Descripcion Articulo", 
+                #              "Pasillo", "Columna", "Nivel", "Sector", "Posicion", "Bultos", "Unidades", 
+                #              "Vencimiento", "Un.x Bulto", "Usuario"]
+                #  df = df[columnas]
+                df_resultado_picking = df_resultado_picking.loc[:, : "Usuario"]
 
                 # ID de las hojas de Google Sheets
                 sheet_ids = [
-                    "1J0YmuXlCFx_lg5DKGS_o_09nhkJaGVh7PLrjsyV2Nsc",
                     "1wan5qrTo_7_oUnXBUXgCuq_oJa24F5U6uhpDOe_LGf8"
                 ]
 
                 # Agregar datos en la última fila de ambas hojas
                 for sheet_id in sheet_ids:
-                    if agregar_a_google_sheets(df, sheet_id):
+                    if agregar_a_google_sheets(df_resultado_picking, sheet_id):
+                        st.success(f"¡Datos agregados en la última fila de Google Sheet con éxito!")
+
+        except:
+            pass
+
+
+    if "Control Recepción" in seleccion:
+
+        st.subheader("Control Recepción")
+
+        try:
+
+            scopes = ["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"]
+            creds = service_account.Credentials.from_service_account_info(credentials_info, scopes=scopes)
+            client = gspread.authorize(creds)
+            # Coloca tu sheet_id aquí
+            sheet_id = '1BFyf3o8jYCleLtKwaMD9b90ZPhJBE8-yXeq74En_B_M'  # Reemplaza con tu sheet_id real
+            # Abre la hoja de Google usando el ID de la hoja
+            sheet = client.open_by_key(sheet_id).sheet1
+            # Obtiene todos los registros de la hoja
+            data = sheet.get_all_records()
+            # Convierte los datos a un DataFrame de pandas
+            df_resultado_recepcion = pd.DataFrame(data)
+
+            total_filas = len(df_resultado_recepcion)
+
+            # Obtener la cantidad de filas no nulas en la columna 'HoraInicio'
+            filas_no_nulas = df_resultado_recepcion['HoraInicio'].notna() & df_resultado_recepcion['HoraInicio'].astype(str).str.strip().ne('')
+            filas_no_nulas = filas_no_nulas.sum()
+
+            # Calcular el porcentaje de avance
+            avance = (filas_no_nulas / total_filas)
+
+            # Mostrar el porcentaje de avance en una barra de progreso en Streamlit
+            st.progress(avance)
+
+            # Mostrar el porcentaje en formato de texto
+            st.write(f"Porcentaje de avance: {(avance)*100:.2f}%")
+
+            df_resultado_recepcion = df_resultado_recepcion[df_resultado_recepcion['Diferencia Unidades'].ne(0) & df_resultado_recepcion['Diferencia Unidades'].notna() & df_resultado_recepcion['Diferencia Unidades'].astype(str).str.strip().ne('')]
+
+            df_resultado_recepcion_monitoreo = df_resultado_recepcion[["Entidad","Temperatura","Articulo","Descripcion Articulo","Posicion","Diferencia Unidades"]]
+
+            st.write(df_resultado_recepcion_monitoreo)
+
+            if st.button("Recontrolar Recepción"):
+                
+
+                # Definir función para agregar datos en la última fila disponible
+                def agregar_a_google_sheets(df, sheet_id):
+                    try:
+                        # Autenticar cliente de Google Sheets
+                        scopes = ["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"]
+                        creds = service_account.Credentials.from_service_account_info(credentials_info, scopes=scopes)
+                        client = gspread.authorize(creds)
+
+                        # Abrir la hoja de Google usando el ID
+                        sheet = client.open_by_key(sheet_id).sheet1
+
+                        # Llenar valores NaN con "0"
+                        df = df.fillna("0")
+
+                        # Convertir el DataFrame a lista de listas
+                        df_values = df.values.tolist()
+
+                        # Agregar filas al final de la hoja
+                        sheet.append_rows(df_values, value_input_option="RAW")
+
+                        return True
+
+                    except Exception as e:
+                        st.error(f"Error al actualizar Google Sheets: {e}")
+                        return False
+
+                # Definir las columnas que se van a exportar
+                df_resultado_recepcion = df_resultado_recepcion.loc[:, : "Usuario"]
+
+                # ID de las hojas de Google Sheets
+                sheet_ids = [
+                    "1BFyf3o8jYCleLtKwaMD9b90ZPhJBE8-yXeq74En_B_M"
+                ]
+
+                # Agregar datos en la última fila de ambas hojas
+                for sheet_id in sheet_ids:
+                    if agregar_a_google_sheets(df_resultado_recepcion, sheet_id):
+                        st.success(f"¡Datos agregados en la última fila de Google Sheet con éxito!")
+
+        except:
+
+            pass
+
+
+    if "Control Parciales" in seleccion:
+
+        st.subheader("Control Parciales")
+
+        try:
+
+            scopes = ["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"]
+            creds = service_account.Credentials.from_service_account_info(credentials_info, scopes=scopes)
+            client = gspread.authorize(creds)
+            # Coloca tu sheet_id aquí
+            sheet_id = '1OuRlrf7RR7P1o0FGIGKIWLMjSFo62Aa3NgiEvpTx2Ps'  # Reemplaza con tu sheet_id real
+            # Abre la hoja de Google usando el ID de la hoja
+            sheet = client.open_by_key(sheet_id).sheet1
+            # Obtiene todos los registros de la hoja
+            data = sheet.get_all_records()
+            # Convierte los datos a un DataFrame de pandas
+            df_resultado_parciales = pd.DataFrame(data)
+
+            total_filas = len(df_resultado_parciales)
+
+            # Obtener la cantidad de filas no nulas en la columna 'HoraInicio'
+            filas_no_nulas = df_resultado_parciales['HoraInicio'].notna() & df_resultado_parciales['HoraInicio'].astype(str).str.strip().ne('')
+            filas_no_nulas = filas_no_nulas.sum()
+
+            # Calcular el porcentaje de avance
+            avance = (filas_no_nulas / total_filas)
+
+            # Mostrar el porcentaje de avance en una barra de progreso en Streamlit
+            st.progress(avance)
+
+            # Mostrar el porcentaje en formato de texto
+            st.write(f"Porcentaje de avance: {(avance)*100:.2f}%")
+
+            df_resultado_parciales = df_resultado_parciales[df_resultado_parciales['Diferencia Unidades'].ne(0) & df_resultado_parciales['Diferencia Unidades'].notna() & df_resultado_parciales['Diferencia Unidades'].astype(str).str.strip().ne('')]
+
+            df_resultado_parciales_monitoreo = df_resultado_parciales[["Entidad","Temperatura","Cod.Articulo","Descripcion Articulo","Posicion","Diferencia Unidades"]]
+
+            st.write(df_resultado_parciales_monitoreo)
+
+            if st.button("Recontrolar Parciales"):
+                
+
+                # Definir función para agregar datos en la última fila disponible
+                def agregar_a_google_sheets(df, sheet_id):
+                    try:
+                        # Autenticar cliente de Google Sheets
+                        scopes = ["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"]
+                        creds = service_account.Credentials.from_service_account_info(credentials_info, scopes=scopes)
+                        client = gspread.authorize(creds)
+
+                        # Abrir la hoja de Google usando el ID
+                        sheet = client.open_by_key(sheet_id).sheet1
+
+                        # Llenar valores NaN con "0"
+                        df = df.fillna("0")
+
+                        # Convertir el DataFrame a lista de listas
+                        df_values = df.values.tolist()
+
+                        # Agregar filas al final de la hoja
+                        sheet.append_rows(df_values, value_input_option="RAW")
+
+                        return True
+
+                    except Exception as e:
+                        st.error(f"Error al actualizar Google Sheets: {e}")
+                        return False
+
+                # Definir las columnas que se van a exportar
+                df_resultado_parciales = df_resultado_parciales.loc[:, : "Usuario"]
+
+                # ID de las hojas de Google Sheets
+                sheet_ids = [
+                    "1OuRlrf7RR7P1o0FGIGKIWLMjSFo62Aa3NgiEvpTx2Ps"
+                ]
+
+                # Agregar datos en la última fila de ambas hojas
+                for sheet_id in sheet_ids:
+                    if agregar_a_google_sheets(df_resultado_parciales, sheet_id):
                         st.success(f"¡Datos agregados en la última fila de Google Sheet con éxito!")
 
         except:

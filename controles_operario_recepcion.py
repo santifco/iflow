@@ -322,6 +322,20 @@ def mostrar_carta(data_row,posicion):
             st.session_state.df.loc[real_index, "HoraFin"] = hora_fin
             st.session_state.df.loc[real_index,"Fecha"] = fecha_control
 
+            hora_inicio = st.session_state.df.loc[real_index, "HoraInicio"]
+            hora_fin = st.session_state.df.loc[real_index, "HoraFin"]
+            # Asegúrate de que ambos son objetos datetime
+            hora_inicio = pd.to_datetime(hora_inicio, format="%d-%m-%Y %H:%M:%S")
+            hora_fin = pd.to_datetime(hora_fin, format="%d-%m-%Y %H:%M:%S")
+
+            # Calcular la diferencia entre 'HoraFin' y 'HoraInicio'
+            diferencia = hora_fin - hora_inicio
+
+            # Calcular la productividad (diferencia en segundos)
+            productividad = diferencia.total_seconds()/ 3600
+
+            # Asignar la productividad al DataFrame
+            st.session_state.df.loc[real_index, "Productividad"] = productividad
 
             header_values = st.session_state.df.columns.tolist()
             sheet.update("A1", [header_values])
