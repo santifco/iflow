@@ -378,7 +378,7 @@ def mostrar_carta(data_row,posicion):
 
 if st.session_state.user_logged_in:
 
-    st.write(st.session_state.current_row)
+    # st.write(st.session_state.current_row)
 
     # Verificar si hay más filas para procesar
     if st.session_state.current_row <= (st.session_state.df.index[st.session_state.df["Usuario"] == st.session_state.selected_value]).max():
