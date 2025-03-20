@@ -1178,45 +1178,48 @@ with tab6:
             if st.button("Actualizar Google Sheets Picking"):
                 
 
-                df = df[["Cod.Articulo","Temperatura","Rubro","Entidad","Descripcion Articulo","Pasillo","Columna","Nivel","Sector","Posicion","Bultos","Unidades","Vencimiento","Un.x Bulto","Usuario"]]   
+                # Definir función para agregar datos en la última fila disponible
+                def agregar_a_google_sheets(df, sheet_id):
+                    try:
+                        # Autenticar cliente de Google Sheets
+                        scopes = ["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"]
+                        creds = service_account.Credentials.from_service_account_info(credentials_info, scopes=scopes)
+                        client = gspread.authorize(creds)
 
-                scopes = ["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"]
-                creds = service_account.Credentials.from_service_account_info(credentials_info, scopes=scopes)
+                        # Abrir la hoja de Google usando el ID
+                        sheet = client.open_by_key(sheet_id).sheet1
 
-                # st.write(creds)
+                        # Llenar valores NaN con "0"
+                        df = df.fillna("0")
 
-                # Autenticar cliente de Google Sheets
-                client = gspread.authorize(creds)
-                # Coloca tu sheet_id aquí
-                sheet_id = '1J0YmuXlCFx_lg5DKGS_o_09nhkJaGVh7PLrjsyV2Nsc'  # Reemplaza con tu sheet_id real
+                        # Convertir el DataFrame a lista de listas
+                        df_values = df.values.tolist()
 
-                # Abre la hoja de Google usando el ID de la hoja
-                sheet = client.open_by_key(sheet_id).sheet1
+                        # Agregar filas al final de la hoja
+                        sheet.append_rows(df_values, value_input_option="RAW")
 
-                df = df.fillna("0")
-                # Convirtiendo el DataFrame a una lista de listas
-                df_values = df.values.tolist()
-                
-                # Escribe los datos en el Google Sheet, sobrescribiendo todo
-                sheet.clear()  # Borrar el contenido anterior
-                sheet.append_row(df.columns.tolist())  # Escribe los encabezados
-                sheet.append_rows(df_values)  # Escribe los datos del DataFrame
+                        return True
 
-                sheet_id_2 = '1wan5qrTo_7_oUnXBUXgCuq_oJa24F5U6uhpDOe_LGf8'  # Reemplaza con tu sheet_id real
-                # Abre la hoja de Google usando el ID de la hoja
-                sheet = client.open_by_key(sheet_id_2).sheet1
+                    except Exception as e:
+                        st.error(f"Error al actualizar Google Sheets: {e}")
+                        return False
 
-                df = df.fillna("0")
-                # Convirtiendo el DataFrame a una lista de listas
-                df_values = df.values.tolist()
-                
-                # Escribe los datos en el Google Sheet, sobrescribiendo todo
-                sheet.clear()  # Borrar el contenido anterior
-                sheet.append_row(df.columns.tolist())  # Escribe los encabezados
-                sheet.append_rows(df_values)  # Escribe los datos del DataFrame
+                # Definir las columnas que se van a exportar
+                columnas = ["Cod.Articulo", "Temperatura", "Rubro", "Entidad", "Descripcion Articulo", 
+                            "Pasillo", "Columna", "Nivel", "Sector", "Posicion", "Bultos", "Unidades", 
+                            "Vencimiento", "Un.x Bulto", "Usuario"]
+                df = df[columnas]
 
+                # ID de las hojas de Google Sheets
+                sheet_ids = [
+                    "1J0YmuXlCFx_lg5DKGS_o_09nhkJaGVh7PLrjsyV2Nsc",
+                    "1wan5qrTo_7_oUnXBUXgCuq_oJa24F5U6uhpDOe_LGf8"
+                ]
 
-                st.success("¡Datos actualizados en Google Sheets con éxito!")
+                # Agregar datos en la última fila de ambas hojas
+                for sheet_id in sheet_ids:
+                    if agregar_a_google_sheets(df, sheet_id):
+                        st.success(f"¡Datos agregados en la última fila de Google Sheet con éxito!")
 
         except:
 
