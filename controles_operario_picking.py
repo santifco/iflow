@@ -66,15 +66,12 @@ def load_data(url):
     df["Posicion"] = df["Posicion"].str.rstrip()
     df['Ordenar_primero'] = df['Posicion'].str.split(' - ').str[0].str[2:4]
     df['Ordenar_segundo'] = df['Posicion'].str.split(' - ').str[1].astype(int)
-    df = df.sort_values(by=['Ordenar_primero', 'Ordenar_segundo']).drop(columns=['Ordenar_primero', 'Ordenar_segundo'])
     df = df.loc[:, ~df.columns.str.contains("Unnamed")]
 
     return df
 
 # Cargar los datos
 df = load_data(data_url)
-
-
 # Obtener valores únicos de la primera columna
 primera_columna_lista = df["Usuario"].dropna().unique().tolist()
 
@@ -132,9 +129,7 @@ def encontrar_siguiente_fila_vacia(sheet, usuario_filtrado):
         for i, row in enumerate(data_filtrada, start=1):  # Usamos el índice en la lista filtrada
             # El índice global de la fila es la posición relativa en el conjunto completo de datos
             global_index = data.index(row)  # Encuentra el índice en el conjunto completo de datos
-            
             if len(row) <= col_index or row[col_index] == "":
-                # st.write(global_index-1)
                 return (global_index-1)  # Retorna el índice global de la fila vacía
     # Si no se encuentra una fila vacía, retornar la primera fila del usuario filtrado
       # Devuelve el índice global de la primera fila del usuario filtrado
@@ -154,6 +149,7 @@ sheet = client.open_by_key(sheet_id).sheet1
 
 if "current_row" not in st.session_state or st.session_state.current_row is None:
     st.session_state.current_row = encontrar_siguiente_fila_vacia(sheet,st.session_state.selected_value)
+    
 
     # if st.session_state.current_row == None:
     #     st.session_state.current_row = 0

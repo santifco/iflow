@@ -70,7 +70,6 @@ def load_data(url):
     df["Posicion"] = df["Posicion"].str.rstrip()
     df['Ordenar_primero'] = df['Posicion'].str.split(' - ').str[0].str[2:4]
     df['Ordenar_segundo'] = df['Posicion'].str.split(' - ').str[1].astype(int)
-    df = df.sort_values(by=['Ordenar_primero', 'Ordenar_segundo']).drop(columns=['Ordenar_primero', 'Ordenar_segundo'])
     df = df.loc[:, ~df.columns.str.contains("Unnamed")]
 
     return df
