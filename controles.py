@@ -1309,7 +1309,7 @@ with tab6:
                 df_resultado_recepcion = df_resultado_recepcion.loc[:, : "Usuario"]
 
                 # ID de las hojas de Google Sheets
-                sheet_ids = [
+                sheet_ids = ["1tpJAMDbUMANKitwywXEJ3_4Khm-DbJPAPxUbzva75cU",
                     "1BFyf3o8jYCleLtKwaMD9b90ZPhJBE8-yXeq74En_B_M"
                 ]
 
@@ -1403,7 +1403,7 @@ with tab6:
                 df_resultado_parciales = df_resultado_parciales.loc[:, : "Usuario"]
 
                 # ID de las hojas de Google Sheets
-                sheet_ids = [
+                sheet_ids = ["1eikx9phIghxyiv1yfFy3ZqqNePWSbhkyvisOzSD37pw",
                     "1OuRlrf7RR7P1o0FGIGKIWLMjSFo62Aa3NgiEvpTx2Ps"
                 ]
 
