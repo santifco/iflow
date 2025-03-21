@@ -74,6 +74,7 @@ def load_data(url):
 # Cargar los datos
 df = load_data(data_url)
 
+
 # Obtener valores únicos de la primera columna
 primera_columna_lista = df["Usuario"].dropna().unique().tolist()
 
@@ -158,7 +159,6 @@ if "current_row" not in st.session_state or st.session_state.current_row is None
     #     st.session_state.current_row = 0
 
 
-
 # # Convertir la lista de listas en un DataFrame de pandas
 # df = pd.DataFrame(data)
 
@@ -234,7 +234,7 @@ def mostrar_carta(data_row,posicion):
             tiene_blister = st.radio("¿Tiene Blister?", options=["Sí", "No"])
 
             if tiene_blister == "No":
-                cantidad_bultos = st.number_input(f"Confirma la cantidad de BULTO CERRADOS para la posición ", min_value=0,value=None)
+                cantidad_bultos = st.number_input(f"Confirma la cantidad de BULTO CERRADOS para la posición ", min_value=0,max_value=3000,value=None)
                 unidades_bulto = st.number_input(f"Confirma la cantidad de UNIDADES POR BULTO para la posición ", min_value=0,value=None)
                 cantidad_unidades_sueltos = st.number_input(f"Confirma la cantidad de UNIDADES SUELTAS para la posición ", min_value=0,value=None)
                 blister_bulto = 0
@@ -242,10 +242,10 @@ def mostrar_carta(data_row,posicion):
                 cantidad_blister_sueltos = 0 
 
             elif tiene_blister == "Sí":
-                cantidad_bultos = st.number_input(f"Confirma la cantidad de BULTOS CERRADOS para la posición ", min_value=0,value=None)
-                blister_bulto = st.number_input(f"Confirma la cantidad de BLISTER POR BULTO para la posición ", min_value=0,value=None)
-                unidades_blister = st.number_input(f"Confirma la cantidad de UNIDADES POR BLISTER para la posición ", min_value=0,value=None)
-                cantidad_blister_sueltos = st.number_input(f"Confirma la cantidad de BLISTER SUELTOS para la posición ", min_value=0,value=None)
+                cantidad_bultos = st.number_input(f"Confirma la cantidad de BULTOS CERRADOS para la posición ", min_value=0,max_value=3000,value=None)
+                blister_bulto = st.number_input(f"Confirma la cantidad de BLISTER POR BULTO para la posición ", min_value=0,max_value=3000,value=None)
+                unidades_blister = st.number_input(f"Confirma la cantidad de UNIDADES POR BLISTER para la posición ", min_value=0,max_value=3000,value=None)
+                cantidad_blister_sueltos = st.number_input(f"Confirma la cantidad de BLISTER SUELTOS para la posición ", min_value=0,max_value=3000,value=None)
                 unidades_bulto = 0
                 cantidad_unidades_sueltos = 0    
 
@@ -377,8 +377,6 @@ def mostrar_carta(data_row,posicion):
 
 
 if st.session_state.user_logged_in:
-
-    # st.write(st.session_state.current_row)
 
     # Verificar si hay más filas para procesar
     if st.session_state.current_row <= (st.session_state.df.index[st.session_state.df["Usuario"] == st.session_state.selected_value]).max():

@@ -676,6 +676,8 @@ if "Control Recepción" in seleccion:
 
         if datos_stock is not None and datos_reposicionamiento is not None:
             # Realizar el merge de df_stock y df_reposicionamiento según la columna "Pallet"
+            
+            
             df_merged_recepcion = pd.merge(df_stock_recepcion, df_reposicionamiento_recepcion, on="Pallet", how="inner")
             
             try:
@@ -690,139 +692,136 @@ if "Control Recepción" in seleccion:
 
             df_merged_recepcion['Universo'] = (df_merged_recepcion['Dias_Laborables'] == 1).astype(int)
 
+
             df_filtered = df_merged_recepcion[df_merged_recepcion['Universo'] == 1]
 
-            # Mostrar el DataFrame resultante
-            # st.write("Tabla combinada (merge) según la columna 'Pallet':")
-            # st.write(df_filtered)
-
-
-            # Tamaño de la población
-            N = len(df_filtered)
-            # st.write(f"Tamaño de la población (número de filas en df_filtered): {N}")
-
-            # Parámetros para el cálculo del tamaño de muestra
-            nivel_confianza = 0.95
-            z = norm.ppf(1 - (1 - nivel_confianza) / 2) # Valor de z para el nivel de confianza del 95%
-            p = p  # Proporción estimada de defectos (ajústalo según tu estimación)
-            e = 0.03  # Margen de error del 3%
-
-            # Función para calcular el tamaño de muestra
-            def calcular_tamano_muestra(N, z, e, p):
-                numerator = N
-                denominator = 1 + ((N * (e ** 2)) / (z ** 2 * p * (1 - p)))
-                n = numerator / denominator
-                return math.ceil(n)  # Redondea hacia arriba para asegurarte de tener un tamaño de muestra entero
-
-            # Calcular el tamaño de la muestra
-            tamano_muestra_recepcion = calcular_tamano_muestra(N, z, e, p)
-            # st.write(f"El tamaño de muestra necesario es: {tamano_muestra_recepcion}")
-
-            # Seleccionar una muestra aleatoria de tamaño n
-            df_sample = df_filtered.sample(n=tamano_muestra_recepcion, random_state=1)
-
-            # Mostrar las columnas solicitadas
-            columnas_a_mostrar = [
-                'Entidad', 'Articulo',"Temperatura", 'Descripcion Articulo', 'Posicion', 'Pallet', 'Lote', 
-                'Fecha Ingreso', 'Vencimiento', 'Bultos_x', 'Unidades_x', 'Tipo de Movimiento Alt', 'Rubro',"Un.x Bulto"
-            ]
+            if df_merged_recepcion.empty:
             
-            
-            df_sample = df_sample[columnas_a_mostrar]
+                st.warning("⚠️ No existieron Entradas de Pallet en el día de ayer")
 
-            df_sample['Vencimiento'] = pd.to_datetime(df_sample['Vencimiento'], errors='coerce').dt.strftime('%d-%m-%Y')
-            df_sample['Fecha Ingreso'] = pd.to_datetime(df_sample['Fecha Ingreso'], errors='coerce').dt.strftime('%d-%m-%Y')
-            df_sample = df_sample.rename(columns={'Bultos_x': 'Bultos', 'Unidades_x': 'Unidades'})
-
-
-            horas_requeridas_control = round(tamano_muestra_recepcion/productividad_recepcion,2)
-
-            if horas_requeridas_control > horas_disponibles:
-                # st.warning(f"¡El resultado es un control de {horas_requeridas_control} horas, lo cual es mayor a las horas disponibles ({horas_disponibles})!")
-                N_recepcion = int(horas_disponibles*productividad_recepcion)
-                # st.warning(f"Se pueden controlar {N_recepcion} posiciones")
-                df_sample = df_sample.sample(n=N_recepcion, random_state=1)
-                st.write(f"Mostrando {N_recepcion} filas seleccionadas aleatoriamente de la muestra:")
-                df_sample["Posicion"] = df_sample["Posicion"].str.rstrip()
-                df_sample['Ordenar_primero'] = df_sample['Posicion'].str.split(' - ').str[0].str[2:4]
-                df_sample['Ordenar_segundo'] = df_sample['Posicion'].str.split(' - ').str[1].astype(int)
-                df_sample = df_sample.sort_values(by=['Ordenar_primero', 'Ordenar_segundo']).drop(columns=['Ordenar_primero', 'Ordenar_segundo'])
-                
-                df_sample = asignar_usuarios(usuarios, df_sample)
-                
-                st.write(df_sample)
             else:
-                # st.success(f"¡El resultado es un control de {horas_requeridas_control} horas, lo cual es menor a las horas disponibles ({horas_disponibles})!")
-                horas_disponibles = round(horas_disponibles - horas_requeridas_control,2)
-                # st.write("Muestra aleatoria de df_filtrado:")
-                df_sample["Posicion"] = df_sample["Posicion"].str.rstrip()
-                df_sample['Ordenar_primero'] = df_sample['Posicion'].str.split(' - ').str[0].str[2:4]
-                df_sample['Ordenar_segundo'] = df_sample['Posicion'].str.split(' - ').str[1].astype(int)
-                df_sample = df_sample.sort_values(by=['Ordenar_primero', 'Ordenar_segundo']).drop(columns=['Ordenar_primero', 'Ordenar_segundo'])
+
+                # Tamaño de la población
+                N = len(df_filtered)
+                # st.write(f"Tamaño de la población (número de filas en df_filtered): {N}")
+
+                # Parámetros para el cálculo del tamaño de muestra
+                nivel_confianza = 0.95
+                z = norm.ppf(1 - (1 - nivel_confianza) / 2) # Valor de z para el nivel de confianza del 95%
+                p = p  # Proporción estimada de defectos (ajústalo según tu estimación)
+                e = 0.03  # Margen de error del 3%
+
+                # Función para calcular el tamaño de muestra
+                def calcular_tamano_muestra(N, z, e, p):
+                    numerator = N
+                    denominator = 1 + ((N * (e ** 2)) / (z ** 2 * p * (1 - p)))
+                    n = numerator / denominator
+                    return math.ceil(n)  # Redondea hacia arriba para asegurarte de tener un tamaño de muestra entero
+
+                # Calcular el tamaño de la muestra
+                tamano_muestra_recepcion = calcular_tamano_muestra(N, z, e, p)
+                # st.write(f"El tamaño de muestra necesario es: {tamano_muestra_recepcion}")
+
+                # Seleccionar una muestra aleatoria de tamaño n
+                df_sample = df_filtered.sample(n=tamano_muestra_recepcion, random_state=1)
+
+                # Mostrar las columnas solicitadas
+                columnas_a_mostrar = [
+                    'Entidad', 'Articulo',"Temperatura", 'Descripcion Articulo', 'Posicion', 'Pallet', 'Lote', 
+                    'Fecha Ingreso', 'Vencimiento', 'Bultos_x', 'Unidades_x', 'Tipo de Movimiento Alt', 'Rubro',"Un.x Bulto"
+                ]
                 
-                df_sample = asignar_usuarios(usuarios, df_sample)
-
-                st.write(df_sample)
-
-
-            def convert_df_to_excel(df):
-                output = BytesIO()
-                with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
-                    df.to_excel(writer, index=False, sheet_name='Sheet1')
-                    writer.close()  # No es necesario el 'save()', cerrando con 'close()' dentro del contexto
-                processed_data = output.getvalue()  # Obtener los datos del archivo en formato binario
-                return processed_data
-
-            # Crear un archivo Excel de un DataFrame (en este caso df_merged)
-            excel_file = convert_df_to_excel(df_sample)
-
-            # # Botón para descargar el archivo Excel
-            # st.download_button(
-            #     label="Download data as Excel Recepcion",
-            #     data=excel_file,
-            #     file_name="df_merged_recepcion.xlsx",
-            #     mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
-            # )
-
-            if st.button("Actualizar Google Sheets Recepcion"):
-
-                # Configurar los scopes correctos
-                scopes = ["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"]
-                creds = service_account.Credentials.from_service_account_info(credentials_info, scopes=scopes)
-
-                # st.write(creds)
-
-                # Autenticar cliente de Google Sheets
-                client = gspread.authorize(creds)
-                # Coloca tu sheet_id aquí
-                sheet_id = '1tpJAMDbUMANKitwywXEJ3_4Khm-DbJPAPxUbzva75cU'  # Reemplaza con tu sheet_id real
-
-                # Abre la hoja de Google usando el ID de la hoja
-                sheet = client.open_by_key(sheet_id).sheet1
-
-                df_sample = df_sample.fillna("0")
-                # Convirtiendo el DataFrame a una lista de listas
-                df_values = df_sample.values.tolist()
                 
-                # Escribe los datos en el Google Sheet, sobrescribiendo todo
-                sheet.clear()  # Borrar el contenido anterior
-                sheet.append_row(df_sample.columns.tolist())  # Escribe los encabezados
-                sheet.append_rows(df_values)  # Escribe los datos del DataFrame
+                df_sample = df_sample[columnas_a_mostrar]
 
-                sheet_id_2 = '1BFyf3o8jYCleLtKwaMD9b90ZPhJBE8-yXeq74En_B_M'  # Reemplaza con tu sheet_id real
-                # Abre la hoja de Google usando el ID de la hoja
-                sheet = client.open_by_key(sheet_id_2).sheet1
-                
-                # Escribe los datos en el Google Sheet, sobrescribiendo todo
-                sheet.clear()  # Borrar el contenido anterior
-                sheet.append_row(df_sample.columns.tolist())  # Escribe los encabezados
-                sheet.append_rows(df_values)  # Escribe los datos del DataFrame
+                df_sample['Vencimiento'] = pd.to_datetime(df_sample['Vencimiento'], errors='coerce').dt.strftime('%d-%m-%Y')
+                df_sample['Fecha Ingreso'] = pd.to_datetime(df_sample['Fecha Ingreso'], errors='coerce').dt.strftime('%d-%m-%Y')
+                df_sample = df_sample.rename(columns={'Bultos_x': 'Bultos', 'Unidades_x': 'Unidades'})
 
-                st.success("¡Datos actualizados en Google Sheets con éxito!")
+                horas_requeridas_control = round(tamano_muestra_recepcion/productividad_recepcion,2)
+
+                if horas_requeridas_control > horas_disponibles:
+                    # st.warning(f"¡El resultado es un control de {horas_requeridas_control} horas, lo cual es mayor a las horas disponibles ({horas_disponibles})!")
+                    N_recepcion = int(horas_disponibles*productividad_recepcion)
+                    # st.warning(f"Se pueden controlar {N_recepcion} posiciones")
+                    df_sample = df_sample.sample(n=N_recepcion, random_state=1)
+                    st.write(f"Mostrando {N_recepcion} filas seleccionadas aleatoriamente de la muestra:")
+                    df_sample["Posicion"] = df_sample["Posicion"].str.rstrip()
+                    df_sample['Ordenar_primero'] = df_sample['Posicion'].str.split(' - ').str[0].str[2:4]
+                    df_sample['Ordenar_segundo'] = df_sample['Posicion'].str.split(' - ').str[1].astype(int)
+                    df_sample = df_sample.sort_values(by=['Ordenar_primero', 'Ordenar_segundo']).drop(columns=['Ordenar_primero', 'Ordenar_segundo'])
+                    
+                    df_sample = asignar_usuarios(usuarios, df_sample)
+                    
+                    st.write(df_sample)
+                else:
+                    # st.success(f"¡El resultado es un control de {horas_requeridas_control} horas, lo cual es menor a las horas disponibles ({horas_disponibles})!")
+                    horas_disponibles = round(horas_disponibles - horas_requeridas_control,2)
+                    # st.write("Muestra aleatoria de df_filtrado:")
+                    df_sample["Posicion"] = df_sample["Posicion"].str.rstrip()
+                    df_sample['Ordenar_primero'] = df_sample['Posicion'].str.split(' - ').str[0].str[2:4]
+                    df_sample['Ordenar_segundo'] = df_sample['Posicion'].str.split(' - ').str[1].astype(int)
+                    df_sample = df_sample.sort_values(by=['Ordenar_primero', 'Ordenar_segundo']).drop(columns=['Ordenar_primero', 'Ordenar_segundo'])
+                    
+                    df_sample = asignar_usuarios(usuarios, df_sample)
+
+                    st.write(df_sample)
 
 
+                def convert_df_to_excel(df):
+                    output = BytesIO()
+                    with pd.ExcelWriter(output, engine='xlsxwriter') as writer:
+                        df.to_excel(writer, index=False, sheet_name='Sheet1')
+                        writer.close()  # No es necesario el 'save()', cerrando con 'close()' dentro del contexto
+                    processed_data = output.getvalue()  # Obtener los datos del archivo en formato binario
+                    return processed_data
 
+                # Crear un archivo Excel de un DataFrame (en este caso df_merged)
+                excel_file = convert_df_to_excel(df_sample)
 
+                # # Botón para descargar el archivo Excel
+                # st.download_button(
+                #     label="Download data as Excel Recepcion",
+                #     data=excel_file,
+                #     file_name="df_merged_recepcion.xlsx",
+                #     mime="application/vnd.openxmlformats-officedocument.spreadsheetml.sheet"
+                # )
+
+                if st.button("Actualizar Google Sheets Recepcion"):
+
+                    # Configurar los scopes correctos
+                    scopes = ["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"]
+                    creds = service_account.Credentials.from_service_account_info(credentials_info, scopes=scopes)
+
+                    # st.write(creds)
+
+                    # Autenticar cliente de Google Sheets
+                    client = gspread.authorize(creds)
+                    # Coloca tu sheet_id aquí
+                    sheet_id = '1tpJAMDbUMANKitwywXEJ3_4Khm-DbJPAPxUbzva75cU'  # Reemplaza con tu sheet_id real
+
+                    # Abre la hoja de Google usando el ID de la hoja
+                    sheet = client.open_by_key(sheet_id).sheet1
+
+                    df_sample = df_sample.fillna("0")
+                    # Convirtiendo el DataFrame a una lista de listas
+                    df_values = df_sample.values.tolist()
+                    
+                    # Escribe los datos en el Google Sheet, sobrescribiendo todo
+                    sheet.clear()  # Borrar el contenido anterior
+                    sheet.append_row(df_sample.columns.tolist())  # Escribe los encabezados
+                    sheet.append_rows(df_values)  # Escribe los datos del DataFrame
+
+                    sheet_id_2 = '1BFyf3o8jYCleLtKwaMD9b90ZPhJBE8-yXeq74En_B_M'  # Reemplaza con tu sheet_id real
+                    # Abre la hoja de Google usando el ID de la hoja
+                    sheet = client.open_by_key(sheet_id_2).sheet1
+                    
+                    # Escribe los datos en el Google Sheet, sobrescribiendo todo
+                    sheet.clear()  # Borrar el contenido anterior
+                    sheet.append_row(df_sample.columns.tolist())  # Escribe los encabezados
+                    sheet.append_rows(df_values)  # Escribe los datos del DataFrame
+
+                    st.success("¡Datos actualizados en Google Sheets con éxito!")
 
         else:
             st.write("Para realizar el merge, carga ambos archivos: 'Informe Stock con Operacion' y 'Reporte Posicionamiento'.")
@@ -1188,7 +1187,7 @@ with tab6:
                         client = gspread.authorize(creds)
 
                         # Abrir la hoja de Google usando el ID
-                        sheet = client.open_by_key(sheet_id).sheet1
+                        sheet_id = client.open_by_key(sheet_id).sheet1
 
                         # Llenar valores NaN con "0"
                         df = df.fillna("0")
@@ -1197,7 +1196,7 @@ with tab6:
                         df_values = df.values.tolist()
 
                         # Agregar filas al final de la hoja
-                        sheet.append_rows(df_values, value_input_option="RAW")
+                        sheet_id.append_rows(df_values, value_input_option="RAW")
 
                         return True
 
@@ -1213,7 +1212,7 @@ with tab6:
                 df_resultado_picking = df_resultado_picking.loc[:, : "Usuario"]
 
                 # ID de las hojas de Google Sheets
-                sheet_ids = [
+                sheet_ids = ["1J0YmuXlCFx_lg5DKGS_o_09nhkJaGVh7PLrjsyV2Nsc",
                     "1wan5qrTo_7_oUnXBUXgCuq_oJa24F5U6uhpDOe_LGf8"
                 ]
 
@@ -1259,9 +1258,21 @@ with tab6:
             # Mostrar el porcentaje en formato de texto
             st.write(f"Porcentaje de avance: {(avance)*100:.2f}%")
 
-            df_resultado_recepcion = df_resultado_recepcion[df_resultado_recepcion['Diferencia Unidades'].ne(0) & df_resultado_recepcion['Diferencia Unidades'].notna() & df_resultado_recepcion['Diferencia Unidades'].astype(str).str.strip().ne('')]
+            df_resultado_recepcion = df_resultado_recepcion[
+            (df_resultado_recepcion['Diferencia Unidades'].ne(0) & 
+            df_resultado_recepcion['Diferencia Unidades'].notna() & 
+            df_resultado_recepcion['Diferencia Unidades'].astype(str).str.strip().ne(''))
+            |
+            (df_resultado_recepcion['Diferencia Fecha Vencimiento'].ne(0) & 
+            df_resultado_recepcion['Diferencia Fecha Vencimiento'].notna()& 
+            df_resultado_recepcion['Diferencia Unidades'].astype(str).str.strip().ne(''))
+            |
+            (df_resultado_recepcion['Coincide Lote'].eq("No") & 
+            df_resultado_recepcion['Coincide Lote'].notna())& 
+            df_resultado_recepcion['Coincide Lote'].astype(str).str.strip().ne('')
+            ]
 
-            df_resultado_recepcion_monitoreo = df_resultado_recepcion[["Entidad","Temperatura","Articulo","Descripcion Articulo","Posicion","Diferencia Unidades"]]
+            df_resultado_recepcion_monitoreo = df_resultado_recepcion[["Entidad","Temperatura","Articulo","Descripcion Articulo","Posicion","Diferencia Unidades","Diferencia Fecha Vencimiento","Coincide Lote","Coincide Pallet"]]
 
             st.write(df_resultado_recepcion_monitoreo)
 
@@ -1345,9 +1356,17 @@ with tab6:
             # Mostrar el porcentaje en formato de texto
             st.write(f"Porcentaje de avance: {(avance)*100:.2f}%")
 
-            df_resultado_parciales = df_resultado_parciales[df_resultado_parciales['Diferencia Unidades'].ne(0) & df_resultado_parciales['Diferencia Unidades'].notna() & df_resultado_parciales['Diferencia Unidades'].astype(str).str.strip().ne('')]
+            df_resultado_parciales = df_resultado_parciales[
+            (df_resultado_parciales['Diferencia Unidades'].ne(0) & 
+            df_resultado_parciales['Diferencia Unidades'].notna() & 
+            df_resultado_parciales['Diferencia Unidades'].astype(str).str.strip().ne(''))
+            |
+            (df_resultado_parciales['Diferencia Fecha Vencimiento'].ne(0) & 
+            df_resultado_parciales['Diferencia Fecha Vencimiento'].notna()& 
+            df_resultado_parciales['Diferencia Unidades'].astype(str).str.strip().ne(''))
+            ]
 
-            df_resultado_parciales_monitoreo = df_resultado_parciales[["Entidad","Temperatura","Cod.Articulo","Descripcion Articulo","Posicion","Diferencia Unidades"]]
+            df_resultado_parciales_monitoreo = df_resultado_parciales[["Entidad","Temperatura","Cod.Articulo","Descripcion Articulo","Posicion","Diferencia Unidades","Diferencia Fecha Vencimiento"]]
 
             st.write(df_resultado_parciales_monitoreo)
 
