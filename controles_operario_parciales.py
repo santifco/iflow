@@ -59,8 +59,6 @@ data_url = f'https://docs.google.com/spreadsheets/d/{sheet_id}/gviz/tq?tqx=out:c
 def load_data(url):
     df = pd.read_csv(url)
     df["Posicion"] = df["Posicion"].str.rstrip()
-    df['Ordenar_primero'] = df['Posicion'].str.split(' - ').str[0].str[2:4]
-    df['Ordenar_segundo'] = df['Posicion'].str.split(' - ').str[1].astype(int)
     df = df.loc[:, ~df.columns.str.contains("Unnamed")]
 
     return df
