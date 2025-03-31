@@ -12,48 +12,48 @@ import numpy as np
 # App title
 st.title("Escaneo y Control de Picking")
 
-# credentials_info = st.secrets["gcp_service_account"]
+credentials_info = st.secrets["gcp_service_account"]
 
-credentials_info = {
-                "type": "service_account",
-                "project_id": "inbound-pattern-429101-c5",
-                "private_key_id": "9dcc01743c917fb186294a8c6d228d4c2fb005bc",
-                "private_key": """-----BEGIN PRIVATE KEY-----
-            MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDPvpK+357PGmvc
-            6jxJTHyKfpUs/2861MGvfClaGMjEw9G8YmeeeH8PAkc/rZxaHpl2zcmpUQfTauxs
-            0mhbOD42jxRflbdi00yvHVkBBtYdzfvtGwepEUsP26yqOySm6PiVI/XKHWdct61B
-            28l/VW+mjXDVPiDiMATQRTJi4tYTgC5eSjhnkT4efY7gUMHmO2057cI+jmRob1WV
-            PEEWLGt76R4IGnH/FtoW2B6lPoOb7KefRx2WgHfTu+zsXvqmbGbgRLSlheG4Zb6g
-            h0dZXcyojx5vGgJT3ty4o5XgpA6n9EH2uURDXUBYQ9KE8mcNDM9VK6KQEYeBmIJr
-            QOvMftM1AgMBAAECggEAAn4NSNdS4/vtzVvknLk+SUTmmuklQvARPtBfK1zqZSza
-            cQ1XARha/p3r7ReQCpAFyJinRharmulIrFJJjmmF4HdUnycjIxxNUyH5GJLgJpM1
-            cY1Ad6PNkKZSsKH41iVDCGk3N8mk4tH5rynGKKViwreabZX5sEuQdiEIlRXchgLN
-            ransgsarOU/8+RI2W5JRt7wPAO56WsZc+zeOIyLS7RScibfdi8wMQYZF7PsPB5EG
-            6ps50hxHWZ18lgLgJO5iK6YZkINHwW8AWDaxonxTgn4eYT8iUDMol8D5i2AXM5x1
-            JnRzhLKnNUdzug4RB7XrcCOsjoDOU2dW1VbXTNkyxQKBgQD4WbO23ktbkl64dmdA
-            ZKhRSRcBfbUf8/+Olp8Dt/PTb53Rjvsm3XK5EUK6t9oMGgL131UuOcKysV1RCyzT
-            I5jjiY5Q3Ws2L0N2IFfxSBI7Di2hxSWLaXgETsMUV0MBfv1TH/8E+3tEtoj26lZY
-            A0GVOrGprEJVNcL3X3T83R3mNwKBgQDWJK8icbaJujm9HfXi9ODcG7YpPYKRcqJa
-            LZclOiccRHIUN4SzouIfB6kp63k96W5Yzm6GeRgaiB/LQNPNTDFO4Q7Zrm7wci9o
-            kzRUHWJcgKl7r8Q+TYXBPJVn0dZe65G5O/d+7cmQn+MUp0Gi5cnYu9eaeKHoJGY0
-            P6vCKhab8wKBgC2cK8k14hkbNJIkDKpi0ha7maIIeC86HIEPYHzKV9lI8m7+F1n3
-            6Y3bganRAhae4FRPg9FNglhXApBTwRO1wepn5N8tCveUjosvPXduiQqXfAHttwt3
-            fzcrT+B4djHcJKITij5cATOJYnYWa20WjADgGqjSngwQJ5JO0alu4oLZAoGAD138
-            j203mzSY9iBTR+EozcLTVKxMVWGzkuMYqJw+uEGVKiw9wqJatb1X/2EdhzrcJ1VR
-            Cydfem/wUCarzFy+YRm3dhmVbn3TNx7xL2QYbejxwKWBYLMxeQd+9T9SsecXwwIx
-            pZMs1ssSgaXrCOSSkpIQS86CV+VczD0Rd1KL4s8CgYEAhfI92S/3eL6eOkm7yHL1
-            4331R/gomiO4QehLpyUZfirpqxNO/8BL6f25Jp5cC3dJeNu4xEbbMIMpEpT9C+ZJ
-            4WWYzDCC43HB8AbA8SgMDz7Vaa6h9zHJolLLrcsDMtiD4JT7VeV4UluWXIaRbg6p
-            XYwWQL2d6uGePDriQHXIUmY=
-            -----END PRIVATE KEY-----""",
-                "client_email": "google-sheets-api@inbound-pattern-429101-c5.iam.gserviceaccount.com",
-                "client_id": "107649396128661753097",
-                "auth_uri": "https://accounts.google.com/o/oauth2/auth",
-                "token_uri": "https://oauth2.googleapis.com/token",
-                "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
-                "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/google-sheets-api%40inbound-pattern-429101-c5.iam.gserviceaccount.com",
-                "universe_domain": "googleapis.com"
-            }
+# credentials_info = {
+#                 "type": "service_account",
+#                 "project_id": "inbound-pattern-429101-c5",
+#                 "private_key_id": "9dcc01743c917fb186294a8c6d228d4c2fb005bc",
+#                 "private_key": """-----BEGIN PRIVATE KEY-----
+#             MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDPvpK+357PGmvc
+#             6jxJTHyKfpUs/2861MGvfClaGMjEw9G8YmeeeH8PAkc/rZxaHpl2zcmpUQfTauxs
+#             0mhbOD42jxRflbdi00yvHVkBBtYdzfvtGwepEUsP26yqOySm6PiVI/XKHWdct61B
+#             28l/VW+mjXDVPiDiMATQRTJi4tYTgC5eSjhnkT4efY7gUMHmO2057cI+jmRob1WV
+#             PEEWLGt76R4IGnH/FtoW2B6lPoOb7KefRx2WgHfTu+zsXvqmbGbgRLSlheG4Zb6g
+#             h0dZXcyojx5vGgJT3ty4o5XgpA6n9EH2uURDXUBYQ9KE8mcNDM9VK6KQEYeBmIJr
+#             QOvMftM1AgMBAAECggEAAn4NSNdS4/vtzVvknLk+SUTmmuklQvARPtBfK1zqZSza
+#             cQ1XARha/p3r7ReQCpAFyJinRharmulIrFJJjmmF4HdUnycjIxxNUyH5GJLgJpM1
+#             cY1Ad6PNkKZSsKH41iVDCGk3N8mk4tH5rynGKKViwreabZX5sEuQdiEIlRXchgLN
+#             ransgsarOU/8+RI2W5JRt7wPAO56WsZc+zeOIyLS7RScibfdi8wMQYZF7PsPB5EG
+#             6ps50hxHWZ18lgLgJO5iK6YZkINHwW8AWDaxonxTgn4eYT8iUDMol8D5i2AXM5x1
+#             JnRzhLKnNUdzug4RB7XrcCOsjoDOU2dW1VbXTNkyxQKBgQD4WbO23ktbkl64dmdA
+#             ZKhRSRcBfbUf8/+Olp8Dt/PTb53Rjvsm3XK5EUK6t9oMGgL131UuOcKysV1RCyzT
+#             I5jjiY5Q3Ws2L0N2IFfxSBI7Di2hxSWLaXgETsMUV0MBfv1TH/8E+3tEtoj26lZY
+#             A0GVOrGprEJVNcL3X3T83R3mNwKBgQDWJK8icbaJujm9HfXi9ODcG7YpPYKRcqJa
+#             LZclOiccRHIUN4SzouIfB6kp63k96W5Yzm6GeRgaiB/LQNPNTDFO4Q7Zrm7wci9o
+#             kzRUHWJcgKl7r8Q+TYXBPJVn0dZe65G5O/d+7cmQn+MUp0Gi5cnYu9eaeKHoJGY0
+#             P6vCKhab8wKBgC2cK8k14hkbNJIkDKpi0ha7maIIeC86HIEPYHzKV9lI8m7+F1n3
+#             6Y3bganRAhae4FRPg9FNglhXApBTwRO1wepn5N8tCveUjosvPXduiQqXfAHttwt3
+#             fzcrT+B4djHcJKITij5cATOJYnYWa20WjADgGqjSngwQJ5JO0alu4oLZAoGAD138
+#             j203mzSY9iBTR+EozcLTVKxMVWGzkuMYqJw+uEGVKiw9wqJatb1X/2EdhzrcJ1VR
+#             Cydfem/wUCarzFy+YRm3dhmVbn3TNx7xL2QYbejxwKWBYLMxeQd+9T9SsecXwwIx
+#             pZMs1ssSgaXrCOSSkpIQS86CV+VczD0Rd1KL4s8CgYEAhfI92S/3eL6eOkm7yHL1
+#             4331R/gomiO4QehLpyUZfirpqxNO/8BL6f25Jp5cC3dJeNu4xEbbMIMpEpT9C+ZJ
+#             4WWYzDCC43HB8AbA8SgMDz7Vaa6h9zHJolLLrcsDMtiD4JT7VeV4UluWXIaRbg6p
+#             XYwWQL2d6uGePDriQHXIUmY=
+#             -----END PRIVATE KEY-----""",
+#                 "client_email": "google-sheets-api@inbound-pattern-429101-c5.iam.gserviceaccount.com",
+#                 "client_id": "107649396128661753097",
+#                 "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+#                 "token_uri": "https://oauth2.googleapis.com/token",
+#                 "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+#                 "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/google-sheets-api%40inbound-pattern-429101-c5.iam.gserviceaccount.com",
+#                 "universe_domain": "googleapis.com"
+#             }
 
 # URL de la hoja de Google Sheets
 # URL de la hoja de Google Sheets
@@ -210,8 +210,8 @@ def mostrar_carta(data_row,posicion):
 
         # st.write(f"Hora de inicio: {st.session_state.HoraInicio[posicion]}")
         articulo = st.number_input(f"Escanea el artículo para la posición {data_row['Posicion']}", min_value=0,value=None)
-        fecha = st.date_input(f"Selecciona la fecha de vencimiento para la posición {data_row['Posicion']}")
-        fecha = fecha.strftime("%d-%m-%Y")
+        # fecha = st.date_input(f"Selecciona la fecha de vencimiento para la posición {data_row['Posicion']}")
+        # fecha = fecha.strftime("%d-%m-%Y")
         
 
         if data_row["Un.x Bulto"] == 1:
@@ -258,7 +258,7 @@ def mostrar_carta(data_row,posicion):
             st.session_state.df.loc[real_index,"Unidad por Bulto"] = unidades_bulto
             st.session_state.df.loc[real_index,"Unidades Sueltos"] = cantidad_unidades_sueltos
             st.session_state.df.loc[real_index,"Blister Sueltos"] = cantidad_blister_sueltos
-            st.session_state.df.loc[real_index,"Fecha Vencimiento Observada"] = fecha
+            # st.session_state.df.loc[real_index,"Fecha Vencimiento Observada"] = fecha
             st.session_state.df.loc[real_index,"HoraInicio"] = st.session_state.HoraInicio.get(st.session_state.current_row, None)
 
 
@@ -283,29 +283,29 @@ def mostrar_carta(data_row,posicion):
             )
 
             # Procesar fechas
-            vencimiento = pd.to_datetime(
-                st.session_state.df.loc[real_index,'Vencimiento'],
-                format='%d-%m-%Y',
-                errors='coerce'
-            )
+            # vencimiento = pd.to_datetime(
+            #     st.session_state.df.loc[real_index,'Vencimiento'],
+            #     format='%d-%m-%Y',
+            #     errors='coerce'
+            # )
 
-            fecha_vencimiento_observada = pd.to_datetime(
-                st.session_state.df.loc[real_index,'Fecha Vencimiento Observada'],
-                format='%d-%m-%Y',
-                errors='coerce'
-            )
+            # fecha_vencimiento_observada = pd.to_datetime(
+            #     st.session_state.df.loc[real_index,'Fecha Vencimiento Observada'],
+            #     format='%d-%m-%Y',
+            #     errors='coerce'
+            # )
 
             # Calcular "Diferencia Fecha Vencimiento"
-            diferencia_fecha_vencimiento = (
-                (vencimiento - fecha_vencimiento_observada).days
-                if pd.notnull(vencimiento) and pd.notnull(fecha_vencimiento_observada)
-                else None
-            )
+            # diferencia_fecha_vencimiento = (
+            #     (vencimiento - fecha_vencimiento_observada).days
+            #     if pd.notnull(vencimiento) and pd.notnull(fecha_vencimiento_observada)
+            #     else None
+            # )
 
             # Crear y actualizar las columnas directamente en el DataFrame
             st.session_state.df.loc[real_index, "Unidades Contadas"] = unidades_contadas
             st.session_state.df.loc[real_index, "Diferencia Unidades"] = diferencia_unidades
-            st.session_state.df.loc[real_index, "Diferencia Fecha Vencimiento"] = diferencia_fecha_vencimiento
+            # st.session_state.df.loc[real_index, "Diferencia Fecha Vencimiento"] = diferencia_fecha_vencimiento
 
         
         except:
@@ -374,7 +374,10 @@ if st.session_state.user_logged_in:
 
 
     # Verificar si hay más filas para procesar
-    if st.session_state.current_row <= (st.session_state.df.index[st.session_state.df["Usuario"] == st.session_state.selected_value]).max():
+    if (
+    st.session_state.current_row is not None and 
+    st.session_state.current_row <= (st.session_state.df.index[st.session_state.df["Usuario"] == st.session_state.selected_value]).max()
+        ):
 
         st.session_state.escaneada_posicion = ""
         posicion = st.text_input(
