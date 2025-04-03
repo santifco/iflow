@@ -164,8 +164,17 @@ if "current_row" not in st.session_state or st.session_state.current_row is None
 # df = df[1:].reset_index(drop=True)
 
 # Convertir las columnas a tipo numérico, reemplazar NaN por 0 y convertir a float
-cols_to_convert = ["Unidades", "Un.x Bulto", "Bultos","Articulo","Pallet","Lote"]
+cols_to_convert = ["Unidades", "Un.x Bulto","Bultos","Articulo","Pallet"]
+
+# Paso 1: Convertir a numérico (puede generar NaN si hay errores)
+df_temp = df[cols_to_convert].apply(pd.to_numeric, errors="coerce")
+
+# Paso 2: Identificar valores que NO pudieron convertirse (NaNs generados)
+errores = df[cols_to_convert][df_temp.isna().any(axis=1)]
+
+
 df[cols_to_convert] = df[cols_to_convert].apply(pd.to_numeric, errors="coerce").astype(int)
+
 
 
 # Guardar en session_state para modificar
