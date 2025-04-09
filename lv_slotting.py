@@ -133,6 +133,10 @@ if archivo:
             grilla_estilizada = grilla.style.applymap(highlight_updated)
             st.write("Grilla actualizada con duplicados destacados en verde:")
         st.write(grilla_estilizada)
+        st.header("6. Descargar grilla final")
+        grilla_long = grilla.reset_index().melt(id_vars='index', var_name='Pasillo', value_name='Articulo')
+        grilla_long = grilla_long[grilla_long['Articulo'] != ""].rename(columns={'index': 'Columna'})
+        st.write(grilla_long)
 
 
 else:
