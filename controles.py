@@ -437,8 +437,10 @@ if "Control Almacenaje" in seleccion:
                 sheet = client.open_by_key(sheet_id).sheet1
 
                 df_concatenado = df_concatenado.fillna("0")
+                df_concatenado["Tarea Salteada"] = 1
                 # Convirtiendo el DataFrame a una lista de listas
                 df_values = df_concatenado.values.tolist()
+                
                 
                 # Escribe los datos en el Google Sheet, sobrescribiendo todo
                 sheet.clear()  # Borrar el contenido anterior
@@ -622,6 +624,7 @@ if "Control Parciales" in seleccion:
                 sheet = client.open_by_key(sheet_id).sheet1
 
                 df_merged_parciales = df_merged_parciales.fillna("0")
+                df_merged_parciales["Tarea Salteada"] = 1
                 # Convirtiendo el DataFrame a una lista de listas
                 df_values = df_merged_parciales.values.tolist()
                 
@@ -828,6 +831,7 @@ if "Control Recepción" in seleccion:
                     sheet = client.open_by_key(sheet_id).sheet1
 
                     df_sample = df_sample.fillna("0")
+                    df_sample["Tarea Salteada"] = 1
                     # Convirtiendo el DataFrame a una lista de listas
                     df_values = df_sample.values.tolist()
                     

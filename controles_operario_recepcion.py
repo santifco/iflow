@@ -215,6 +215,48 @@ def mostrar_carta(data_row,posicion):
     """
     st.markdown(card_html, unsafe_allow_html=True)
 
+    if st.button("Saltear Tarea"):
+
+        real_index = st.session_state.df.index[st.session_state.current_row]  
+        st.session_state.df.loc[real_index,"Tarea Salteada"] = 1
+        st.session_state.df.loc[real_index,"HoraInicio"] = datetime.now().strftime("%d-%m-%Y %H:%M:%S")
+
+        header_values = st.session_state.df.columns.tolist()
+        sheet.update("A1", [header_values])
+        # Obtener los valores de la fila actual y convertirlos a cadenas
+        current_row_values = st.session_state.df.loc[real_index].values.tolist()
+        current_row_values = ["" if pd.isna(x) else x for x in current_row_values]
+        # current_row_values = [str(value) for value in current_row_values]
+        current_row_values[0] = str(current_row_values[0])
+
+        # Calcular el rango dinámico basado en el número de columnas
+        num_columns = len(st.session_state.df.columns)  # Total de columnas
+        last_column_letter = string.ascii_uppercase[num_columns - 1] if num_columns <= 26 else f"A{string.ascii_uppercase[num_columns - 27]}"  # AA, AB, etc.
+
+        current_row_values = [
+        int(value) if isinstance(value, (np.int64, np.int32)) else
+        float(value) if isinstance(value, (np.float64, np.float32)) else
+        value
+        for value in current_row_values
+        ]
+
+        # Construir el rango (por ejemplo, A2:Z2)
+        sheet_range = f"A{st.session_state.current_row + 2}:{last_column_letter}{st.session_state.current_row + 2}"
+
+
+        # Actualizar la fila en Google Sheets
+        sheet.update(sheet_range, [current_row_values])
+        
+    
+        st.success("Tarea completada para la posición.")
+        time.sleep(1)
+        # Reinicia la entrada de posición escaneada
+        st.session_state.escaneada_posicion = ""
+        st.session_state.input_key += 1 
+        # Incrementa la fila actual
+        st.session_state.current_row = encontrar_siguiente_fila_vacia(sheet,st.session_state.selected_value)
+        st.rerun()
+
     # Campos de entrada
 
     if st.button(f"Estoy en Posición {data_row['Posicion']}",key="hidden_button"):
