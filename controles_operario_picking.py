@@ -309,9 +309,6 @@ def mostrar_carta(data_row,posicion):
             st.session_state.df.loc[real_index,"Blister Sueltos"] = cantidad_blister_sueltos
             # st.session_state.df.loc[real_index,"Fecha Vencimiento Observada"] = fecha
             
-
-
-
             current_row_data = st.session_state.df.iloc[real_index]
 
             unidades_contadas = int(

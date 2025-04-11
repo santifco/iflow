@@ -179,6 +179,9 @@ if "escaneada_posicion" not in st.session_state:
 if "is_in_position" not in st.session_state:
     st.session_state.is_in_position = False
 
+if "input_key" not in st.session_state:
+    st.session_state.input_key = 0
+
 # Función para mostrar la información en formato de carta
 def mostrar_carta(data_row,posicion):
     card_html = f"""
@@ -284,14 +287,15 @@ def mostrar_carta(data_row,posicion):
 
         try:
             
-
+            st.session_state.df.loc[real_index,"Tarea Salteada"] = 0
+            st.session_state.df.loc[real_index,"HoraInicio"] = st.session_state.HoraInicio.get(st.session_state.current_row, None)
             st.session_state.df.loc[real_index,"Articulo Escaneado"] = articulo
             st.session_state.df.loc[real_index,"Bultos Contados"] = cantidad_bultos
             st.session_state.df.loc[real_index,"Blister por Bulto"] = blister_bulto
             st.session_state.df.loc[real_index,"Unidad por Blister"] = unidades_blister
             st.session_state.df.loc[real_index,"Unidad por Bulto"] = unidades_bulto
             st.session_state.df.loc[real_index,"Fecha Vencimiento Observada"] = fecha
-            st.session_state.df.loc[real_index,"HoraInicio"] = st.session_state.HoraInicio.get(st.session_state.current_row, None)
+            
 
             current_row_data = st.session_state.df.iloc[real_index]
 
