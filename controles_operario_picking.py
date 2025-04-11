@@ -12,48 +12,48 @@ import numpy as np
 # App title
 st.title("Escaneo y Control de Picking")
 
-credentials_info = st.secrets["gcp_service_account"]
+# credentials_info = st.secrets["gcp_service_account"]
 
-# credentials_info = {
-#                 "type": "service_account",
-#                 "project_id": "inbound-pattern-429101-c5",
-#                 "private_key_id": "9dcc01743c917fb186294a8c6d228d4c2fb005bc",
-#                 "private_key": """-----BEGIN PRIVATE KEY-----
-#             MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDPvpK+357PGmvc
-#             6jxJTHyKfpUs/2861MGvfClaGMjEw9G8YmeeeH8PAkc/rZxaHpl2zcmpUQfTauxs
-#             0mhbOD42jxRflbdi00yvHVkBBtYdzfvtGwepEUsP26yqOySm6PiVI/XKHWdct61B
-#             28l/VW+mjXDVPiDiMATQRTJi4tYTgC5eSjhnkT4efY7gUMHmO2057cI+jmRob1WV
-#             PEEWLGt76R4IGnH/FtoW2B6lPoOb7KefRx2WgHfTu+zsXvqmbGbgRLSlheG4Zb6g
-#             h0dZXcyojx5vGgJT3ty4o5XgpA6n9EH2uURDXUBYQ9KE8mcNDM9VK6KQEYeBmIJr
-#             QOvMftM1AgMBAAECggEAAn4NSNdS4/vtzVvknLk+SUTmmuklQvARPtBfK1zqZSza
-#             cQ1XARha/p3r7ReQCpAFyJinRharmulIrFJJjmmF4HdUnycjIxxNUyH5GJLgJpM1
-#             cY1Ad6PNkKZSsKH41iVDCGk3N8mk4tH5rynGKKViwreabZX5sEuQdiEIlRXchgLN
-#             ransgsarOU/8+RI2W5JRt7wPAO56WsZc+zeOIyLS7RScibfdi8wMQYZF7PsPB5EG
-#             6ps50hxHWZ18lgLgJO5iK6YZkINHwW8AWDaxonxTgn4eYT8iUDMol8D5i2AXM5x1
-#             JnRzhLKnNUdzug4RB7XrcCOsjoDOU2dW1VbXTNkyxQKBgQD4WbO23ktbkl64dmdA
-#             ZKhRSRcBfbUf8/+Olp8Dt/PTb53Rjvsm3XK5EUK6t9oMGgL131UuOcKysV1RCyzT
-#             I5jjiY5Q3Ws2L0N2IFfxSBI7Di2hxSWLaXgETsMUV0MBfv1TH/8E+3tEtoj26lZY
-#             A0GVOrGprEJVNcL3X3T83R3mNwKBgQDWJK8icbaJujm9HfXi9ODcG7YpPYKRcqJa
-#             LZclOiccRHIUN4SzouIfB6kp63k96W5Yzm6GeRgaiB/LQNPNTDFO4Q7Zrm7wci9o
-#             kzRUHWJcgKl7r8Q+TYXBPJVn0dZe65G5O/d+7cmQn+MUp0Gi5cnYu9eaeKHoJGY0
-#             P6vCKhab8wKBgC2cK8k14hkbNJIkDKpi0ha7maIIeC86HIEPYHzKV9lI8m7+F1n3
-#             6Y3bganRAhae4FRPg9FNglhXApBTwRO1wepn5N8tCveUjosvPXduiQqXfAHttwt3
-#             fzcrT+B4djHcJKITij5cATOJYnYWa20WjADgGqjSngwQJ5JO0alu4oLZAoGAD138
-#             j203mzSY9iBTR+EozcLTVKxMVWGzkuMYqJw+uEGVKiw9wqJatb1X/2EdhzrcJ1VR
-#             Cydfem/wUCarzFy+YRm3dhmVbn3TNx7xL2QYbejxwKWBYLMxeQd+9T9SsecXwwIx
-#             pZMs1ssSgaXrCOSSkpIQS86CV+VczD0Rd1KL4s8CgYEAhfI92S/3eL6eOkm7yHL1
-#             4331R/gomiO4QehLpyUZfirpqxNO/8BL6f25Jp5cC3dJeNu4xEbbMIMpEpT9C+ZJ
-#             4WWYzDCC43HB8AbA8SgMDz7Vaa6h9zHJolLLrcsDMtiD4JT7VeV4UluWXIaRbg6p
-#             XYwWQL2d6uGePDriQHXIUmY=
-#             -----END PRIVATE KEY-----""",
-#                 "client_email": "google-sheets-api@inbound-pattern-429101-c5.iam.gserviceaccount.com",
-#                 "client_id": "107649396128661753097",
-#                 "auth_uri": "https://accounts.google.com/o/oauth2/auth",
-#                 "token_uri": "https://oauth2.googleapis.com/token",
-#                 "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
-#                 "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/google-sheets-api%40inbound-pattern-429101-c5.iam.gserviceaccount.com",
-#                 "universe_domain": "googleapis.com"
-#             }
+credentials_info = {
+                "type": "service_account",
+                "project_id": "inbound-pattern-429101-c5",
+                "private_key_id": "9dcc01743c917fb186294a8c6d228d4c2fb005bc",
+                "private_key": """-----BEGIN PRIVATE KEY-----
+            MIIEvQIBADANBgkqhkiG9w0BAQEFAASCBKcwggSjAgEAAoIBAQDPvpK+357PGmvc
+            6jxJTHyKfpUs/2861MGvfClaGMjEw9G8YmeeeH8PAkc/rZxaHpl2zcmpUQfTauxs
+            0mhbOD42jxRflbdi00yvHVkBBtYdzfvtGwepEUsP26yqOySm6PiVI/XKHWdct61B
+            28l/VW+mjXDVPiDiMATQRTJi4tYTgC5eSjhnkT4efY7gUMHmO2057cI+jmRob1WV
+            PEEWLGt76R4IGnH/FtoW2B6lPoOb7KefRx2WgHfTu+zsXvqmbGbgRLSlheG4Zb6g
+            h0dZXcyojx5vGgJT3ty4o5XgpA6n9EH2uURDXUBYQ9KE8mcNDM9VK6KQEYeBmIJr
+            QOvMftM1AgMBAAECggEAAn4NSNdS4/vtzVvknLk+SUTmmuklQvARPtBfK1zqZSza
+            cQ1XARha/p3r7ReQCpAFyJinRharmulIrFJJjmmF4HdUnycjIxxNUyH5GJLgJpM1
+            cY1Ad6PNkKZSsKH41iVDCGk3N8mk4tH5rynGKKViwreabZX5sEuQdiEIlRXchgLN
+            ransgsarOU/8+RI2W5JRt7wPAO56WsZc+zeOIyLS7RScibfdi8wMQYZF7PsPB5EG
+            6ps50hxHWZ18lgLgJO5iK6YZkINHwW8AWDaxonxTgn4eYT8iUDMol8D5i2AXM5x1
+            JnRzhLKnNUdzug4RB7XrcCOsjoDOU2dW1VbXTNkyxQKBgQD4WbO23ktbkl64dmdA
+            ZKhRSRcBfbUf8/+Olp8Dt/PTb53Rjvsm3XK5EUK6t9oMGgL131UuOcKysV1RCyzT
+            I5jjiY5Q3Ws2L0N2IFfxSBI7Di2hxSWLaXgETsMUV0MBfv1TH/8E+3tEtoj26lZY
+            A0GVOrGprEJVNcL3X3T83R3mNwKBgQDWJK8icbaJujm9HfXi9ODcG7YpPYKRcqJa
+            LZclOiccRHIUN4SzouIfB6kp63k96W5Yzm6GeRgaiB/LQNPNTDFO4Q7Zrm7wci9o
+            kzRUHWJcgKl7r8Q+TYXBPJVn0dZe65G5O/d+7cmQn+MUp0Gi5cnYu9eaeKHoJGY0
+            P6vCKhab8wKBgC2cK8k14hkbNJIkDKpi0ha7maIIeC86HIEPYHzKV9lI8m7+F1n3
+            6Y3bganRAhae4FRPg9FNglhXApBTwRO1wepn5N8tCveUjosvPXduiQqXfAHttwt3
+            fzcrT+B4djHcJKITij5cATOJYnYWa20WjADgGqjSngwQJ5JO0alu4oLZAoGAD138
+            j203mzSY9iBTR+EozcLTVKxMVWGzkuMYqJw+uEGVKiw9wqJatb1X/2EdhzrcJ1VR
+            Cydfem/wUCarzFy+YRm3dhmVbn3TNx7xL2QYbejxwKWBYLMxeQd+9T9SsecXwwIx
+            pZMs1ssSgaXrCOSSkpIQS86CV+VczD0Rd1KL4s8CgYEAhfI92S/3eL6eOkm7yHL1
+            4331R/gomiO4QehLpyUZfirpqxNO/8BL6f25Jp5cC3dJeNu4xEbbMIMpEpT9C+ZJ
+            4WWYzDCC43HB8AbA8SgMDz7Vaa6h9zHJolLLrcsDMtiD4JT7VeV4UluWXIaRbg6p
+            XYwWQL2d6uGePDriQHXIUmY=
+            -----END PRIVATE KEY-----""",
+                "client_email": "google-sheets-api@inbound-pattern-429101-c5.iam.gserviceaccount.com",
+                "client_id": "107649396128661753097",
+                "auth_uri": "https://accounts.google.com/o/oauth2/auth",
+                "token_uri": "https://oauth2.googleapis.com/token",
+                "auth_provider_x509_cert_url": "https://www.googleapis.com/oauth2/v1/certs",
+                "client_x509_cert_url": "https://www.googleapis.com/robot/v1/metadata/x509/google-sheets-api%40inbound-pattern-429101-c5.iam.gserviceaccount.com",
+                "universe_domain": "googleapis.com"
+            }
 
 # URL de la hoja de Google Sheets
 # URL de la hoja de Google Sheets
@@ -70,6 +70,8 @@ def load_data(url):
 
 # Cargar los datos
 df = load_data(data_url)
+
+
 # Obtener valores únicos de la primera columna
 primera_columna_lista = df["Usuario"].dropna().unique().tolist()
 
@@ -164,6 +166,7 @@ cols_to_convert = ["Unidades", "Un.x Bulto", "Bultos"]
 df[cols_to_convert] = df[cols_to_convert].apply(pd.to_numeric, errors="coerce").astype(int)
 
 # Guardar en session_state para modificar
+
 if "df" not in st.session_state:
     st.session_state.df = df.copy()
 
@@ -200,13 +203,57 @@ def mostrar_carta(data_row,posicion):
     """
     st.markdown(card_html, unsafe_allow_html=True)
 
+    if st.button("Saltear Tarea"):
+
+        real_index = st.session_state.df.index[st.session_state.current_row]  
+        st.session_state.df.loc[real_index,"Tarea Salteada"] = 1
+        st.session_state.df.loc[real_index,"HoraInicio"] = datetime.now().strftime("%d-%m-%Y %H:%M:%S")
+
+        header_values = st.session_state.df.columns.tolist()
+        sheet.update("A1", [header_values])
+        # Obtener los valores de la fila actual y convertirlos a cadenas
+        current_row_values = st.session_state.df.loc[real_index].values.tolist()
+        current_row_values = ["" if pd.isna(x) else x for x in current_row_values]
+        # current_row_values = [str(value) for value in current_row_values]
+        current_row_values[0] = str(current_row_values[0])
+
+        # Calcular el rango dinámico basado en el número de columnas
+        num_columns = len(st.session_state.df.columns)  # Total de columnas
+        last_column_letter = string.ascii_uppercase[num_columns - 1] if num_columns <= 26 else f"A{string.ascii_uppercase[num_columns - 27]}"  # AA, AB, etc.
+
+        current_row_values = [
+        int(value) if isinstance(value, (np.int64, np.int32)) else
+        float(value) if isinstance(value, (np.float64, np.float32)) else
+        value
+        for value in current_row_values
+        ]
+
+        # Construir el rango (por ejemplo, A2:Z2)
+        sheet_range = f"A{st.session_state.current_row + 2}:{last_column_letter}{st.session_state.current_row + 2}"
+
+
+        # Actualizar la fila en Google Sheets
+        sheet.update(sheet_range, [current_row_values])
+        
+    
+        st.success("Tarea completada para la posición.")
+        time.sleep(1)
+        # Reinicia la entrada de posición escaneada
+        st.session_state.escaneada_posicion = ""
+        st.session_state.input_key += 1 
+        # Incrementa la fila actual
+        st.session_state.current_row = encontrar_siguiente_fila_vacia(sheet,st.session_state.selected_value)
+        st.rerun()
+
+
+
     if posicion == data_row['Posicion']:
 
         if st.session_state.current_row not in st.session_state.HoraInicio:
 
             hora_inicio = datetime.now()
             st.session_state.HoraInicio[st.session_state.current_row] = hora_inicio.strftime("%d-%m-%Y %H:%M:%S")
-                
+
 
         # st.write(f"Hora de inicio: {st.session_state.HoraInicio[posicion]}")
         articulo = st.number_input(f"Escanea el artículo para la posición {data_row['Posicion']}", min_value=0,value=None)
@@ -250,7 +297,9 @@ def mostrar_carta(data_row,posicion):
         real_index = st.session_state.df.index[st.session_state.current_row]
 
         try:
-
+            
+            st.session_state.df.loc[real_index,"Tarea Salteada"] = 0
+            st.session_state.df.loc[real_index,"HoraInicio"] = st.session_state.HoraInicio.get(st.session_state.current_row, None)
             st.session_state.df.loc[real_index,"Articulo Escaneado"] = articulo
             st.session_state.df.loc[real_index,"Bultos Contados"] = cantidad_bultos
             st.session_state.df.loc[real_index,"Blister por Bulto"] = blister_bulto
@@ -259,7 +308,7 @@ def mostrar_carta(data_row,posicion):
             st.session_state.df.loc[real_index,"Unidades Sueltos"] = cantidad_unidades_sueltos
             st.session_state.df.loc[real_index,"Blister Sueltos"] = cantidad_blister_sueltos
             # st.session_state.df.loc[real_index,"Fecha Vencimiento Observada"] = fecha
-            st.session_state.df.loc[real_index,"HoraInicio"] = st.session_state.HoraInicio.get(st.session_state.current_row, None)
+            
 
 
 

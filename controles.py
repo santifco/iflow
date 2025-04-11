@@ -125,7 +125,31 @@ def asignar_usuarios(primera_columna_lista, df_concatenado):
 
 #
 
+                # Definir función para agregar datos en la última fila disponible
+def agregar_a_google_sheets(df, sheet_id):
+    try:
+        # Autenticar cliente de Google Sheets
+        scopes = ["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"]
+        creds = service_account.Credentials.from_service_account_info(credentials_info, scopes=scopes)
+        client = gspread.authorize(creds)
 
+        # Abrir la hoja de Google usando el ID
+        sheet_id = client.open_by_key(sheet_id).sheet1
+
+        # Llenar valores NaN con "0"
+        df = df.fillna("0")
+
+        # Convertir el DataFrame a lista de listas
+        df_values = df.values.tolist()
+
+        # Agregar filas al final de la hoja
+        sheet_id.append_rows(df_values, value_input_option="RAW")
+
+        return True
+
+    except Exception as e:
+        st.error(f"Error al actualizar Google Sheets: {e}")
+        return False
 
 # URL de la hoja de Google Sheets
 sheet_url = 'https://docs.google.com/spreadsheets/d/1x2z8puH9uRbWuhhddVtEdy8w6QoqxB__3RiHiib9KYk/edit?gid=0#gid=0'
@@ -1090,6 +1114,7 @@ if "Control Picking" in seleccion:
                 sheet = client.open_by_key(sheet_id).sheet1
 
                 df_merged_picking = df_merged_picking.fillna("0")
+                df_merged_picking["Tarea Salteada"] = 1
                 # Convirtiendo el DataFrame a una lista de listas
                 df_values = df_merged_picking.values.tolist()
                 
@@ -1169,7 +1194,15 @@ with tab6:
             # Mostrar el porcentaje en formato de texto
             st.write(f"Porcentaje de avance: {(avance)*100:.2f}%")
 
-            df_resultado_picking = df_resultado_picking[df_resultado_picking['Diferencia Unidades'].ne(0) & df_resultado_picking['Diferencia Unidades'].notna() & df_resultado_picking['Diferencia Unidades'].astype(str).str.strip().ne('')]
+            df_resultado_picking = df_resultado_picking.sort_values('HoraFin', ascending=False)
+            df_resultado_picking = df_resultado_picking.drop_duplicates(subset=['Cod.Articulo'], keep='first')  # Reemplazá 'ID' por tu columna clave
+
+            # Filtrar las filas con 'Diferencia Unidades' distintas de 0, no nulas y no vacías
+            df_resultado_picking = df_resultado_picking[
+                df_resultado_picking['Diferencia Unidades'].ne(0) &
+                df_resultado_picking['Diferencia Unidades'].notna() &
+                df_resultado_picking['Diferencia Unidades'].astype(str).str.strip().ne('')
+            ]
 
             df_resultado_picking_monitoreo = df_resultado_picking[["Entidad","Temperatura","Cod.Articulo","Descripcion Articulo","Posicion","Diferencia Unidades"]]
 
@@ -1177,33 +1210,6 @@ with tab6:
 
             if st.button("Recontrolar Picking"):
                 
-
-                # Definir función para agregar datos en la última fila disponible
-                def agregar_a_google_sheets(df, sheet_id):
-                    try:
-                        # Autenticar cliente de Google Sheets
-                        scopes = ["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"]
-                        creds = service_account.Credentials.from_service_account_info(credentials_info, scopes=scopes)
-                        client = gspread.authorize(creds)
-
-                        # Abrir la hoja de Google usando el ID
-                        sheet_id = client.open_by_key(sheet_id).sheet1
-
-                        # Llenar valores NaN con "0"
-                        df = df.fillna("0")
-
-                        # Convertir el DataFrame a lista de listas
-                        df_values = df.values.tolist()
-
-                        # Agregar filas al final de la hoja
-                        sheet_id.append_rows(df_values, value_input_option="RAW")
-
-                        return True
-
-                    except Exception as e:
-                        st.error(f"Error al actualizar Google Sheets: {e}")
-                        return False
-
                 # Definir las columnas que se van a exportar
                 # columnas = ["Cod.Articulo", "Temperatura", "Rubro", "Entidad", "Descripcion Articulo", 
                 #              "Pasillo", "Columna", "Nivel", "Sector", "Posicion", "Bultos", "Unidades", 
@@ -1279,32 +1285,6 @@ with tab6:
             if st.button("Recontrolar Recepción"):
                 
 
-                # Definir función para agregar datos en la última fila disponible
-                def agregar_a_google_sheets(df, sheet_id):
-                    try:
-                        # Autenticar cliente de Google Sheets
-                        scopes = ["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"]
-                        creds = service_account.Credentials.from_service_account_info(credentials_info, scopes=scopes)
-                        client = gspread.authorize(creds)
-
-                        # Abrir la hoja de Google usando el ID
-                        sheet = client.open_by_key(sheet_id).sheet1
-
-                        # Llenar valores NaN con "0"
-                        df = df.fillna("0")
-
-                        # Convertir el DataFrame a lista de listas
-                        df_values = df.values.tolist()
-
-                        # Agregar filas al final de la hoja
-                        sheet.append_rows(df_values, value_input_option="RAW")
-
-                        return True
-
-                    except Exception as e:
-                        st.error(f"Error al actualizar Google Sheets: {e}")
-                        return False
-
                 # Definir las columnas que se van a exportar
                 df_resultado_recepcion = df_resultado_recepcion.loc[:, : "Usuario"]
 
@@ -1356,60 +1336,68 @@ with tab6:
             # Mostrar el porcentaje en formato de texto
             st.write(f"Porcentaje de avance: {(avance)*100:.2f}%")
 
-            df_resultado_parciales = df_resultado_parciales[
-            (df_resultado_parciales['Diferencia Unidades'].ne(0) & 
-            df_resultado_parciales['Diferencia Unidades'].notna() & 
-            df_resultado_parciales['Diferencia Unidades'].astype(str).str.strip().ne(''))
-            |
-            (df_resultado_parciales['Diferencia Fecha Vencimiento'].ne(0) & 
-            df_resultado_parciales['Diferencia Fecha Vencimiento'].notna()& 
-            df_resultado_parciales['Diferencia Unidades'].astype(str).str.strip().ne(''))
+            df_resultado_parciales_unidades = df_resultado_parciales[
+                (df_resultado_parciales['Diferencia Unidades'].ne(0)) & 
+                (df_resultado_parciales['Diferencia Unidades'].notna()) & 
+                (df_resultado_parciales['Diferencia Unidades'].astype(str).str.strip().ne(''))
             ]
 
-            df_resultado_parciales_monitoreo = df_resultado_parciales[["Entidad","Temperatura","Cod.Articulo","Descripcion Articulo","Posicion","Diferencia Unidades","Diferencia Fecha Vencimiento"]]
+            # Filtro para diferencias en fecha de vencimiento
+            df_resultado_parciales_fecha = df_resultado_parciales[
+                (df_resultado_parciales['Diferencia Fecha Vencimiento'].ne(0)) & 
+                (df_resultado_parciales['Diferencia Fecha Vencimiento'].notna()) & 
+                (df_resultado_parciales['Diferencia Fecha Vencimiento'].astype(str).str.strip().ne(''))
+            ]
 
-            st.write(df_resultado_parciales_monitoreo)
+            df_resultado_parciales_concatenado = pd.concat([df_resultado_parciales_unidades, df_resultado_parciales_fecha],ignore_index=True)
 
-            if st.button("Recontrolar Parciales"):
-                
+            # Eliminar duplicados por la columna "Cod.Articulo"
+            df_resultado_parciales_concatenado = df_resultado_parciales_concatenado.drop_duplicates(subset="Cod.Articulo", keep="first")
 
-                # Definir función para agregar datos en la última fila disponible
-                def agregar_a_google_sheets(df, sheet_id):
-                    try:
-                        # Autenticar cliente de Google Sheets
-                        scopes = ["https://www.googleapis.com/auth/spreadsheets", "https://www.googleapis.com/auth/drive"]
-                        creds = service_account.Credentials.from_service_account_info(credentials_info, scopes=scopes)
-                        client = gspread.authorize(creds)
+            df_resultado_parciales_unidades_monitoreo = df_resultado_parciales_unidades[["Entidad","Temperatura","Cod.Articulo","Descripcion Articulo","Posicion","Diferencia Unidades","Diferencia Fecha Vencimiento"]]
+            df_resultado_parciales_fecha_monitoreo = df_resultado_parciales_fecha[["Entidad","Temperatura","Cod.Articulo","Descripcion Articulo","Posicion","Diferencia Unidades","Diferencia Fecha Vencimiento"]]
 
-                        # Abrir la hoja de Google usando el ID
-                        sheet = client.open_by_key(sheet_id).sheet1
+            st.write(df_resultado_parciales_unidades_monitoreo)
 
-                        # Llenar valores NaN con "0"
-                        df = df.fillna("0")
+            # Botón 1 - Recontrolar Parciales Unidades
 
-                        # Convertir el DataFrame a lista de listas
-                        df_values = df.values.tolist()
+            if st.button("Recontrolar Parciales Unidades"):
+                df_resultado_parciales_unidades = df_resultado_parciales_unidades.loc[:, : "Usuario"]
 
-                        # Agregar filas al final de la hoja
-                        sheet.append_rows(df_values, value_input_option="RAW")
-
-                        return True
-
-                    except Exception as e:
-                        st.error(f"Error al actualizar Google Sheets: {e}")
-                        return False
-
-                # Definir las columnas que se van a exportar
-                df_resultado_parciales = df_resultado_parciales.loc[:, : "Usuario"]
-
-                # ID de las hojas de Google Sheets
-                sheet_ids = ["1eikx9phIghxyiv1yfFy3ZqqNePWSbhkyvisOzSD37pw",
+                sheet_ids = [
+                    "1eikx9phIghxyiv1yfFy3ZqqNePWSbhkyvisOzSD37pw",
                     "1OuRlrf7RR7P1o0FGIGKIWLMjSFo62Aa3NgiEvpTx2Ps"
                 ]
 
-                # Agregar datos en la última fila de ambas hojas
                 for sheet_id in sheet_ids:
-                    if agregar_a_google_sheets(df_resultado_parciales, sheet_id):
+                    if agregar_a_google_sheets(df_resultado_parciales_unidades, sheet_id):
+                        st.success(f"¡Datos agregados en la última fila de Google Sheet con éxito!")
+            
+            st.write(df_resultado_parciales_fecha_monitoreo)
+        # Botón 2 - Recontrolar Parciales Fecha
+            if st.button("Recontrolar Parciales Fecha"):
+                df_resultado_parciales_fecha = df_resultado_parciales_fecha.loc[:, : "Usuario"]
+
+                sheet_ids = [
+                    "1eikx9phIghxyiv1yfFy3ZqqNePWSbhkyvisOzSD37pw",
+                    "1OuRlrf7RR7P1o0FGIGKIWLMjSFo62Aa3NgiEvpTx2Ps"
+                ]
+
+                for sheet_id in sheet_ids:
+                    if agregar_a_google_sheets(df_resultado_parciales_fecha, sheet_id):
+                        st.success(f"¡Datos agregados en la última fila de Google Sheet con éxito!")
+                    # Botón 2 - Recontrolar Parciales Fecha
+
+            if st.button("Recontrolar Todo"):
+                df_resultado_parciales_concatenado = df_resultado_parciales_concatenado.loc[:, : "Usuario"]
+
+                sheet_ids = [
+                    "1eikx9phIghxyiv1yfFy3ZqqNePWSbhkyvisOzSD37pw",
+                    "1OuRlrf7RR7P1o0FGIGKIWLMjSFo62Aa3NgiEvpTx2Ps"
+                ]
+
+                for sheet_id in sheet_ids:
+                    if agregar_a_google_sheets(df_resultado_parciales_concatenado, sheet_id):
                         st.success(f"¡Datos agregados en la última fila de Google Sheet con éxito!")
 
         except:
